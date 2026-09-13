@@ -38,4 +38,6 @@ Frozen real dataset: 53 cases, 20 failures/33 controls; 52 development and one h
 
 ## Final gate
 
-Final validation and remote verification are in progress during preparation of this document. Do not interpret this sentence as a completed delivery claim; the final checkpoint replaces it with actual results.
+Completed against code commit c1d980dd517da58b7806c83bff7d1b5b42a12dde: 68 local tests passed; a fresh authenticated GitHub clone independently passed all 68 tests, Ruff checking/formatting, wheel and sdist builds, isolated-wheel installation, three consecutive fresh-server browser workflows and a synthetic portable bundle round trip through the installed CLI. All browser runs reported zero console errors and failed workflow requests, two expected security rejections and comparison=pass. The installed Hermes skill loader again returned success=true and readiness_status=available. The installed wrapper doctor reached the real package and profile. Installation/removal/ownership checks are included in the suite.
+
+The exact-index audit covered 52 text files with zero excluded artifacts or sensitive-pattern matches. All four existing committed trees also passed. Private history and detailed evidence stayed outside Git. The clean-clone commands follow the sequence above with synthetic fixtures created by scripts/browser_fixture.py and query Unfamiliar. Actual source data was not copied into the clean checkout. Final documentation-only commits do not change the validated implementation; their required Actions run is checked separately before delivery.
