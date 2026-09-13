@@ -1,0 +1,123 @@
+{
+  "files": {
+    "LICENSE": {
+      "sha256": "3d2181d52897645c234241f767d3070606911b87803d4a35c1a0403a66069ee6",
+      "source": "LICENSE"
+    },
+    "NOTICE": {
+      "sha256": "bbb0e65979e1600741225af8b32f6602c648b89ad22f9fa31c0a1684d5a906c9",
+      "source": "NOTICE"
+    },
+    "README.md": {
+      "sha256": "496de120ce885a8b953532bfd7840bc74e8014ebc7d47309d2b4268ce5928c4a",
+      "source": "packaging/plugin-readme.md"
+    },
+    "__init__.py": {
+      "sha256": "c6aafa26c58608fa1db859e9741b510f07b28797917a2cc2d7b66d975b95c341",
+      "source": "__init__.py"
+    },
+    "docs/privacy.md": {
+      "sha256": "bde77e91c873461941ef72b603edba6e195eff3977ecab33e8cf5906d5f83c15",
+      "source": "docs/privacy.md"
+    },
+    "hermes_plugin/__init__.py": {
+      "sha256": "e67889d8d4ef6cd5934e029933b21e8242269478e6b69aeafc8125c426bb6058",
+      "source": "hermes_plugin/__init__.py"
+    },
+    "hermes_plugin/commands.py": {
+      "sha256": "13da2615783e016204f238c5d15fdd43c45bde89f25b1855e0e8b8e044e650e1",
+      "source": "hermes_plugin/commands.py"
+    },
+    "hermes_plugin/hooks.py": {
+      "sha256": "41be1ff940b8c84613e4f1c25e158535f4162280689c5a6ca29b25d24cc4af42",
+      "source": "hermes_plugin/hooks.py"
+    },
+    "hermes_plugin/runtime.py": {
+      "sha256": "ec3bc10ae52783f6fba998d11fd2bd924b9f2c6fe77a3a422d7943bd41ebb0ef",
+      "source": "hermes_plugin/runtime.py"
+    },
+    "hermes_plugin/schemas.py": {
+      "sha256": "c5afc3be15b56148048926e108fce85b8210eb04169f9685b48f90ffcabe6879",
+      "source": "hermes_plugin/schemas.py"
+    },
+    "plugin.yaml": {
+      "sha256": "32b8b07aa0e0433f6ed6dfe3f9a88f685af6465a9998ebe21b3d12b264bf2ecf",
+      "source": "plugin.yaml"
+    },
+    "pyproject.toml": {
+      "sha256": "e7fb6eed47a4f3089e534d2efc0bd5a5f28c5433c7fcbce1292666269798b6c0",
+      "source": "pyproject.toml"
+    },
+    "skills/regression-workflow/SKILL.md": {
+      "sha256": "1c40bc9e2d40566af50500bea1c689bd7aabeed024c6750d11493e46a6c01e18",
+      "source": "skills/regression-workflow/SKILL.md"
+    },
+    "src/agent_fix_lab/__init__.py": {
+      "sha256": "00b9adea1103b72d9bcf237f6a4bcd8fae6d2ec3cc0a843ce8a946f44928040a",
+      "source": "src/agent_fix_lab/__init__.py"
+    },
+    "src/agent_fix_lab/adapters.py": {
+      "sha256": "d8c214d38770a8d3a69ff828b21692a142a06c706890095a73b6bc070ba9fe2f",
+      "source": "src/agent_fix_lab/adapters.py"
+    },
+    "src/agent_fix_lab/assets/app.js": {
+      "sha256": "2c0f8f575f4ffd53905880f6742937284d891f1ef5411a3cd7616861307f8908",
+      "source": "src/agent_fix_lab/assets/app.js"
+    },
+    "src/agent_fix_lab/assets/index.html": {
+      "sha256": "62365b5d6b9614e1a1f716b8404a8e1c41d08d14fa509306cabab49caf847f52",
+      "source": "src/agent_fix_lab/assets/index.html"
+    },
+    "src/agent_fix_lab/assets/style.css": {
+      "sha256": "9e6cc733be23bc15e3a2ed2ea8768dd96826483c95a2d94d290df6dc4d4032f6",
+      "source": "src/agent_fix_lab/assets/style.css"
+    },
+    "src/agent_fix_lab/bundles.py": {
+      "sha256": "75ec34ff3d47a77cbf7c0eae04e9e34d743553d323e68d0929c6339b6a68c143",
+      "source": "src/agent_fix_lab/bundles.py"
+    },
+    "src/agent_fix_lab/cli.py": {
+      "sha256": "f094dea98c0dc5db7a8df613d75a415eb904d450a15604b75e66de4a5dd7fff0",
+      "source": "src/agent_fix_lab/cli.py"
+    },
+    "src/agent_fix_lab/corrections.py": {
+      "sha256": "934c6f21ea2fd4643b3497749a26cc1e229e806f4bd5a43b4911f23174b45890",
+      "source": "src/agent_fix_lab/corrections.py"
+    },
+    "src/agent_fix_lab/history.py": {
+      "sha256": "cb8e69fb3739344805e064251cdd0b026819c6ba9eaf4e5661a9dfe26abb895a",
+      "source": "src/agent_fix_lab/history.py"
+    },
+    "src/agent_fix_lab/models.py": {
+      "sha256": "d1c4eddbb6fc2fba81bd99b81e75df6b28c470722f64c18e20e11da0fe26897d",
+      "source": "src/agent_fix_lab/models.py"
+    },
+    "src/agent_fix_lab/plugin_bridge.py": {
+      "sha256": "4a6f693e519f236fccea97665d44a38fb2dc02a6eb6e44dd03a31424a9554914",
+      "source": "src/agent_fix_lab/plugin_bridge.py"
+    },
+    "src/agent_fix_lab/runner.py": {
+      "sha256": "55793e58d32e886c6d61fd4436b93459f6427ea19ae164d5780c3c1250cb0b71",
+      "source": "src/agent_fix_lab/runner.py"
+    },
+    "src/agent_fix_lab/service.py": {
+      "sha256": "e74d3de247bb247067188841d17befc6d2654e5282acdfb24a0d1e0257780e91",
+      "source": "src/agent_fix_lab/service.py"
+    },
+    "src/agent_fix_lab/store.py": {
+      "sha256": "3afd3c5e0265b56253b27feae561a121ef00e026542f624a4561d8b027d45195",
+      "source": "src/agent_fix_lab/store.py"
+    },
+    "src/agent_fix_lab/web.py": {
+      "sha256": "2b25d692e4cc8918b607985e307de51d009eb79a7e32d341122f570d8ea9dea1",
+      "source": "src/agent_fix_lab/web.py"
+    },
+    "uv.lock": {
+      "sha256": "aeb1d90ef3a3df99ea8754b72e252143c6d74b3ee60d4c484461e3fadc7f6009",
+      "source": "uv.lock"
+    }
+  },
+  "format_version": 1,
+  "source_commit": "27f80edea9c1c91580b3d74ef6b58c31eb222f36",
+  "source_repository": "https://github.com/ussyverse/agent-fix-lab"
+}
