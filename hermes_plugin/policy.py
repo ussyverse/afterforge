@@ -44,13 +44,18 @@ def directive(policy, coding=False, attempt=0, changed_paths=None, **kwargs):
     if not isinstance(changed_paths, list) or not 1 <= len(changed_paths) <= 256:
         return None
     scope = Path(policy["scope"])
-    if not scope.is_absolute():
+    if not scope.is_absolute() or scope.resolve() != scope or not scope.is_dir():
         return None
     for value in changed_paths:
         if not isinstance(value, str) or len(value) > 4096:
             return None
         path = Path(value)
-        if not path.is_absolute() or ".." in path.parts or not path.is_relative_to(scope):
+        if (
+            not path.is_absolute()
+            or ".." in path.parts
+            or not path.is_relative_to(scope)
+            or not path.resolve().is_relative_to(scope.resolve())
+        ):
             return None
     return {"action": "continue", "message": MESSAGE}
 
@@ -97,7 +102,10 @@ def transition(directory, action, expected_generation, policy=None, approved_dig
         state = read(root)
         if state["generation"] != expected_generation:
             raise ValueError("State changed; inspect before retrying")
-        if len(state["events"]) >= 128:
+        # Repeating rollback is idempotent, never an implicit redo/activation.
+        if action == "rollback" and state["events"] and state["events"][-1]["action"] == "rollback":
+            return state
+        if len(state["events"]) >= 128 and action != "rollback":
             raise ValueError("Lifecycle event limit reached")
         previous = state["active"]
         if action == "activate":

@@ -31,5 +31,8 @@ def policy_lifecycle(manager):
     assert not any(manager.invoke_hook("pre_verify", **{**payload, "attempt": 1}))
     command("rollback", "--generation", "1")
     assert command("status")["active"] is None
+    command("rollback", "--generation", "2")
+    assert command("status")["active"] is None
+    assert command("status")["generation"] == 2
     assert not any(manager.invoke_hook("pre_verify", **payload))
     return {"status": "pass", "kind": "synthetic-host-lifecycle", "behavioral_efficacy": "not-run"}
