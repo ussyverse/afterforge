@@ -6,7 +6,7 @@ import subprocess
 from pathlib import Path
 
 
-def policy_lifecycle(manager):
+def policy_lifecycle(manager, case_id=None):
     home = Path(os.environ["HERMES_HOME"])
     assert (home / ".afl-isolated-test").exists()
     project = home / "synthetic-policy-project"
@@ -18,12 +18,25 @@ def policy_lifecycle(manager):
         assert result["success"], result
         return result["data"]
 
-    proposed = command("propose", "--scope", str(project))
+    linkage = ["--case-id", case_id] if case_id else []
+    proposed = command("propose", "--scope", str(project), *linkage)
+    if case_id:
+        assert proposed["candidate"]["origin"]["case_id"] == case_id
+        assert set(proposed["candidate"]["origin"]) == {"case_id", "case_digest"}
     digest = proposed["evaluation"]["candidate_digest"]
     assert proposed["evaluation"]["behavioral_efficacy"] == "not-run"
     payload = {"coding": True, "attempt": 0, "changed_paths": [str(project / "synthetic.py")]}
     assert not any(manager.invoke_hook("pre_verify", **payload))
-    command("activate", "--scope", str(project), "--approve-digest", digest, "--generation", "0")
+    command(
+        "activate",
+        "--scope",
+        str(project),
+        "--approve-digest",
+        digest,
+        "--generation",
+        "0",
+        *linkage,
+    )
     # Different CLI process sees persisted activation; manager reloads policy on each hook.
     assert command("status")["active"]["digest"] == digest
     results = manager.invoke_hook("pre_verify", **payload)

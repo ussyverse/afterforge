@@ -20,16 +20,29 @@ def digest(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True).encode()).hexdigest()
 
 
-def candidate(scope):
+def candidate(scope, origin=None):
     scope = Path(scope)
     if not scope.is_absolute() or scope.is_symlink() or not scope.is_dir():
         raise ValueError("Scope must be an existing absolute project directory")
-    return {
+    result = {
         "version": 1,
         "kind": "verification-reminder",
         "scope": str(scope.resolve()),
         "message": MESSAGE,
     }
+    if origin is not None:
+        if (
+            not isinstance(origin, dict)
+            or set(origin) != {"case_id", "case_digest"}
+            or not isinstance(origin["case_id"], str)
+            or not 1 <= len(origin["case_id"]) <= 128
+            or not isinstance(origin["case_digest"], str)
+            or len(origin["case_digest"]) != 64
+            or any(char not in "0123456789abcdef" for char in origin["case_digest"])
+        ):
+            raise ValueError("Invalid bounded incident reference")
+        result["origin"] = dict(origin)
+    return result
 
 
 def directive(policy, coding=False, attempt=0, changed_paths=None, **kwargs):
@@ -109,7 +122,9 @@ def transition(directory, action, expected_generation, policy=None, approved_dig
             raise ValueError("Lifecycle event limit reached")
         previous = state["active"]
         if action == "activate":
-            if policy != candidate(policy["scope"]) or approved_digest != digest(policy):
+            if policy != candidate(
+                policy["scope"], policy.get("origin")
+            ) or approved_digest != digest(policy):
                 raise ValueError("Approval must bind the exact supported candidate")
             receipt = evaluate(policy)
             if receipt["status"] != "pass":

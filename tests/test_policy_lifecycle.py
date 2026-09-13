@@ -82,6 +82,28 @@ def test_rollback_available_at_event_limit(tmp_path):
     assert policy.transition(root, "rollback", 129) == restored
 
 
+def test_incident_link_bound_to_approval(lab, tmp_path):
+    from agent_fix_lab.plugin_bridge import dispatch
+
+    case_id = lab.list_cases()[0]["id"]
+    origin = dispatch(lab.store.root, "policy_origin", {"case_id": case_id})
+    assert set(origin) == {"case_id", "case_digest"}
+    assert len(origin["case_digest"]) == 64
+    linked = policy.candidate(str(tmp_path), origin)
+    plain = policy.candidate(str(tmp_path))
+    assert policy.digest(linked) != policy.digest(plain)
+    root = tmp_path / "state"
+    with pytest.raises(ValueError):
+        policy.transition(root, "activate", 0, linked, policy.digest(plain))
+    state = policy.transition(root, "activate", 0, linked, policy.digest(linked))
+    assert state["active"]["policy"]["origin"] == origin
+    assert state["active"]["evaluation"]["behavioral_efficacy"] == "not-run"
+    with pytest.raises(KeyError):
+        dispatch(lab.store.root, "policy_origin", {"case_id": "missing"})
+    with pytest.raises(ValueError):
+        policy.candidate(str(tmp_path), {**origin, "raw_history": "not allowed"})
+
+
 def test_corrupt_state_abstains(tmp_path):
     (tmp_path / "lifecycle.json").write_text("invalid")
     assert policy.hook(tmp_path, coding=True, changed_paths=["/synthetic.py"]) is None

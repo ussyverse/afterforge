@@ -34,6 +34,14 @@ def dispatch(home, operation, args):
             "total": len(rows),
             "next_offset": offset + limit if offset + limit < len(rows) else None,
         }
+    if operation == "policy_origin":
+        from .models import digest
+
+        identifier = args["case_id"]
+        if not isinstance(identifier, str) or not 1 <= len(identifier) <= 128:
+            raise ValueError("Bounded incident ID required")
+        case = lab.store.get("case", identifier)
+        return {"case_id": identifier, "case_digest": digest(case)}
     if operation == "inspect_case":
         return lab.detail(args["case_id"])
     if operation == "review_case":

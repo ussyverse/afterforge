@@ -308,14 +308,33 @@ class Runtime:
                 from . import policy
 
                 root = self.root() / "policies"
+                origin = None
+                if args.case_id:
+                    if args.operation not in ("propose", "activate"):
+                        raise ValueError("Incident linkage is only for propose/activate")
+                    if not self.ready():
+                        raise RuntimeError("Run hermes fixlab setup before linking incidents")
+                    response = self.invoke(
+                        [str(self.executable()), "-m", "agent_fix_lab.plugin_bridge"],
+                        {
+                            "home": str(self.root() / "data"),
+                            "operation": "policy_origin",
+                            "args": {"case_id": args.case_id},
+                        },
+                    )
+                    if not response.get("success"):
+                        raise ValueError("Incident reference could not be verified")
+                    origin = response["data"]
                 if args.operation == "status":
                     data = policy.read(root)
                 elif args.operation == "propose":
-                    item = policy.candidate(args.scope or "")
+                    item = policy.candidate(args.scope or "", origin)
                     data = {"candidate": item, "evaluation": policy.evaluate(item)}
                 else:
                     item = (
-                        policy.candidate(args.scope or "") if args.operation == "activate" else None
+                        policy.candidate(args.scope or "", origin)
+                        if args.operation == "activate"
+                        else None
                     )
                     data = policy.transition(
                         root, args.operation, args.generation, item, args.approve_digest

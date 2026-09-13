@@ -11,6 +11,7 @@ def configure(parser, **kwargs):
     policy = subs.add_parser("policy")
     policy.add_argument("operation", choices=["propose", "status", "activate", "rollback"])
     policy.add_argument("--scope")
+    policy.add_argument("--case-id")
     policy.add_argument("--approve-digest")
     policy.add_argument("--generation", type=int, default=0)
     serve = subs.add_parser("serve")

@@ -33,7 +33,6 @@ def main():
     assert "regression-workflow" in manager.list_plugin_skills("agent-fix-lab")
     from policy_lifecycle import policy_lifecycle
 
-    policy_result = policy_lifecycle(manager)
     count = 0
 
     def call(name, payload):
@@ -71,6 +70,7 @@ def main():
     rows = call("list_cases", {"status": "fail"})["cases"]
     assert len(rows) == 1
     cid = rows[0]["id"]
+    policy_result = policy_lifecycle(manager, cid)
     assert call("inspect_case", {"case_id": cid})["observations"]["exit_code"] == 3
     call(
         "review_case",
