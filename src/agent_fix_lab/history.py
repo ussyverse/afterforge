@@ -46,7 +46,10 @@ def validate_schema(c):
     if "schema_version" not in tables:
         raise ValueError("Unsupported Hermes schema: missing explicit schema_version")
     if "schema_version" in tables:
-        version = c.execute("select version from schema_version").fetchone()[0]
+        versions = c.execute("select version from schema_version").fetchall()
+        if len(versions) != 1:
+            raise ValueError("Unsupported Hermes schema: ambiguous or missing version row")
+        version = versions[0][0]
         if version != 26:
             raise ValueError(f"Unsupported Hermes schema version: {version}")
     return cols

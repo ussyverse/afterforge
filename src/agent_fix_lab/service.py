@@ -38,6 +38,8 @@ class Lab:
         return result
 
     def detail(self, identifier):
+        from .corrections import candidates
+
         case = self.store.get("case", identifier)
         annotations = [x for x in self.store.all("annotation") if x["case_id"] == identifier]
         retracted = set()
@@ -56,6 +58,9 @@ class Lab:
                 x for x in self.store.all("source-observation") if x["case_id"] == identifier
             ],
             "interpretations": annotations,
+            "correction_candidates": [
+                c for c in candidates(self.store) if c["case_id"] == identifier
+            ],
             "effective_interpretations": [x for x in annotations if x["id"] not in retracted],
             "recipes": recipes,
             "results": results,
@@ -148,6 +153,7 @@ class Lab:
             "exit_code": run["exit_code"],
             "evidence_missing_count": len(run["unknown"]),
             "annotation_count": len(detail["interpretations"]),
+            "correction_candidate_count": len(detail["correction_candidates"]),
             "recipe_count": len(detail["recipes"]),
             "results": [
                 {

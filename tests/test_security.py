@@ -145,6 +145,21 @@ def test_cli_no_remote_bind_option():
         parser().parse_args(["serve", "--host", "0.0.0.0"])
 
 
+@pytest.mark.parametrize(
+    "action",
+    [
+        "drop table schema_version",
+        "delete from schema_version",
+        "insert into schema_version values(26)",
+    ],
+)
+def test_missing_or_ambiguous_source_version(lab, history, action):
+    with sqlite3.connect(history) as c:
+        c.execute(action)
+    with pytest.raises(ValueError, match="Unsupported Hermes schema"):
+        import_hermes(lab.store, history, source_id="fixture", before=10)
+
+
 def test_install_remove_and_collision(tmp_path):
     script = Path(__file__).resolve().parents[1] / "scripts/install_hermes.py"
     command = [

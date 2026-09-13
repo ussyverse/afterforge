@@ -125,3 +125,20 @@ def test_bundle_paths(path):
 def test_bundle_secret_guard():
     with pytest.raises(ValueError):
         bundles.privacy_check('password="an-excluded-credential"')
+
+
+def test_interrupted_bundle_database_write_retries(lab, regression, tmp_path, monkeypatch):
+    path = make_bundle(lab, regression, tmp_path)
+    fresh = Lab(Store(tmp_path / "fresh"))
+    original = fresh.store.put_many
+
+    def interrupted(_):
+        raise OSError("simulated interrupted transaction")
+
+    monkeypatch.setattr(fresh.store, "put_many", interrupted)
+    with pytest.raises(OSError):
+        bundles.import_bundle(fresh, path, reviewed=True)
+    assert fresh.store.all("bundle-import") == []
+    monkeypatch.setattr(fresh.store, "put_many", original)
+    imported = bundles.import_bundle(fresh, path, reviewed=True)
+    assert fresh.run(imported["recipe_id"])["comparison"]["status"] == "pass"

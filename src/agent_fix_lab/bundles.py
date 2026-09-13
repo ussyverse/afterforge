@@ -242,10 +242,11 @@ def import_bundle(lab, path, reviewed=False):
         (tmp / "assertion.py").write_text(data["assertion"])
         (tmp / "README.txt").write_text(data["readme"])
         if not root.exists():
-            root.mkdir(mode=0o700)
-            (tmp / "repository").rename(root / "repository")
-            (tmp / "assertion.py").rename(root / "assertion.py")
-            (tmp / "README.txt").rename(root / "README.txt")
+            tmp.rename(root)
+        elif not (root / "repository" / ".git").is_dir() or not (root / "assertion.py").is_file():
+            raise ValueError(
+                "Incomplete bundle workspace; inspect the owned import directory before retrying"
+            )
     cid = data["case_id"]
     source = SourceRecord(
         id=cid,

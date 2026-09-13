@@ -45,6 +45,7 @@ def workflow(url, recipe, query, screenshot=None):
         page.locator("#expected").fill(recipe["expected_behavior"])
         page.locator("#annotation-form button").click()
         ready("annotation")
+        expect(page.locator("#annotations")).to_contain_text('"author_kind": "operator"')
         expect(page.locator("#annotations")).to_contain_text("browser verification")
         page.get_by_text("Select compatible configuration evidence", exact=True).click()
         fields = json.dumps({"python_version": sys.version.split()[0]})

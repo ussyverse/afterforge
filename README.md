@@ -1,6 +1,8 @@
 # Agent Fix Lab
 
-Local-first regression workbench for Python and Hermes. Import a failed tool run, inspect its evidence, record a correction, and run the same reviewed pytest assertion against two Git revisions.
+Local-first regression workbench that turns Hermes failures and corrections into reproducible, evidence-backed test cases.
+
+For Python projects: import a failed tool run, inspect its evidence, review a correction candidate, and execute the same pytest assertion against two Git revisions.
 
 The useful output is an evidence-backed answer: what failed, what remains unknown, what should happen, and a repeatable command to check the proposed fix. Historical success is not fresh verification. This is a single-user local tool, not autonomous learning or a general model replay engine.
 
@@ -96,6 +98,8 @@ python3 "$HERMES_HOME/skills/agent-fix-lab/scripts/lab.py" find 'KeyError'
 
 Hermes discovers `skills/agent-fix-lab/SKILL.md`; the skill guides its existing terminal tool to the bounded wrapper. No invented slash command, gateway restart, core patch, prompt edit or automatic memory mutation is needed. See [integration instructions](docs/hermes-integration.md) for update/removal and the exact verification boundary.
 
+Remove only the owned integration with `python3 scripts/install_hermes.py --remove --hermes-home "$HERMES_HOME"`. This retains the isolated environment and all private data. Updating the wrapper requires this owned removal followed by installation; package updates use `uv pip install --reinstall-package agent-fix-lab` against the isolated environment, never Hermes's runtime.
+
 ## Included derived examples
 
 `examples/derived/` contains safe reductions of three real historical assumptions: appending `profiles/default` to an already resolved home; requiring a `matches` field when search returned a grouped shape; and treating a non-JSON response as parseable JSON. Fixtures are synthetic and historical provenance is private. These do not reproduce the original runtime or claim that the original incident was fixed.
@@ -112,7 +116,24 @@ The frozen initial dataset contains 53 selected real tool-result cases: 20 failu
 
 Three derived comparisons executed real red/green checks (2, 3 and 3 assertions). Original revisions/configurations remain unknown. Counts, exclusions, component test results and dogfooding are documented in [validation](docs/validation.md) and [dataset methodology](docs/dataset-methodology.md).
 
-Exports deliberately contain counts/statuses, not portable raw transcripts or executable repository bundles. To move a reviewed regression, move its inspected repository and assertion separately and create a new local review. Data is permission-restricted, not encrypted. Only the inspected Hermes SQLite schema 26 is supported; older/future schemas fail explicitly. Legacy text logs, automatic human-correction extraction, semantic completion-claim detection, multi-user serving and automatic policy learning are not implemented.
+`export` is the privacy-minimized count/status report. `bundle-export` additionally transfers selected reviewed code, one frozen assertion, checksums and sanitized metadata. No original conversations are included. `bundle-import` requires a new explicit review before execution; a checksum is not a signature or a trust decision. See [bundles](docs/recipes-and-bundles.md).
+
+Data is permission-restricted, not encrypted. Only inspected Hermes SQLite schema 26 is supported. Conservative correction candidates use message roles, chronology and explicit wording; they are pending hypotheses, not authenticated human corrections. General semantic completion verification, legacy text-log imports, multi-user serving and automatic policy learning remain out of scope. The runner is not an operating-system sandbox.
+
+## Correction candidates and portable bundles
+
+```sh
+uv run agent-fix-lab correction-scan --source "$HERMES_HOME/state.db" --source-id local-hermes --before CUTOFF_UNIX_SECONDS
+uv run agent-fix-lab corrections --status pending
+uv run agent-fix-lab review-correction CANDIDATE_ID --decision accepted --note 'Reviewed against the private evidence'
+uv run agent-fix-lab bundle-export RECIPE_ID --output regression.json --approved \
+  --problem 'Sanitized description' --expected 'Required behavior' \
+  --failure 'Distinctive assertion failure text' --file implementation.py
+uv run agent-fix-lab bundle-validate regression.json
+uv run agent-fix-lab --home "$HOME/.local/share/afl-imported" bundle-import regression.json --reviewed
+```
+
+Inspect all source/fixture files before `--approved` or `--reviewed`. Use the returned recipe ID with `run`. The bundle command selects files from both committed implementations, not from the private history store. Review and retraction history remain immutable in the original private store.
 
 ## Development
 

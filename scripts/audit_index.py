@@ -1,12 +1,18 @@
-"""Audit exact Git index blobs (not working-tree approximations)."""
+"""Audit exact Git index blobs and optionally every reachable committed tree."""
 
+import argparse
 import re
 import subprocess
 from pathlib import PurePosixPath
 
 
-def audit():
-    paths = subprocess.check_output(["git", "ls-files", "-z"]).decode().split("\0")
+def audit(revision=None):
+    command = (
+        ["git", "ls-tree", "-r", "--name-only", "-z", revision]
+        if revision
+        else ["git", "ls-files", "-z"]
+    )
+    paths = subprocess.check_output(command).decode().split("\0")
     problems = []
     count = 0
     patterns = [
@@ -23,7 +29,7 @@ def audit():
             part in {"private", "dataset", ".vault", "node_modules"} for part in path.parts
         ) or re.search(r"\.(db|sqlite|log)(-|\.|$)|\.env", name):
             problems.append((name, "excluded artifact"))
-        body = subprocess.check_output(["git", "show", ":" + name])
+        body = subprocess.check_output(["git", "show", (revision or "") + ":" + name])
         if b"\0" in body:
             problems.append((name, "unreviewed binary"))
         for pattern in patterns:
@@ -32,9 +38,15 @@ def audit():
     if problems:
         raise SystemExit(str(problems))
     print(
-        f"Index privacy audit: {count} text files, zero excluded artifacts or sensitive-pattern matches"
+        f"{revision or 'Index'} privacy audit: {count} text files, zero excluded artifacts or sensitive-pattern matches"
     )
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--history", action="store_true")
+    args = parser.parse_args()
     audit()
+    if args.history:
+        for revision in subprocess.check_output(["git", "rev-list", "--all"]).decode().splitlines():
+            audit(revision)

@@ -1,0 +1,16 @@
+Agent Fix Lab dependency and attribution notice
+
+Agent Fix Lab's original source is MIT licensed; see LICENSE. Dependencies remain under their own licenses and are resolved separately, not copied into this source tree.
+
+Triage: https://github.com/ussyverse/triageussy
+Commit 36a391039b286a5571c91574267efe644d8ec1fe. MIT declared in pyproject.toml; no root LICENSE at the inspected revision. Used through extractor APIs.
+
+Petrichor: https://github.com/ussyverse/petrichorussy
+Commit 76b19e47e1aa1800e16b02aa73a8462bacddcad6. MIT declared in pyproject.toml; no root LICENSE at the inspected revision. Used through selected snapshot/hash/difference APIs.
+
+Correction-aware-learning: https://github.com/mojomast/hermes-correction-aware-learning
+Commit 84c8c8c7e27c820cbc1aa0a5fcf99f891f503f48. MIT license; copyright (c) 2025 Nous Research and (c) 2026 mojomast. Used through structural evidence, relation and report APIs. Its upstream LICENSE is retained by the separately installed dependency.
+
+Hermes/Nous Research and the user's fork supplied storage/skill/routing reference interfaces, not copied runtime code. brainstorm and clanker03 are research references, not dependencies. Full revisions and reuse decisions are in docs/sources.md.
+
+Other runtime/development dependencies, including FastAPI, Uvicorn, Pydantic, pytest, Playwright, Ruff, Hatchling, httpx and build, retain their distribution licenses. Inspect installed distribution metadata and uv.lock for the exact resolved set. This notice does not relicense third-party code or certify missing upstream license files.

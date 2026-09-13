@@ -1,6 +1,6 @@
 const $ = id => document.getElementById(id);
 const token = document.querySelector('meta[name="afl-token"]').content;
-let selected = null, detailGeneration = 0, listGeneration = 0, mutation = false;
+let selected = null, detailGeneration = 0, listGeneration = 0, taskGeneration = 0, mutation = false;
 function notice(text, error=false) { $('notice').textContent=text; $('notice').className=error?'error':''; }
 function show(id,value) { $(id).textContent=typeof value==='string'?value:JSON.stringify(value,null,2); }
 async function api(path,body) {
@@ -11,12 +11,13 @@ async function api(path,body) {
 }
 async function task(name,fn,write=false) {
   if(mutation) return;
+  const operation=++taskGeneration;
   if(write) { mutation=true; document.querySelector('main').inert=true; $('import').disabled=true; }
   document.body.dataset.state='loading'; document.body.dataset.operation=name;
   delete document.body.dataset.completed;
   notice(name==='run'?'Running reviewed assertions against both revisions…':'Loading…');
-  try { await fn(); document.body.dataset.state='ready'; document.body.dataset.completed=name; notice('Completed: '+name); }
-  catch(e) { document.body.dataset.state='error'; notice(e.message,true); }
+  try { await fn(); if(operation===taskGeneration){document.body.dataset.state='ready'; document.body.dataset.completed=name; notice('Completed: '+name);} }
+  catch(e) { if(operation===taskGeneration){document.body.dataset.state='error'; notice(e.message,true);} }
   finally { if(write) { mutation=false; document.querySelector('main').inert=false; $('import').disabled=false; } }
 }
 async function list() {
@@ -43,7 +44,7 @@ async function detail(id) {
   show('completeness','Unknown: '+data.observations.unknown.join(', '));
   show('output',data.observations.output);
   show('source',{source:data.observations.source,symptoms:data.observations.symptoms,lineage:data.source_observations});
-  show('annotations',data.interpretations); show('config',data.configuration_difference);
+  show('annotations',{operator_history:data.interpretations,correction_candidates:data.correction_candidates}); show('config',data.configuration_difference);
   show('availability',data.unavailable_reason || 'Only previously reviewed recipes can run.');
   show('results',data.results);
   for(const recipe of data.recipes) { const option=document.createElement('option'); option.value=recipe.id; option.textContent=recipe.expected_behavior; $('recipes').append(option); }
