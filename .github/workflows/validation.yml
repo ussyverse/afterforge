@@ -24,8 +24,8 @@ jobs:
         run: python scripts/audit_index.py
       - name: Lint and test
         run: |
-          uv run ruff check src tests scripts examples
-          uv run ruff format --check src tests scripts examples
+          uv run ruff check __init__.py hermes_plugin src tests scripts examples
+          uv run ruff format --check __init__.py hermes_plugin src tests scripts examples
           uv run pytest -q
       - name: Build and clean wheel installation
         run: |

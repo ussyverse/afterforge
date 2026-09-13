@@ -38,3 +38,9 @@ testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 100
+
+# Native plugin folder names contain hyphens; boundaries must isolate all exceptions.
+[tool.ruff.lint.per-file-ignores]
+"**/__init__.py" = ["N999"]
+"hermes_plugin/*.py" = ["BLE001", "S110", "TRY004"]
+"src/agent_fix_lab/plugin_bridge.py" = ["BLE001"]

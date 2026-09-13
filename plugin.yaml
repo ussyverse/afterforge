@@ -1,0 +1,14 @@
+name: agent-fix-lab
+version: 0.2.0
+manifest_version: 2
+api_version: 1
+description: Local-first regression workbench that turns Hermes failures and corrections into reproducible, evidence-backed test cases.
+license: MIT
+homepage: https://github.com/ussyverse/agent-fix-lab
+tags: [regression, pytest, local-first, evidence]
+provides_tools: [fixlab_status, fixlab_scan, fixlab_list_cases, fixlab_inspect_case, fixlab_review_case, fixlab_build_regression, fixlab_verify_regression, fixlab_report]
+provides_hooks: [post_tool_call, on_session_end]
+config_schema:
+  capture: {type: bool, default: true, description: Queue bounded metadata only; never execute from hooks}
+  scan_limit: {type: int, default: 50, description: Maximum source records per scan (1 to 200)}
+  timeout: {type: int, default: 120, description: Backend timeout in seconds (5 to 600)}
