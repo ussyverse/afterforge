@@ -36,7 +36,7 @@ async function list() {
 async function detail(id) {
   selected=id; const generation=++detailGeneration;
   const data=await api('/api/cases/'+id);
-  if(generation!==detailGeneration || id!==selected) return;
+  if(generation!==detailGeneration || id!==selected) { document.body.dataset.discardedDetails=String(Number(document.body.dataset.discardedDetails || 0)+1); return; }
   $('detail').replaceChildren($('detail-template').content.cloneNode(true));
   $('detail').dataset.caseId=id;
   show('case-title',`${data.observations.observed_status.toUpperCase()} · ${id.slice(0,12)}`);

@@ -21,6 +21,35 @@ def parser():
     p = argparse.ArgumentParser(prog="agent-fix-lab")
     p.add_argument("--home", type=Path, default=default_home())
     commands = p.add_subparsers(dest="command", required=True)
+    scan = commands.add_parser("correction-scan")
+    scan.add_argument("--source", type=Path, required=True)
+    scan.add_argument("--source-id", required=True)
+    scan.add_argument("--before", type=float, required=True)
+    scan.add_argument("--after", type=float, default=0)
+    scan.add_argument("--limit", type=int, default=500)
+    candidates = commands.add_parser("corrections")
+    candidates.add_argument("--status", choices=["pending", "accepted", "rejected"])
+    review = commands.add_parser("review-correction")
+    review.add_argument("candidate_id")
+    review.add_argument("--decision", choices=["accepted", "rejected", "retracted"], required=True)
+    review.add_argument("--note", required=True)
+    review.add_argument(
+        "--reviewer", choices=["operator", "human-declared", "agent"], default="operator"
+    )
+    review.add_argument("--retracts")
+    bundle = commands.add_parser("bundle-export")
+    bundle.add_argument("recipe_id")
+    bundle.add_argument("--output", type=Path, required=True)
+    bundle.add_argument("--problem", required=True)
+    bundle.add_argument("--expected", required=True)
+    bundle.add_argument("--failure", required=True)
+    bundle.add_argument("--file", action="append", dest="files", required=True)
+    bundle.add_argument("--approved", action="store_true")
+    for name in ("bundle-import", "bundle-validate"):
+        sub = commands.add_parser(name)
+        sub.add_argument("file", type=Path)
+        if name == "bundle-import":
+            sub.add_argument("--reviewed", action="store_true")
     d = commands.add_parser("doctor")
     d.add_argument("--source", type=Path)
     i = commands.add_parser("import-hermes")
@@ -105,6 +134,54 @@ def main(argv=None):
             result = doctor(args.source)
         else:
             lab = Lab(Store(args.home))
+            if args.command in {
+                "correction-scan",
+                "corrections",
+                "review-correction",
+                "bundle-export",
+                "bundle-import",
+                "bundle-validate",
+            }:
+                from . import bundles, corrections
+
+                if args.command == "correction-scan":
+                    result = corrections.scan(
+                        lab.store, args.source, args.source_id, args.before, args.after, args.limit
+                    )
+                elif args.command == "corrections":
+                    result = corrections.candidates(lab.store, args.status)
+                elif args.command == "review-correction":
+                    result = corrections.review(
+                        lab.store,
+                        args.candidate_id,
+                        args.decision,
+                        args.note,
+                        args.reviewer,
+                        args.retracts,
+                    )
+                elif args.command == "bundle-export":
+                    result = bundles.export_bundle(
+                        lab,
+                        args.recipe_id,
+                        args.output,
+                        problem=args.problem,
+                        expected=args.expected,
+                        failure=args.failure,
+                        files=args.files,
+                        approved=args.approved,
+                    )
+                elif args.command == "bundle-import":
+                    result = bundles.import_bundle(lab, args.file, args.reviewed)
+                else:
+                    validated = bundles.validate(args.file)
+                    result = {
+                        "status": "valid",
+                        "case_id": validated["case_id"],
+                        "integrity": validated["integrity"],
+                        "execution_authorized": False,
+                    }
+                print(json.dumps(result, indent=2))
+                return 0
             if args.command == "serve":
                 import uvicorn
 

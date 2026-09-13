@@ -36,8 +36,12 @@ def create_app(lab):
         if request.method not in ("GET", "HEAD"):
             if not secrets.compare_digest(request.headers.get("x-afl-token", ""), token):
                 return JSONResponse({"error": "Invalid mutation token"}, status_code=403)
-            if int(request.headers.get("content-length", "0")) > 65536:
-                return JSONResponse({"error": "Request too large"}, status_code=413)
+            body = bytearray()
+            async for chunk in request.stream():
+                body.extend(chunk)
+                if len(body) > 65536:
+                    return JSONResponse({"error": "Request too large"}, status_code=413)
+            request._body = bytes(body)
         response = await call_next(request)
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; script-src 'self'; style-src 'self'; "
@@ -83,6 +87,22 @@ def create_app(lab):
     @app.get("/api/cases")
     def cases(q: str = "", status: str | None = None):
         return lab.list_cases(q, status)
+
+    @app.get("/api/corrections")
+    def corrections():
+        from .corrections import candidates
+
+        return candidates(lab.store)
+
+    @app.post("/api/corrections/{candidate_id}/review")
+    def correction_review(candidate_id: str, body: dict):
+        from .corrections import review
+
+        if set(body) - {"decision", "note", "retracts"}:
+            raise ValueError("Unexpected correction review fields")
+        return review(
+            lab.store, candidate_id, body["decision"], body["note"], retracts=body.get("retracts")
+        )
 
     @app.get("/api/cases/{case_id}")
     def detail(case_id: str):

@@ -43,6 +43,8 @@ def validate_schema(c):
         raise ValueError("Unsupported Hermes sessions schema")
     # Installed schema v26 is verified; refuse unknown future versions.
     tables = {r[0] for r in c.execute("select name from sqlite_master where type='table'")}
+    if "schema_version" not in tables:
+        raise ValueError("Unsupported Hermes schema: missing explicit schema_version")
     if "schema_version" in tables:
         version = c.execute("select version from schema_version").fetchone()[0]
         if version != 26:

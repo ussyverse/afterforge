@@ -17,7 +17,14 @@ from .models import Comparison, Recipe, ReproductionResult
 
 
 def git(repo, *args):
-    return subprocess.check_output(["git", "-C", str(repo), *args], stderr=subprocess.PIPE)
+    try:
+        return subprocess.check_output(
+            ["git", "-C", str(repo), *args], stderr=subprocess.PIPE, timeout=30
+        )
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
+        raise ValueError(
+            "Git revision/archive operation failed; inspect repository and revision"
+        ) from exc
 
 
 def resolve_recipe(recipe):
@@ -33,6 +40,10 @@ def resolve_recipe(recipe):
     if recipe.dependencies != ["pytest"]:
         raise ValueError(
             "Only the isolated runner pytest dependency is supported; vendor reviewed fixtures"
+        )
+    if recipe.fixture_inputs:
+        raise ValueError(
+            "External fixture references are unsupported; commit inspected fixtures in the repository"
         )
     values = recipe.model_dump()
     for name in ("faulty_revision", "corrected_revision"):
@@ -67,6 +78,8 @@ def classify_result(code, xml_path, output, stopped):
     if stopped:
         return "inconclusive", stopped, (0, 0, 0, 0), ""
     try:
+        if Path(xml_path).stat().st_size > 1048576:
+            return "inconclusive", "Oversized pytest process report", (0, 0, 0, 0), ""
         tree = ET.parse(xml_path)
         cases = tree.findall(".//testcase")
         failures = tree.findall(".//testcase/failure")
@@ -105,7 +118,10 @@ def execute(recipe, variant):
         assertion_dir = base / "assertions"
         assertion_dir.mkdir()
         assertion = assertion_dir / "test_regression.py"
-        assertion.write_bytes(Path(recipe.test_file).read_bytes())
+        test_bytes = Path(recipe.test_file).read_bytes()
+        if hashlib.sha256(test_bytes).hexdigest() != recipe.test_sha256:
+            raise ValueError("Reviewed test changed during preparation")
+        assertion.write_bytes(test_bytes)
         report = base / "report.xml"
         outpath = base / "output.log"
         # No user config, autoloaded plugins, shell, or inherited credential environment.
@@ -159,7 +175,8 @@ def execute(recipe, variant):
                 except ProcessLookupError:
                     pass
                 process.wait(timeout=5)
-        raw = outpath.read_bytes()[: recipe.output_limit_bytes + 1]
+        with outpath.open("rb") as output_file:
+            raw = output_file.read(recipe.output_limit_bytes + 1)
         if len(raw) > recipe.output_limit_bytes:
             stopped = "output-limit"
         try:

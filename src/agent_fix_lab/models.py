@@ -44,7 +44,7 @@ class Run(Contract):
     source: SourceRecord
     observed_status: Status
     exit_code: int | None = None
-    capture_source: Literal["historical-tool"] = "historical-tool"
+    capture_source: Literal["historical-tool", "bundle-projection"] = "historical-tool"
     output: str
     symptoms: list[dict] = Field(default_factory=list)
     context: list[dict] = Field(default_factory=list)

@@ -90,6 +90,42 @@ def workflow(url, recipe, query, screenshot=None):
             == 400
         )
         assert page.request.post(url + "/api/recipes/unknown/run", data={}).status == 403
+        # Deliberately return an older detail response after a newer selection.
+        page.locator("#search").fill("")
+        ready("list")
+        first = page.locator("#cases .case").nth(0).get_attribute("data-case-id")
+        second = page.locator("#cases .case").nth(1).get_attribute("data-case-id")
+        pending = []
+
+        def hold(route):
+            response = route.fetch()
+            pending.append((route, response))
+
+        page.route(url + "/api/cases/" + first, hold)
+        with page.expect_request(url + "/api/cases/" + first):
+            page.locator("#cases .case").nth(0).click()
+        page.locator("#cases .case").nth(1).click()
+        ready("detail")
+        expect(page.locator("#detail")).to_have_attribute("data-case-id", second)
+        assert pending
+        pending[0][0].fulfill(response=pending[0][1])
+        expect(page.locator("body")).to_have_attribute("data-discarded-details", "1")
+        expect(page.locator("#detail")).to_have_attribute("data-case-id", second)
+        page.unroute(url + "/api/cases/" + first)
+
+        # Synthetic malicious text is transported by a test route, not stored in the dataset.
+        def malicious(route):
+            response = route.fetch()
+            data = response.json()
+            data["observations"]["output"] = '<img src=x onerror="window.AFL_XSS=1">'
+            route.fulfill(response=response, json=data)
+
+        page.route(url + "/api/cases/" + first, malicious)
+        page.locator("#cases .case").nth(0).click()
+        ready("detail")
+        expect(page.locator("#output")).to_contain_text("<img")
+        assert page.locator("#output img").count() == 0
+        assert page.evaluate("window.AFL_XSS === undefined")
         page.locator("#search").fill("nonexistent-case-control")
         ready("list")
         expect(page.locator("#cases")).to_have_attribute("data-state", "empty")
