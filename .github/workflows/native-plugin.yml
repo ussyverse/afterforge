@@ -2,15 +2,22 @@ name: native-plugin
 on:
   push:
     branches: [main]
-  pull_request:
+  workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: native-release
+  cancel-in-progress: false
 jobs:
   host-lifecycle:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
       - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e
         with:
           version: '0.11.2'
@@ -19,30 +26,61 @@ jobs:
           repository: NousResearch/hermes-agent
           ref: 277268d83ff2204de9646f0b1e376e73ac0a5d20
           path: .host-hermes
-      - name: Isolated pinned Hermes host
+      - name: Isolated pinned stock Hermes host
         run: |
           uv venv "$RUNNER_TEMP/hermes-env" --python 3.11
           uv pip install --python "$RUNNER_TEMP/hermes-env/bin/python" --editable .host-hermes
           uv sync --locked
+          uv run pytest -q
           uv run python scripts/browser_fixture.py "$RUNNER_TEMP/native-fixture"
-      - name: Git install, managed setup and actual registry lifecycle
+      - name: Reproducible release and unmodified security scan
+        run: |
+          PREVIOUS=$(git rev-parse origin/plugin-release)
+          python scripts/plugin_release.py "$RUNNER_TEMP/native-release" --revision "$GITHUB_SHA" --commit --previous "$PREVIOUS" --sha-file "$RUNNER_TEMP/release.sha"
+          python scripts/plugin_release.py "$RUNNER_TEMP/native-release-repeat" --revision "$GITHUB_SHA" --commit --previous "$PREVIOUS" --sha-file "$RUNNER_TEMP/repeat.sha"
+          cmp "$RUNNER_TEMP/release.sha" "$RUNNER_TEMP/repeat.sha"
+          export PYTHONPATH="$GITHUB_WORKSPACE/.host-hermes"
+          "$RUNNER_TEMP/hermes-env/bin/python" scripts/plugin_scan_gate.py "$RUNNER_TEMP/native-release"
+          "$RUNNER_TEMP/hermes-env/bin/hermes" plugins doctor "$RUNNER_TEMP/native-release" --ci
+      - name: Publish immutable install candidate
+        run: |
+          RELEASE_SHA=$(<"$RUNNER_TEMP/release.sha")
+          git push origin "$RELEASE_SHA:refs/heads/plugin-release"
+      - name: Pinned GitHub install and real registry lifecycle
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           export PATH="$RUNNER_TEMP/hermes-env/bin:$PATH"
           export HERMES_HOME="$RUNNER_TEMP/native-home"
           export HERMES_BUNDLED_PLUGINS="$RUNNER_TEMP/empty-plugins"
+          export PYTHONPATH="$GITHUB_WORKSPACE/.host-hermes"
           mkdir -p "$HERMES_HOME" "$HERMES_BUNDLED_PLUGINS"
           touch "$HERMES_HOME/.afl-isolated-test"
           gh auth setup-git
+          RELEASE_SHA=$(<"$RUNNER_TEMP/release.sha")
           hermes --version
-          hermes plugins doctor . --ci
-          hermes plugins install ussyverse/agent-fix-lab --ref "$GITHUB_SHA" --enable
+          # Normal stock caution confirmation, only after exact-warning review above.
+          # Dangerous verdicts still block with --force. Scanning stays enabled.
+          hermes plugins install ussyverse/agent-fix-lab --ref "$RELEASE_SHA" --enable --force
+          test "$(git -C "$HERMES_HOME/plugins/agent-fix-lab" rev-parse HEAD)" = "$RELEASE_SHA"
           hermes plugins list
           hermes plugins capabilities agent-fix-lab
           hermes fixlab setup
           hermes fixlab doctor
           python scripts/plugin_lifecycle.py --fixture "$RUNNER_TEMP/native-fixture"
+          if hermes plugins update agent-fix-lab; then
+            printf 'ERROR: pinned update unexpectedly succeeded\n'
+            exit 1
+          else
+            test "$?" -eq 1
+          fi
+          test "$(git -C "$HERMES_HOME/plugins/agent-fix-lab" rev-parse HEAD)" = "$RELEASE_SHA"
           hermes fixlab uninstall-runtime --confirm
           hermes plugins disable agent-fix-lab
+          hermes plugins enable agent-fix-lab
+          hermes plugins disable agent-fix-lab
           hermes plugins remove agent-fix-lab
+          test ! -d "$HERMES_HOME/plugins/agent-fix-lab"
+          test -f "$HERMES_HOME/plugin-data/agent-fix-lab/data/lab.sqlite"
+          test ! -d "$HERMES_HOME/plugin-data/agent-fix-lab/runtime"
+          printf 'Verified native release: %s\n' "$RELEASE_SHA"

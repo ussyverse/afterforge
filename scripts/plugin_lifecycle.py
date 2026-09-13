@@ -62,7 +62,9 @@ def main():
     assert call("status", {})["queued_sessions"] == 1
     first = call("scan", {})
     second = call("scan", {})
-    assert first["added_cases"] == 3 and second["added_cases"] == 0
+    assert first["added_cases"] == 4 and second["added_cases"] == 0, (first, second)
+    assert first["scanned"] == 5 and first["duplicates"] == 1
+    assert len(call("list_cases", {"status": "inconclusive"})["cases"]) == 2
     rows = call("list_cases", {"status": "fail"})["cases"]
     assert len(rows) == 1
     cid = rows[0]["id"]

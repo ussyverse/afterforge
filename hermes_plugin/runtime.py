@@ -51,6 +51,9 @@ class Runtime:
             self.source / "pyproject.toml",
             self.source / "uv.lock",
             *sorted((self.source / "src").rglob("*.py")),
+            *sorted((self.source / "src").rglob("*.js")),
+            *sorted((self.source / "src").rglob("*.html")),
+            *sorted((self.source / "src").rglob("*.css")),
         ]
         h = hashlib.sha256()
         for file in files:

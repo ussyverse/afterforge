@@ -8,9 +8,9 @@ The useful output is an evidence-backed answer: what failed, what remains unknow
 
 ## Install
 
-Native Hermes plugin adapter 0.2.0 is now included, adding eight tools, passive metadata hooks, `/fixlab`, terminal commands and a namespaced bundled skill without replacing the standalone core. Its real plugin doctor passes, but the tested Hermes installer currently blocks Git installation with a security verdict. Managed runtime setup and complete native lifecycle verification are pending that review; the existing standalone installation remains usable. See [native plugin installation, command reference, migration and blocker](docs/native-plugin.md). Do not disable or bypass security scanning to infer a successful installation.
+Native Hermes plugin 0.2.0 adds eight tools, passive metadata hooks, `/fixlab`, terminal commands and a namespaced bundled skill without replacing the standalone core. A reproducible distribution is generated on `plugin-release`; use the exact release SHA from a successful `native-plugin` Actions run, not a development/main SHA. All application code ships visibly in the distribution; development security tests remain here.
 
-After an operator-reviewed resolution, the intended entry points are `hermes plugins install ussyverse/agent-fix-lab --enable` and `hermes fixlab setup`. Pinned installation uses `--ref FULL_40_CHARACTER_COMMIT_SHA`. A supported desktop client may handle `hermes://plugin/install?repo=ussyverse/agent-fix-lab&enable=1`; the same trust boundary applies.
+Install with `hermes plugins install ussyverse/agent-fix-lab --ref FULL_RELEASE_COMMIT_SHA --enable`, review the stock installer's caution prompt, then run `hermes fixlab setup`. The repository remains private and requires GitHub access. Stock scanning stays enabled; no Hermes scanner patch is needed. Pinned GitHub installation and real tool/hook/regression dispatch have passed locally. See [native distribution, verification, commands, migration and removal](docs/native-plugin.md).
 
 Requires Linux, Python 3.11+, Git and [uv](https://docs.astral.sh/uv/). No model API or personal logs are needed to install or test. Initial dependency installation needs network access; analysis and execution work offline afterwards.
 

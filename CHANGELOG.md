@@ -1,8 +1,8 @@
 # Changelog
 
-## Native plugin 0.2.0 — validation blocked
+## Native plugin 0.2.0 — runtime distribution
 
-Thin native registration, eight bounded JSON tools, two metadata-only hooks, slash/terminal commands, read-only bundled skill and lazy managed-runtime adapter. Eighteen adapter tests pass alongside the 68 existing tests. Real plugin doctor passes. Full pinned installation/setup/lifecycle is blocked by the host security scanner, not certified. Manifest v1 is required by the tested installer's version ceiling; additive metadata is retained. Standalone package version remains 0.1.0.
+Thin native registration, eight bounded JSON tools, two metadata-only hooks, slash/terminal commands, read-only bundled skill and lazy managed-runtime adapter. A generated plugin-release tree ships all runtime source and assets with reproducible source provenance. Stock Hermes pinned GitHub installation, managed setup, real manager tool/hook dispatch and reviewed regression now pass locally, without scanner changes. The normal caution confirmation remains required for the reviewed privacy-document warning. CI verifies exact releases; development tests remain intact. Manifest v1 matches the tested installer's version ceiling. Standalone package version remains 0.1.0.
 
 ## 0.1.0 — initial working release
 
