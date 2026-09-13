@@ -1,5 +1,7 @@
 # Handoff
 
+Passive process capture now retains up to 64 ordered sanitized outcomes per session across 32 sessions, rather than relying only on the latest hint. Truncation is explicit; coverage is best-effort (lock contention can drop callbacks). process_evidence returns defensive copies and always marks verification inconclusive and obligation binding not-run. No commands/output are retained and no new hook is registered. Local 120 tests, lint/format and build passed. Required-check/revision binding and real-agent trials are still unfinished.
+
 Verification-shadow-v1 is implemented as a pure bounded CLI assessment (verification-shadow --file) with strict structured obligations/checks and no database/host writes. Local 117 tests and build passed. See docs/interventions.md for caller-declared provenance limits. Live adapters, real-agent trials and promotion/rollback remain unimplemented; do not describe this as deployed learning.
 
 Intervention development milestone: standalone 0.2.0/native 0.3.0 implements immutable proposals, frozen existing-recipe suites, deterministic evaluation receipts and local-declared evidence review via CLI/web. See docs/interventions.md. Promotion stays unauthorized; behavioral_trials remains not-run. No live profile behavior was changed. Next scope is structured verification evidence and shadow policy, then isolated real-agent inference trials, then separately reviewed activation/rollback. Existing recipe tests are not proof of learned behavior. CI must still certify every generated release SHA.
