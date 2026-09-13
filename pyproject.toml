@@ -1,0 +1,34 @@
+[build-system]
+requires = ["hatchling==1.27.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "agent-fix-lab"
+version = "0.1.0"
+description = "Local-first, evidence-backed Hermes regression workbench"
+requires-python = ">=3.11"
+license = "MIT"
+dependencies = [
+  "fastapi==0.141.1", "uvicorn==0.52.4", "pydantic==2.13.5", "pytest==9.1.1",
+  "triage @ git+https://github.com/ussyverse/triageussy.git@36a391039b286a5571c91574267efe644d8ec1fe",
+  "petrichor @ git+https://github.com/ussyverse/petrichorussy.git@76b19e47e1aa1800e16b02aa73a8462bacddcad6",
+  "correction-aware-learning @ git+https://github.com/mojomast/hermes-correction-aware-learning.git@84c8c8c7e27c820cbc1aa0a5fcf99f891f503f48"
+]
+
+[project.scripts]
+agent-fix-lab = "agent_fix_lab.cli:main"
+
+[dependency-groups]
+dev = ["ruff==0.16.7", "httpx==0.28.1", "build==1.3.0"]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/agent_fix_lab"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
