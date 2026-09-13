@@ -326,7 +326,7 @@ class Runtime:
                         raise ValueError("Incident reference could not be verified")
                     origin = response["data"]
                 if args.operation == "status":
-                    data = policy.read(root)
+                    data = policy.status(root)
                 elif args.operation == "propose":
                     item = policy.candidate(args.scope or "", origin)
                     data = {"candidate": item, "evaluation": policy.evaluate(item)}

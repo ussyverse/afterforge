@@ -104,6 +104,51 @@ def test_incident_link_bound_to_approval(lab, tmp_path):
         policy.candidate(str(tmp_path), {**origin, "raw_history": "not allowed"})
 
 
+def test_implementation_change_requires_fresh_approval(tmp_path, monkeypatch):
+    root = tmp_path / "state"
+    item = policy.candidate(str(tmp_path))
+    payload = {"coding": True, "changed_paths": [str(tmp_path / "a.py")]}
+    policy.transition(root, "activate", 0, item, policy.digest(item))
+    assert policy.status(root)["implementation_status"] == "approved-implementation"
+    monkeypatch.setattr(policy, "implementation_digest", lambda: "f" * 64)
+    assert policy.status(root)["implementation_status"] == "requires-reapproval"
+    assert policy.hook(root, **payload) is None
+    assert policy.evaluate(item)["status"] == "fail"
+    with pytest.raises(ValueError):
+        policy.transition(root, "activate", 1, item, policy.digest(item))
+    fresh = policy.candidate(str(tmp_path))
+    policy.transition(root, "activate", 1, fresh, policy.digest(fresh))
+    assert policy.hook(root, **payload)["action"] == "continue"
+    # Restoring old state does not make the old implementation approval valid.
+    policy.transition(root, "rollback", 2)
+    assert policy.hook(root, **payload) is None
+    assert policy.status(root)["implementation_status"] == "requires-reapproval"
+
+
+def test_legacy_candidate_cannot_inherit_approval(tmp_path):
+    item = policy.candidate(str(tmp_path))
+    item["version"] = 1
+    item.pop("implementation_digest")
+    assert policy.directive(item, coding=True, changed_paths=[str(tmp_path / "a.py")]) is None
+    with pytest.raises(ValueError):
+        policy.transition(tmp_path / "state", "activate", 0, item, policy.digest(item))
+
+
+def test_implementation_digest_tracks_distributed_bytes(tmp_path, monkeypatch):
+    directory = tmp_path / "adapter"
+    directory.mkdir()
+    source = directory / "policy.py"
+    source.write_text("synthetic version one")
+    (tmp_path / "__init__.py").write_text("synthetic registration")
+    monkeypatch.setattr(policy, "__file__", str(source))
+    initial = policy.implementation_digest()
+    source.write_text("synthetic version two")
+    assert policy.implementation_digest() != initial
+    initial = policy.implementation_digest()
+    (directory / "additional.py").write_text("synthetic additional module")
+    assert policy.implementation_digest() != initial
+
+
 def test_corrupt_state_abstains(tmp_path):
     (tmp_path / "lifecycle.json").write_text("invalid")
     assert policy.hook(tmp_path, coding=True, changed_paths=["/synthetic.py"]) is None

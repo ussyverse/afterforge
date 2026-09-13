@@ -20,12 +20,26 @@ def digest(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True).encode()).hexdigest()
 
 
+def implementation_digest():
+    """Bind approval to the distributed adapter code, not just its message."""
+    directory = Path(__file__).resolve().parent
+    sources = {
+        path.name: hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in sorted(directory.glob("*.py"))
+    }
+    sources["entrypoint"] = hashlib.sha256(
+        (directory.parent / "__init__.py").read_bytes()
+    ).hexdigest()
+    return digest(sources)
+
+
 def candidate(scope, origin=None):
     scope = Path(scope)
     if not scope.is_absolute() or scope.is_symlink() or not scope.is_dir():
         raise ValueError("Scope must be an existing absolute project directory")
     result = {
-        "version": 1,
+        "version": 2,
+        "implementation_digest": implementation_digest(),
         "kind": "verification-reminder",
         "scope": str(scope.resolve()),
         "message": MESSAGE,
@@ -47,7 +61,8 @@ def candidate(scope, origin=None):
 
 def directive(policy, coding=False, attempt=0, changed_paths=None, **kwargs):
     if (
-        policy.get("version") != 1
+        policy.get("version") != 2
+        or policy.get("implementation_digest") != implementation_digest()
         or policy.get("kind") != "verification-reminder"
         or policy.get("message") != MESSAGE
     ):
@@ -108,6 +123,22 @@ def read(root):
     if path.stat().st_size > 262144:
         raise ValueError("Lifecycle file too large")
     return json.loads(path.read_text())
+
+
+def status(root):
+    state = read(root)
+    active = state["active"]
+    if active is None:
+        effective = "inactive"
+    elif (
+        active.get("digest") == digest(active.get("policy"))
+        and active["policy"].get("version") == 2
+        and active["policy"].get("implementation_digest") == implementation_digest()
+    ):
+        effective = "approved-implementation"
+    else:
+        effective = "requires-reapproval"
+    return {**state, "implementation_status": effective}
 
 
 def transition(directory, action, expected_generation, policy=None, approved_digest=None):
