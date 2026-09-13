@@ -73,7 +73,7 @@ def create_app(lab):
 
     @app.get("/assets/{name}")
     def asset(name: str):
-        if name not in ("app.js", "style.css"):
+        if name not in ("app.js", "style.css", "interventions.js"):
             return Response(status_code=404)
         return Response(
             (Path(__file__).parent / "assets" / name).read_text(),
@@ -83,6 +83,55 @@ def create_app(lab):
     @app.get("/favicon.ico")
     def favicon():
         return Response(status_code=204)
+
+    @app.get("/interventions", response_class=HTMLResponse)
+    def intervention_page():
+        return (
+            (Path(__file__).parent / "assets/interventions.html")
+            .read_text()
+            .replace("TOKEN_VALUE", token)
+        )
+
+    @app.get("/api/interventions")
+    def intervention_list(offset: int = 0, limit: int = 10):
+        from .interventions import listing
+
+        return listing(lab, offset, limit)
+
+    @app.get("/api/interventions/{identifier}")
+    def intervention_detail(identifier: str):
+        from .interventions import inspect
+
+        return inspect(lab, identifier)
+
+    @app.post("/api/interventions")
+    def intervention_propose(body: dict):
+        from .interventions import propose
+
+        return propose(lab, body)
+
+    @app.post("/api/interventions/{identifier}/evaluate")
+    def intervention_evaluate(identifier: str, body: dict):
+        from .interventions import evaluate
+
+        if set(body) != {"candidate_digest", "reviewed"}:
+            raise ValueError("Exact candidate digest and explicit review required")
+        return evaluate(lab, identifier, body["candidate_digest"], reviewed=body["reviewed"])
+
+    @app.post("/api/interventions/{identifier}/review")
+    def intervention_review(identifier: str, body: dict):
+        from .interventions import review
+
+        if set(body) != {"candidate_digest", "evaluation_id", "decision", "note"}:
+            raise ValueError("Exact evidence review fields required")
+        return review(
+            lab,
+            identifier,
+            body["evaluation_id"],
+            body["candidate_digest"],
+            body["decision"],
+            body["note"],
+        )
 
     @app.get("/api/cases")
     def cases(q: str = "", status: str | None = None):

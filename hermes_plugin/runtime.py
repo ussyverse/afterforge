@@ -12,7 +12,7 @@ import tempfile
 from .hooks import Capture
 from .schemas import SCHEMAS
 
-VERSION = "0.2.0"
+VERSION = "0.3.0"
 
 
 class Runtime:

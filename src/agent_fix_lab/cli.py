@@ -21,6 +21,25 @@ def parser():
     p = argparse.ArgumentParser(prog="agent-fix-lab")
     p.add_argument("--home", type=Path, default=default_home())
     commands = p.add_subparsers(dest="command", required=True)
+    draft = commands.add_parser("intervention-propose")
+    draft.add_argument("--file", type=Path, required=True)
+    listing_interventions = commands.add_parser("intervention-list")
+    listing_interventions.add_argument("--offset", type=int, default=0)
+    listing_interventions.add_argument("--limit", type=int, default=10)
+    show_intervention = commands.add_parser("intervention-show")
+    show_intervention.add_argument("intervention_id")
+    evaluate_intervention = commands.add_parser("intervention-evaluate")
+    evaluate_intervention.add_argument("intervention_id")
+    evaluate_intervention.add_argument("--candidate-digest", required=True)
+    evaluate_intervention.add_argument("--reviewed", action="store_true")
+    review_intervention = commands.add_parser("intervention-review")
+    review_intervention.add_argument("intervention_id")
+    review_intervention.add_argument("--evaluation-id", required=True)
+    review_intervention.add_argument("--candidate-digest", required=True)
+    review_intervention.add_argument(
+        "--decision", choices=["accept-evidence", "reject"], required=True
+    )
+    review_intervention.add_argument("--note", required=True)
     scan = commands.add_parser("correction-scan")
     scan.add_argument("--source", type=Path, required=True)
     scan.add_argument("--source-id", required=True)
@@ -134,6 +153,38 @@ def main(argv=None):
             result = doctor(args.source)
         else:
             lab = Lab(Store(args.home))
+            if args.command.startswith("intervention-"):
+                from . import interventions
+
+                if args.command == "intervention-propose":
+                    with args.file.open("rb") as stream:
+                        raw = stream.read(65537)
+                    if len(raw) > 65536:
+                        raise ValueError("Proposal file too large")
+                    result = interventions.propose(lab, json.loads(raw))
+                elif args.command == "intervention-list":
+                    result = interventions.listing(lab, args.offset, args.limit)
+                elif args.command == "intervention-show":
+                    result = interventions.inspect(lab, args.intervention_id)
+                elif args.command == "intervention-evaluate":
+                    result = interventions.evaluate(
+                        lab, args.intervention_id, args.candidate_digest, reviewed=args.reviewed
+                    )
+                else:
+                    result = interventions.review(
+                        lab,
+                        args.intervention_id,
+                        args.evaluation_id,
+                        args.candidate_digest,
+                        args.decision,
+                        args.note,
+                    )
+                print(json.dumps(result, indent=2))
+                return (
+                    2
+                    if args.command == "intervention-evaluate" and result["status"] != "pass"
+                    else 0
+                )
             if args.command in {
                 "correction-scan",
                 "corrections",

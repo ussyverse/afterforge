@@ -14,7 +14,7 @@ from pathlib import Path
 from playwright.sync_api import expect, sync_playwright
 
 
-def workflow(url, recipe, query, screenshot=None):
+def workflow(url, recipe, query, screenshot=None, interventions=False):
     errors, failed = [], []
     with sync_playwright() as pw:
         options = {"headless": True}
@@ -130,6 +130,10 @@ def workflow(url, recipe, query, screenshot=None):
         page.locator("#search").fill("nonexistent-case-control")
         ready("list")
         expect(page.locator("#cases")).to_have_attribute("data-state", "empty")
+        if interventions:
+            from intervention_browser import intervention_workflow
+
+            intervention_workflow(page, url, recipe)
         assert not errors and not failed, (errors, failed)
         browser.close()
     return {
@@ -138,6 +142,7 @@ def workflow(url, recipe, query, screenshot=None):
         "failed_workflow_requests": 0,
         "security_rejections": 2,
         "comparison": "pass",
+        "intervention_evidence": "pass" if interventions else "not-run",
     }
 
 
@@ -149,6 +154,9 @@ def main():
     p.add_argument("--query", default="KeyError")
     p.add_argument("--repeat", type=int, default=3)
     p.add_argument("--screenshot", type=Path)
+    p.add_argument(
+        "--interventions", action="store_true", help="Only for browser_fixture.py synthetic inputs"
+    )
     args = p.parse_args()
     results = []
     with tempfile.TemporaryDirectory(prefix="afl-browser-") as tmp:
@@ -193,6 +201,7 @@ def main():
                             json.loads(args.recipe_file.read_text()),
                             args.query,
                             args.screenshot,
+                            args.interventions,
                         )
                     )
                 finally:

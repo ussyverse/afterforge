@@ -26,6 +26,8 @@ Terminal: hermes fixlab setup, doctor, scan, serve, export CASE_ID, uninstall-ru
 
 ## Review and privacy
 
+Standalone 0.2.0/native 0.3.0 includes immutable intervention proposals, deterministic recipe-suite evaluation and evidence review. Use the managed standalone CLI's intervention-propose/list/show/evaluate/review commands or visit /interventions on the local web service. Read docs/interventions.md for input contracts and limitations. No activation or deployment approval is implemented; accepting evidence does not change Hermes behavior.
+
 Read docs/privacy.md before importing history, executing a recipe or exporting evidence. Source logs and runtime state remain in the active profile's private plugin-data directory, never in this code tree. Hooks retain bounded identifiers and process metadata, not raw tool arguments or results. Scanning is explicit and uses the existing read-only importer. Inferred corrections remain proposals; no automatic prompt, memory, policy or skill modification occurs.
 
 Regression execution requires an explicitly reviewed recipe. Imported or historical commands are not execution authorization. Reviewed pytest code runs with your permissions: this is NOT an operating-system sandbox. Use a separate VM or OS account for hostile code.

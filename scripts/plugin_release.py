@@ -21,6 +21,7 @@ FILES = {
     "LICENSE",
     "NOTICE",
     "docs/privacy.md",
+    "docs/interventions.md",
 }
 ROOTS = ("src/", "hermes_plugin/", "skills/")
 

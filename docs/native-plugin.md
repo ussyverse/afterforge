@@ -1,4 +1,6 @@
-# Native Hermes plugin — 0.2.0
+# Native Hermes plugin — 0.3.0
+
+The bundled standalone 0.2.0 now includes the reviewed-intervention evidence workflow. See [intervention contracts and limitations](interventions.md). The native registrations remain eight tools and two passive hooks. No behavior-changing intervention is enabled or deployed by installing this release.
 
 The native plugin is a thin adapter around the unchanged standalone architecture. The immutable standalone green baseline is 53c451334593943fc55e1a991b6620b477bec923. All native application dependencies load only in the explicitly installed managed backend, not during registration.
 

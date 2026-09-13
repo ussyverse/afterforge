@@ -1,5 +1,9 @@
 # Changelog
 
+## Standalone 0.2.0 / native 0.3.0 — intervention evidence
+
+Immutable intervention proposals, exact candidate/suite digests, existing-runner evaluations with target/success/negative controls, inert candidate text and append-only local-declared evidence reviews. New CLI commands and the loopback `/interventions` page share the existing Store and runner. Packaged browser tests cover the full evidence workflow. No activation, inferred human approval, behavioral inference trials or new live policy hooks are included.
+
 ## Native plugin 0.2.0 — runtime distribution
 
 Thin native registration, eight bounded JSON tools, two metadata-only hooks, slash/terminal commands, read-only bundled skill and lazy managed-runtime adapter. A generated plugin-release tree ships all runtime source and assets with reproducible source provenance. Stock Hermes pinned GitHub installation, managed setup, real manager tool/hook dispatch and reviewed regression now pass locally, without scanner changes. The normal caution confirmation remains required for the reviewed privacy-document warning. CI verifies exact releases; development tests remain intact. Manifest v1 matches the tested installer's version ceiling. Standalone package version remains 0.1.0.

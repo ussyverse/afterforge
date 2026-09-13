@@ -31,7 +31,7 @@ jobs:
         run: |
           uv build
           uv venv "$RUNNER_TEMP/afl-wheel"
-          uv pip install --python "$RUNNER_TEMP/afl-wheel/bin/python" dist/agent_fix_lab-0.1.0-py3-none-any.whl
+          uv pip install --python "$RUNNER_TEMP/afl-wheel/bin/python" dist/agent_fix_lab-0.2.0-py3-none-any.whl
           "$RUNNER_TEMP/afl-wheel/bin/agent-fix-lab" --help
       - name: Synthetic browser fixtures
         run: |
@@ -39,7 +39,7 @@ jobs:
           uv run playwright install --with-deps chromium
       - name: Three fresh-server wheel browser workflows
         run: |
-          uv run python scripts/browser_smoke.py --python "$RUNNER_TEMP/afl-wheel/bin/python" --home "$RUNNER_TEMP/afl-fixture/lab" --recipe-file "$RUNNER_TEMP/afl-fixture/recipe.json" --query Unfamiliar --repeat 3
+          uv run python scripts/browser_smoke.py --python "$RUNNER_TEMP/afl-wheel/bin/python" --home "$RUNNER_TEMP/afl-fixture/lab" --recipe-file "$RUNNER_TEMP/afl-fixture/recipe.json" --query Unfamiliar --repeat 3 --interventions
       - name: Portable bundle installed-CLI round trip
         run: |
           uv run python scripts/bundle_smoke.py --python "$RUNNER_TEMP/afl-wheel/bin/python" --home "$RUNNER_TEMP/afl-fixture/lab" --recipe-file "$RUNNER_TEMP/afl-fixture/recipe.json" --output-directory "$RUNNER_TEMP/afl-roundtrip" --file implementation.py

@@ -8,7 +8,9 @@ The useful output is an evidence-backed answer: what failed, what remains unknow
 
 ## Install
 
-Native Hermes plugin 0.2.0 adds eight tools, passive metadata hooks, `/fixlab`, terminal commands and a namespaced bundled skill without replacing the standalone core. A reproducible distribution is generated on `plugin-release`; use the exact release SHA from a successful `native-plugin` Actions run, not a development/main SHA. All application code ships visibly in the distribution; development security tests remain here.
+Native Hermes plugin 0.3.0 adds eight tools, passive metadata hooks, `/fixlab`, terminal commands and a namespaced bundled skill without replacing the standalone core. A reproducible distribution is generated on `plugin-release`; use the exact release SHA from a successful `native-plugin` Actions run, not a development/main SHA. All application code ships visibly in the distribution; development security tests remain here.
+
+Standalone 0.2.0 adds [reviewed intervention evidence](docs/interventions.md): immutable proposals, frozen target/control recipe suites, real evaluation receipts and explicit evidence review through the CLI or `/interventions` web page. No intervention is activated by this release. Evidence acceptance is not deployment approval or demonstrated agent learning.
 
 Install with `hermes plugins install ussyverse/agent-fix-lab --ref FULL_RELEASE_COMMIT_SHA --enable`, review the stock installer's caution prompt, then run `hermes fixlab setup`. The repository remains private and requires GitHub access. Stock scanning stays enabled; no Hermes scanner patch is needed. Pinned GitHub installation and real tool/hook/regression dispatch have passed locally. See [native distribution, verification, commands, migration and removal](docs/native-plugin.md).
 

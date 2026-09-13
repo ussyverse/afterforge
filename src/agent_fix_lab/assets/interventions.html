@@ -1,0 +1,10 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><meta name="afl-token" content="TOKEN_VALUE"><title>Interventions — Agent Fix Lab</title><link rel="stylesheet" href="/assets/style.css"><script src="/assets/interventions.js" defer></script></head><body>
+<header><h1>Reviewed intervention evidence</h1><a href="/">Cases</a></header>
+<p>No activation is available. Accepting evidence does not approve deployment or prove behavioral improvement.</p>
+<p id="notice" role="status" aria-live="polite">Loading…</p>
+<main><aside><button id="refresh">Refresh proposals</button><div id="proposals"></div><button id="next">Next page</button></aside><section>
+<form id="propose"><h2>Propose a candidate</h2><p>Paste proposal JSON with case_ids, surface, scope, hypothesis, rationale, candidate_text, base_revision, candidate_revision and suite. Suite entries reference existing reviewed recipe IDs with role and expected baseline status. Text is stored as inert evidence, never evaluated as code.</p><label>Proposal JSON<textarea id="proposal-json" required rows="12"></textarea></label><button>Store immutable proposal</button></form>
+<h2>Selected candidate and receipts</h2><pre id="detail">Select a proposal.</pre>
+<form id="evaluate"><label><input id="authorized" type="checkbox" required>I inspected this candidate and every frozen local recipe and authorize execution. This is not an OS sandbox.</label><button disabled id="evaluate-button">Evaluate frozen suite</button></form>
+<form id="review"><label>Evaluation ID<input id="evaluation-id" required></label><label>Decision<select id="decision"><option value="accept-evidence">Accept evaluation evidence only</option><option value="reject">Reject</option></select></label><label>Review note<textarea id="note" required maxlength="4000"></textarea></label><button disabled id="review-button">Record evidence review</button></form>
+</section></main></body></html>
