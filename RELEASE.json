@@ -1,0 +1,143 @@
+{
+  "files": {
+    "LICENSE": {
+      "sha256": "3d2181d52897645c234241f767d3070606911b87803d4a35c1a0403a66069ee6",
+      "source": "LICENSE"
+    },
+    "NOTICE": {
+      "sha256": "bbb0e65979e1600741225af8b32f6602c648b89ad22f9fa31c0a1684d5a906c9",
+      "source": "NOTICE"
+    },
+    "README.md": {
+      "sha256": "e0b7d68d40cf1b030441091015ff95a91c3db3de23cf457a2940ac1b2908bbd6",
+      "source": "packaging/plugin-readme.md"
+    },
+    "__init__.py": {
+      "sha256": "c6aafa26c58608fa1db859e9741b510f07b28797917a2cc2d7b66d975b95c341",
+      "source": "__init__.py"
+    },
+    "docs/interventions.md": {
+      "sha256": "660f70174212f18c9a024bca9df699a33f739a0a7636646dfca8b94b48add0c3",
+      "source": "docs/interventions.md"
+    },
+    "docs/privacy.md": {
+      "sha256": "bde77e91c873461941ef72b603edba6e195eff3977ecab33e8cf5906d5f83c15",
+      "source": "docs/privacy.md"
+    },
+    "hermes_plugin/__init__.py": {
+      "sha256": "e67889d8d4ef6cd5934e029933b21e8242269478e6b69aeafc8125c426bb6058",
+      "source": "hermes_plugin/__init__.py"
+    },
+    "hermes_plugin/commands.py": {
+      "sha256": "13da2615783e016204f238c5d15fdd43c45bde89f25b1855e0e8b8e044e650e1",
+      "source": "hermes_plugin/commands.py"
+    },
+    "hermes_plugin/hooks.py": {
+      "sha256": "f13e69e7990dbdbdbb2b11d7c6767dd824a06045f027481381097deff12bbc66",
+      "source": "hermes_plugin/hooks.py"
+    },
+    "hermes_plugin/runtime.py": {
+      "sha256": "2ff3ad9c866fbefc839a3f03c8b1effeab5a805a1e8d3fccc6ce8a744f2405bc",
+      "source": "hermes_plugin/runtime.py"
+    },
+    "hermes_plugin/schemas.py": {
+      "sha256": "c5afc3be15b56148048926e108fce85b8210eb04169f9685b48f90ffcabe6879",
+      "source": "hermes_plugin/schemas.py"
+    },
+    "plugin.yaml": {
+      "sha256": "b5b882ba8d0577e440cd3e22ef0475699d515afa9b7b3538aa616951326d97d5",
+      "source": "plugin.yaml"
+    },
+    "pyproject.toml": {
+      "sha256": "d1c3f83faa365dac5022d654ad430e0a6ec4c69a636f255d0d150f65f4cdb208",
+      "source": "pyproject.toml"
+    },
+    "skills/regression-workflow/SKILL.md": {
+      "sha256": "1c40bc9e2d40566af50500bea1c689bd7aabeed024c6750d11493e46a6c01e18",
+      "source": "skills/regression-workflow/SKILL.md"
+    },
+    "src/agent_fix_lab/__init__.py": {
+      "sha256": "fff65ff7e50f7236cb32757a6a3a6a18dea4b7a01927f55518d0cd4b2a838abf",
+      "source": "src/agent_fix_lab/__init__.py"
+    },
+    "src/agent_fix_lab/adapters.py": {
+      "sha256": "d8c214d38770a8d3a69ff828b21692a142a06c706890095a73b6bc070ba9fe2f",
+      "source": "src/agent_fix_lab/adapters.py"
+    },
+    "src/agent_fix_lab/assets/app.js": {
+      "sha256": "2c0f8f575f4ffd53905880f6742937284d891f1ef5411a3cd7616861307f8908",
+      "source": "src/agent_fix_lab/assets/app.js"
+    },
+    "src/agent_fix_lab/assets/index.html": {
+      "sha256": "cab4d5c00f28c8cfe8368f11aee4e4cb94c2db23ae682dbfd058410660936e8c",
+      "source": "src/agent_fix_lab/assets/index.html"
+    },
+    "src/agent_fix_lab/assets/interventions.html": {
+      "sha256": "50f3d57ee19b57013c29fd2af375fe5c3c8822cc74fe0f954673c36a8a7fbbe2",
+      "source": "src/agent_fix_lab/assets/interventions.html"
+    },
+    "src/agent_fix_lab/assets/interventions.js": {
+      "sha256": "9b8f1a78ab2716e542302718325dbdd054e67864c43dbe0cdb9fb3270a411c92",
+      "source": "src/agent_fix_lab/assets/interventions.js"
+    },
+    "src/agent_fix_lab/assets/style.css": {
+      "sha256": "9e6cc733be23bc15e3a2ed2ea8768dd96826483c95a2d94d290df6dc4d4032f6",
+      "source": "src/agent_fix_lab/assets/style.css"
+    },
+    "src/agent_fix_lab/bundles.py": {
+      "sha256": "75ec34ff3d47a77cbf7c0eae04e9e34d743553d323e68d0929c6339b6a68c143",
+      "source": "src/agent_fix_lab/bundles.py"
+    },
+    "src/agent_fix_lab/cli.py": {
+      "sha256": "184663fe204eb2ce56c2604447a4df84018bfc05e161d7c7c686077d87f0a07b",
+      "source": "src/agent_fix_lab/cli.py"
+    },
+    "src/agent_fix_lab/corrections.py": {
+      "sha256": "934c6f21ea2fd4643b3497749a26cc1e229e806f4bd5a43b4911f23174b45890",
+      "source": "src/agent_fix_lab/corrections.py"
+    },
+    "src/agent_fix_lab/history.py": {
+      "sha256": "cb8e69fb3739344805e064251cdd0b026819c6ba9eaf4e5661a9dfe26abb895a",
+      "source": "src/agent_fix_lab/history.py"
+    },
+    "src/agent_fix_lab/interventions.py": {
+      "sha256": "2d683ae0c6a7a30a08e90e4a1bedbaf30db72ba5d7f7147f72ba4f78368c0284",
+      "source": "src/agent_fix_lab/interventions.py"
+    },
+    "src/agent_fix_lab/models.py": {
+      "sha256": "d1c4eddbb6fc2fba81bd99b81e75df6b28c470722f64c18e20e11da0fe26897d",
+      "source": "src/agent_fix_lab/models.py"
+    },
+    "src/agent_fix_lab/plugin_bridge.py": {
+      "sha256": "4a6f693e519f236fccea97665d44a38fb2dc02a6eb6e44dd03a31424a9554914",
+      "source": "src/agent_fix_lab/plugin_bridge.py"
+    },
+    "src/agent_fix_lab/runner.py": {
+      "sha256": "55793e58d32e886c6d61fd4436b93459f6427ea19ae164d5780c3c1250cb0b71",
+      "source": "src/agent_fix_lab/runner.py"
+    },
+    "src/agent_fix_lab/service.py": {
+      "sha256": "e74d3de247bb247067188841d17befc6d2654e5282acdfb24a0d1e0257780e91",
+      "source": "src/agent_fix_lab/service.py"
+    },
+    "src/agent_fix_lab/store.py": {
+      "sha256": "3afd3c5e0265b56253b27feae561a121ef00e026542f624a4561d8b027d45195",
+      "source": "src/agent_fix_lab/store.py"
+    },
+    "src/agent_fix_lab/verification.py": {
+      "sha256": "a26b4cd5d7f844e687b07f140492bf6cef05049bf3d826b57cebe511377454ff",
+      "source": "src/agent_fix_lab/verification.py"
+    },
+    "src/agent_fix_lab/web.py": {
+      "sha256": "c32fb7493e0afda324385ec6892fbaeb993b428c2c934b3146fec8b081021af8",
+      "source": "src/agent_fix_lab/web.py"
+    },
+    "uv.lock": {
+      "sha256": "d0201fd86afc21f49c51e28d914982d8c075615dc3677a2d3e1c1e752b91487e",
+      "source": "uv.lock"
+    }
+  },
+  "format_version": 1,
+  "source_commit": "fd09e3c5a53a79de69cde8347b0ea39a3990df4a",
+  "source_repository": "https://github.com/ussyverse/agent-fix-lab"
+}
