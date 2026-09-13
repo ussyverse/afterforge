@@ -8,6 +8,11 @@ def configure(parser, **kwargs):
     subs = parser.add_subparsers(dest="fixlab_action", required=True)
     for name in ("setup", "doctor", "scan"):
         subs.add_parser(name)
+    policy = subs.add_parser("policy")
+    policy.add_argument("operation", choices=["propose", "status", "activate", "rollback"])
+    policy.add_argument("--scope")
+    policy.add_argument("--approve-digest")
+    policy.add_argument("--generation", type=int, default=0)
     serve = subs.add_parser("serve")
     serve.add_argument("--port", type=int, default=8765)
     export = subs.add_parser("export")

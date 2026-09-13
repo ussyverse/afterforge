@@ -69,7 +69,11 @@ def runtime(tmp_path, monkeypatch):
 def test_registration_lightweight():
     ctx = Context()
     plugin.register(ctx)
-    assert len(ctx.tools) == 8 and set(ctx.hooks) == {"post_tool_call", "on_session_end"}
+    assert len(ctx.tools) == 8 and set(ctx.hooks) == {
+        "post_tool_call",
+        "on_session_end",
+        "pre_verify",
+    }
     assert ctx.cli["name"] == "fixlab" and "fixlab" in ctx.commands
     assert ctx.skills["regression-workflow"].is_file() and ctx.state.data == {}
 

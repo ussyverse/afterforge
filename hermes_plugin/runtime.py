@@ -293,10 +293,35 @@ class Runtime:
                 }
             )
 
+    def pre_verify(self, **kwargs):
+        try:
+            from .policy import hook
+
+            return hook(self.root() / "policies", **kwargs)
+        except Exception:
+            return None
+
     def command(self, args, **kwargs):
         try:
             action = args.fixlab_action
-            if action == "setup":
+            if action == "policy":
+                from . import policy
+
+                root = self.root() / "policies"
+                if args.operation == "status":
+                    data = policy.read(root)
+                elif args.operation == "propose":
+                    item = policy.candidate(args.scope or "")
+                    data = {"candidate": item, "evaluation": policy.evaluate(item)}
+                else:
+                    item = (
+                        policy.candidate(args.scope or "") if args.operation == "activate" else None
+                    )
+                    data = policy.transition(
+                        root, args.operation, args.generation, item, args.approve_digest
+                    )
+                result = {"success": True, "data": data}
+            elif action == "setup":
                 result = {"success": True, "data": self.setup()}
             elif action == "uninstall-runtime":
                 if (

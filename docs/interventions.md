@@ -1,6 +1,13 @@
-# Reviewed interventions — evidence milestone
+# Reviewed interventions — evidence and reminder lifecycle
 
-Standalone 0.2.0 / native plugin 0.3.0. This is the implemented proposal and deterministic evaluation milestone, not automatic policy learning or deployment. No new behavior-changing hooks, memory writes, profile changes or promotion endpoints exist. The existing eight native tools and two passive hooks are unchanged.
+The native plugin now additionally supports an opt-in verification-reminder lifecycle, separate from the incident-linked evidence system below. It is a fixed, project-scoped one-shot pre_verify reminder, NOT an authoritative verification gate. It does not execute tests or certify code state. Its built-in evaluation is labeled synthetic-hook-contract and behavioral_efficacy=not-run. No model-efficacy claim is made. Existing intervention evidence acceptance does not activate this reminder.
+
+Use `hermes fixlab policy propose --scope ABSOLUTE_PROJECT` to inspect the exact fixed message and candidate digest. Activate only after inspection with `hermes fixlab policy activate --scope ABSOLUTE_PROJECT --approve-digest DIGEST --generation 0`. Read `hermes fixlab policy status`; undo with `hermes fixlab policy rollback --generation CURRENT_GENERATION`. Every transition checks the expected generation under a file lock, retains the prior state and atomically replaces the active record. Approval is local-caller-declared, not authenticated human identity. The scope and fixed message are digest-bound. No arbitrary candidate instructions execute.
+
+A third registered hook, pre_verify, reads the current policy on each invocation, allowing changes to take effect without restarting the model process. It is inert without activation. It only acts for coding=true, attempt=0 and nonempty absolute changed paths entirely inside the selected scope. Missing, relative or mixed-project paths cause abstention. Corrupt state causes abstention, not a security guarantee. Hermes's bounded hook contract still applies. The reminder may add a turn even when checks passed, but directs the agent not to rerun solely due to the reminder. Efficacy and cost need real-agent trials. State lives in private plugin-data policies; no global prompt, skill or memory is edited. The original broader verification-execution workflow remains unfinished.
+
+
+The earlier standalone 0.2.0/native 0.3.0 evidence milestone below remains available without activating the optional reminder.
 
 ## Structured verification shadow assessment
 

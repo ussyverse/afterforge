@@ -31,6 +31,9 @@ def main():
     manager = get_plugin_manager()
     manager.discover_and_load()
     assert "regression-workflow" in manager.list_plugin_skills("agent-fix-lab")
+    from policy_lifecycle import policy_lifecycle
+
+    policy_result = policy_lifecycle(manager)
     count = 0
 
     def call(name, payload):
@@ -105,7 +108,8 @@ def main():
             {
                 "real_registry_tools": 8,
                 "successful_dispatches": count,
-                "hooks": 2,
+                "hooks": 3,
+                "policy_lifecycle": policy_result,
                 "slash_commands_checked": 4,
                 "first_scan_added": first["added_cases"],
                 "repeat_added": second["added_cases"],

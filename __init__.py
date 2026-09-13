@@ -16,6 +16,7 @@ def register(ctx):
 
         ctx.register_tool(name=name, toolset="agent-fix-lab", schema=schema, handler=handler)
     ctx.register_hook("post_tool_call", runtime.capture.post_tool_call)
+    ctx.register_hook("pre_verify", runtime.pre_verify)
     ctx.register_hook("on_session_end", runtime.capture.on_session_end)
     ctx.register_command(
         "fixlab",
