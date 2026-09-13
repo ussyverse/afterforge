@@ -172,7 +172,14 @@ def test_full_workflow(lab, regression):
 def test_inconclusive_never_fix(lab, regression, text, reason):
     Path(regression["test_file"]).write_text(text)
     recipe = lab.add_recipe(
-        {**regression, "case_id": lab.list_cases()[0]["id"], "timeout_seconds": 1}, reviewed=True
+        {
+            **regression,
+            "case_id": lab.list_cases()[0]["id"],
+            # Only the timeout case needs a short deadline. Other cases must
+            # reach collection on slow CI rather than testing startup speed.
+            "timeout_seconds": 1 if reason == "timeout" else 20,
+        },
+        reviewed=True,
     )
     result = execute(Recipe(**recipe), "corrected")
     assert result.status == "inconclusive"
