@@ -140,7 +140,27 @@ def hook(root, **kwargs):
     try:
         active = read(root)["active"]
         if active and digest(active["policy"]) == active["digest"]:
-            return directive(active["policy"], **kwargs)
+            result = directive(active["policy"], **kwargs)
+            receipt = {
+                "policy_digest": active["digest"],
+                "session_digest": digest(str(kwargs.get("session_id", ""))),
+                "coding": kwargs.get("coding") is True,
+                "attempt": kwargs.get("attempt"),
+                "directive_emitted": result is not None,
+                "evidence_kind": "hook-invocation-not-model-efficacy",
+            }
+            fd, temporary = tempfile.mkstemp(dir=root)
+            try:
+                with os.fdopen(fd, "w") as output:
+                    json.dump(receipt, output)
+                os.replace(
+                    temporary,
+                    Path(root) / ("last-directive.json" if result else "last-abstention.json"),
+                )
+            finally:
+                if os.path.exists(temporary):
+                    os.unlink(temporary)
+            return result
     except Exception:
         return None
     return None
