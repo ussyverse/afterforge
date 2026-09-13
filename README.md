@@ -8,6 +8,8 @@ The useful output is an evidence-backed answer: what failed, what remains unknow
 
 ## Install
 
+Native 0.4.0 additionally includes an opt-in, project-scoped verification reminder with exact-digest approval and rollback (`hermes fixlab policy`). It adds a third hook, pre_verify, inert until explicitly activated. This is not an authoritative completion gate or evidence of model improvement. The incident-linked evidence review workflow below remains separate. See [reminder lifecycle and limits](docs/interventions.md). The earlier version descriptions below record prior milestones.
+
 Native Hermes plugin 0.3.0 adds eight tools, passive metadata hooks, `/fixlab`, terminal commands and a namespaced bundled skill without replacing the standalone core. A reproducible distribution is generated on `plugin-release`; use the exact release SHA from a successful `native-plugin` Actions run, not a development/main SHA. All application code ships visibly in the distribution; development security tests remain here.
 
 Standalone 0.2.0 adds [reviewed intervention evidence](docs/interventions.md): immutable proposals, frozen target/control recipe suites, real evaluation receipts and explicit evidence review through the CLI or `/interventions` web page. No intervention is activated by this release. Evidence acceptance is not deployment approval or demonstrated agent learning.
