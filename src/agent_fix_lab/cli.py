@@ -21,6 +21,8 @@ def parser():
     p = argparse.ArgumentParser(prog="agent-fix-lab")
     p.add_argument("--home", type=Path, default=default_home())
     commands = p.add_subparsers(dest="command", required=True)
+    shadow = commands.add_parser("verification-shadow")
+    shadow.add_argument("--file", type=Path, required=True)
     draft = commands.add_parser("intervention-propose")
     draft.add_argument("--file", type=Path, required=True)
     listing_interventions = commands.add_parser("intervention-list")
@@ -149,6 +151,16 @@ def main(argv=None):
     args = parser().parse_args(argv)
     os.umask(0o077)
     try:
+        if args.command == "verification-shadow":
+            from .verification import assess
+
+            with args.file.open("rb") as source:
+                raw = source.read(262145)
+            if len(raw) > 262144:
+                raise ValueError("Evidence exceeds 256 KiB")
+            result = assess(json.loads(raw))
+            print(json.dumps(result, indent=2))
+            return 0
         if args.command == "doctor":
             result = doctor(args.source)
         else:

@@ -2,6 +2,14 @@
 
 Standalone 0.2.0 / native plugin 0.3.0. This is the implemented proposal and deterministic evaluation milestone, not automatic policy learning or deployment. No new behavior-changing hooks, memory writes, profile changes or promotion endpoints exist. The existing eight native tools and two passive hooks are unchanged.
 
+## Structured verification shadow assessment
+
+`agent-fix-lab verification-shadow --file evidence.json` runs the pure verification-shadow-v1 policy without opening the lab database, executing commands or changing responses. Input is a strict schema-version-1 JSON object: revision (exact caller-supplied worktree/version identity), draft_kind (success/blocker/continuation/unknown), obligations (id and scope), and checks (unique sequence, obligation_id, scope, revision, status, and optional purpose required/baseline/unrelated). Input is bounded to 256 KiB, 64 obligations and 512 checks. Unknown fields and coercions are rejected.
+
+For each obligation only the latest sequence at the exact current revision/scope with purpose=required counts. An unrelated success cannot erase a failure. Intentional baseline runs do not satisfy final verification. Edits invalidate prior-revision evidence. All obligations must pass; missing, inconclusive and failed checks stay distinct. Success drafts with unresolved obligations produce would-request-continuation; blocker/continuation drafts produce no-objection without claiming verification passed. Unknown drafts and absent obligations cause abstention. No-objection is not approval of the response's other claims.
+
+This is caller-declared structured evidence, not authenticated terminal output or a semantic classifier. Sequence numbers are declared completion order, not inferred timestamps. Revision values must identify all relevant worktree changes; the policy cannot detect dishonest or reused identities. No live tool adapter, pre_verify hook, automatic obligation extraction or actual-agent inference trial is included. The input digest permits comparison but is not an attestation. CLI exit 0 means assessment completed, NOT that tests passed; inspect verification_status and shadow_decision. Synthetic controls cover stale revisions, unrelated/baseline commands, later repairs, multiple checks, honest blockers and invalid inputs. Local full suite: 117 passed; wheel/sdist build passed.
+
 ## Working workflow
 
 Create the motivating cases and existing reviewed recipes with the current CLI/web workflow. Prepare an intervention JSON object containing case_ids, surface, scope, hypothesis, rationale, candidate_text, base_revision, candidate_revision and suite. Supported surface labels: code, tool-schema, skill, verification-policy, configuration, routing, memory. Labels describe proposals; they are not implemented deployment adapters. The text is inert and no model inference is performed to generate or evaluate it.
