@@ -23,6 +23,7 @@ def parser():
     commands = p.add_subparsers(dest="command", required=True)
     shadow = commands.add_parser("verification-shadow")
     shadow.add_argument("--file", type=Path, required=True)
+    shadow.add_argument("--captured-bindings", action="store_true")
     draft = commands.add_parser("intervention-propose")
     draft.add_argument("--file", type=Path, required=True)
     listing_interventions = commands.add_parser("intervention-list")
@@ -158,7 +159,12 @@ def main(argv=None):
                 raw = source.read(262145)
             if len(raw) > 262144:
                 raise ValueError("Evidence exceeds 256 KiB")
-            result = assess(json.loads(raw))
+            if args.captured_bindings:
+                from .verification_binding import bind_assess
+
+                result = bind_assess(json.loads(raw))
+            else:
+                result = assess(json.loads(raw))
             print(json.dumps(result, indent=2))
             return 0
         if args.command == "doctor":
