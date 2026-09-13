@@ -4,9 +4,9 @@ import subprocess
 
 import pytest
 
-from agent_fix_lab.store import Store
-from agent_fix_lab.service import Lab
 from agent_fix_lab.history import import_hermes
+from agent_fix_lab.service import Lab
+from agent_fix_lab.store import Store
 
 
 @pytest.fixture

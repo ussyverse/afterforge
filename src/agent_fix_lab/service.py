@@ -5,9 +5,9 @@ import time
 import uuid
 from pathlib import Path
 
-from .adapters import structural_annotation, configuration_snapshot, configuration_difference
+from .adapters import configuration_difference, configuration_snapshot, structural_annotation
 from .models import Annotation, Recipe, ReproductionResult, digest
-from .runner import resolve_recipe, execute, compare
+from .runner import compare, execute, resolve_recipe
 
 
 class Lab:
@@ -40,7 +40,10 @@ class Lab:
     def detail(self, identifier):
         case = self.store.get("case", identifier)
         annotations = [x for x in self.store.all("annotation") if x["case_id"] == identifier]
-        retracted = {x["retracts"] for x in annotations if x.get("retracts")}
+        retracted = set()
+        for item in reversed(annotations):
+            if item["id"] not in retracted and item.get("retracts"):
+                retracted.add(item["retracts"])
         recipes = [x for x in self.store.all("recipe") if x["case_id"] == identifier]
         results = [
             x for x in self.store.all("result") if x["recipe_id"] in {r["id"] for r in recipes}
@@ -49,6 +52,9 @@ class Lab:
         return {
             "case": case,
             "observations": self.store.get("run", case["run_id"]),
+            "source_observations": [
+                x for x in self.store.all("source-observation") if x["case_id"] == identifier
+            ],
             "interpretations": annotations,
             "effective_interpretations": [x for x in annotations if x["id"] not in retracted],
             "recipes": recipes,

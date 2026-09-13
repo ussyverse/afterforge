@@ -12,6 +12,13 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 from .history import import_hermes
 
 
+def default_app():
+    from .service import Lab
+    from .store import Store
+
+    return create_app(Lab(Store(os.environ["AGENT_FIX_LAB_HOME"])))
+
+
 def create_app(lab):
     app = FastAPI(title="Agent Fix Lab", docs_url=None, redoc_url=None, openapi_url=None)
     token = secrets.token_urlsafe(32)
@@ -68,6 +75,10 @@ def create_app(lab):
             (Path(__file__).parent / "assets" / name).read_text(),
             media_type="text/javascript" if name.endswith(".js") else "text/css",
         )
+
+    @app.get("/favicon.ico")
+    def favicon():
+        return Response(status_code=204)
 
     @app.get("/api/cases")
     def cases(q: str = "", status: str | None = None):

@@ -13,7 +13,7 @@ import uuid
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-from .models import Recipe, ReproductionResult, Comparison
+from .models import Comparison, Recipe, ReproductionResult
 
 
 def git(repo, *args):

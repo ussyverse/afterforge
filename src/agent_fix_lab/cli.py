@@ -5,12 +5,12 @@ import json
 import os
 import sys
 import time
-from pathlib import Path
 from importlib.metadata import version
+from pathlib import Path
 
-from .store import Store
-from .service import Lab
 from .history import import_hermes, snapshot, validate_schema
+from .service import Lab
+from .store import Store
 
 
 def default_home():
@@ -30,6 +30,9 @@ def parser():
     )
     i.add_argument("--before", type=float, default=None, help="Exclusive Unix seconds cutoff")
     i.add_argument("--after", type=float, default=0)
+    i.add_argument(
+        "--after-id", type=int, default=0, help="Resume bounded import from next_after_id"
+    )
     i.add_argument("--session")
     i.add_argument("--limit", type=int, default=500)
     i.add_argument("--dry-run", action="store_true")
@@ -104,6 +107,7 @@ def main(argv=None):
             lab = Lab(Store(args.home))
             if args.command == "serve":
                 import uvicorn
+
                 from .web import create_app
 
                 uvicorn.run(create_app(lab), host="127.0.0.1", port=args.port)
@@ -119,6 +123,7 @@ def main(argv=None):
                     source_id=args.source_id,
                     before=args.before if args.before is not None else time.time(),
                     after=args.after,
+                    after_id=args.after_id,
                     session=args.session,
                     limit=args.limit,
                     dry_run=args.dry_run,

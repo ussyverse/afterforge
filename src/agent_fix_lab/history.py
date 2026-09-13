@@ -1,15 +1,16 @@
 """Bounded, WAL-consistent Hermes SQLite import without loading SessionDB writers."""
 
 import json
+import math
 import sqlite3
 import tempfile
+from contextlib import closing, contextmanager
 from pathlib import Path
-from contextlib import contextmanager
 
 from .adapters import process_facts, symptoms
-from .models import SourceRecord, Run, Case, digest
+from .models import Case, Run, SourceRecord, digest
 
-PARSER = "hermes.sqlite.v1"
+PARSER = "hermes.sqlite.v2"
 
 
 @contextmanager
@@ -17,9 +18,11 @@ def snapshot(path):
     path = Path(path).expanduser().resolve(strict=True)
     with tempfile.TemporaryDirectory(prefix="afl-snapshot-") as directory:
         target = Path(directory) / "source.sqlite"
-        with sqlite3.connect(path.as_uri() + "?mode=ro", uri=True) as source:
-            with sqlite3.connect(target) as destination:
-                source.backup(destination, pages=256)
+        with (
+            closing(sqlite3.connect(path.as_uri() + "?mode=ro", uri=True)) as source,
+            closing(sqlite3.connect(target)) as destination,
+        ):
+            source.backup(destination, pages=256)
         c = sqlite3.connect(target.as_uri() + "?mode=ro", uri=True)
         c.row_factory = sqlite3.Row
         try:
@@ -48,6 +51,12 @@ def validate_schema(c):
 
 
 def parse_payload(content):
+    # Decode only a complete JSON object inside the known Hermes envelope.
+    if isinstance(content, str) and content.startswith("<untrusted_tool_result "):
+        start = content.find("\n{")
+        end = content.rfind("\n</untrusted_tool_result>")
+        if start >= 0 and end > start:
+            content = content[start + 1 : end]
     try:
         payload = json.loads(content or "")
     except (ValueError, TypeError):
@@ -64,6 +73,7 @@ def import_hermes(
     source_id,
     before,
     after=0,
+    after_id=0,
     session=None,
     limit=500,
     dry_run=False,
@@ -82,16 +92,41 @@ def import_hermes(
         "truncated": 0,
         "dry_run": dry_run,
         "parser": PARSER,
+        "next_after_id": after_id,
+    }
+    existing_identity = {
+        (
+            x["source"]["source_id"],
+            x["source"].get("tool_call_id") or str(x["source"]["message_id"]),
+        ): x["id"]
+        for x in store.all("run")
     }
     with snapshot(path) as c:
         cols = validate_schema(c)
-        sessions = {r["id"]: dict(r) for r in c.execute("select * from sessions")}
+        session_cols = {r["name"] for r in c.execute("pragma table_info(sessions)")}
+        selected_cols = sorted(
+            session_cols & {"id", "parent_session_id", "model_config", "archived"}
+        )
+        sessions = {
+            r["id"]: dict(r)
+            for r in c.execute("select " + ",".join(selected_cols) + " from sessions")
+        }
+        for entry in sessions.values():
+            try:
+                config = json.loads(entry.get("model_config") or "{}")
+            except (ValueError, TypeError):
+                config = {}
+            entry["delegated_from"] = (
+                (config.get("_delegate_from") or config.get("delegated_from"))
+                if isinstance(config, dict)
+                else None
+            )
 
         def group(s):
             seen = set()
             while s in sessions and s not in seen:
                 seen.add(s)
-                p = sessions[s].get("parent_session_id")
+                p = sessions[s].get("parent_session_id") or sessions[s].get("delegated_from")
                 if not p or p not in sessions:
                     break
                 s = p
@@ -101,8 +136,8 @@ def import_hermes(
                 else digest(s)
             )
 
-        args = [after, before]
-        where = 'role="tool" and timestamp>=? and timestamp<?'
+        args = [after, before, after_id]
+        where = 'role="tool" and timestamp>=? and timestamp<? and id>?'
         if session:
             where += " and session_id=?"
             args.append(session)
@@ -129,11 +164,19 @@ def import_hermes(
         ]
         query = (
             "select " + ",".join(projections) + ",length(content) as original_length "
-            "from messages where " + where + " order by timestamp,id limit ?"
+            "from messages where " + where + " order by id limit ?"
         )
         for row in c.execute(query, [*args, limit]):
             stats["scanned"] += 1
             r = dict(row)
+            stats["next_after_id"] = r["id"]
+            if (
+                r["session_id"] not in sessions
+                or not isinstance(r["timestamp"], (int, float))
+                or not math.isfinite(r["timestamp"])
+            ):
+                stats["malformed"] += 1
+                continue
             s = sessions.get(r["session_id"], {})
             payload, malformed = parse_payload(r["content"])
             if malformed:
@@ -145,13 +188,42 @@ def import_hermes(
             output = str(payload.get("output", payload.get("error", r["content"] or "")))
             # Identity is stable across snapshot copies, compaction duplicates and re-imports.
             event = r.get("tool_call_id") or str(r["id"])
-            identifier = digest([source_id, group(r["session_id"]), event])[:32]
+            identifier = existing_identity.get(
+                (source_id, event), digest([source_id, group(r["session_id"]), event])[:32]
+            )
+            existing_identity[(source_id, event)] = identifier
+            observation = {
+                "schema_version": 1,
+                "id": digest(
+                    [
+                        source_id,
+                        r["id"],
+                        r.get("active", 1),
+                        r.get("compacted", 0),
+                        digest(r["content"]),
+                    ]
+                ),
+                "case_id": identifier,
+                "message_id": r["id"],
+                "session_id": r["session_id"],
+                "parser": PARSER,
+                "active": bool(r.get("active", 1)),
+                "compacted": bool(r.get("compacted", 0)),
+                "archived": bool(s.get("archived", 0)),
+                "payload_digest": digest(r["content"]),
+                "timestamp_seconds": r["timestamp"],
+                "output": output[:65536],
+                "exit_code": code,
+                "observed_status": status,
+            }
             try:
                 old = store.get("run", identifier)
             except KeyError:
                 old = None
             if old:
                 stats["duplicates"] += 1
+                if not dry_run:
+                    store.put("source-observation", observation)
                 continue
             try:
                 conf = json.loads(s.get("model_config") or "{}")
@@ -161,6 +233,7 @@ def import_hermes(
                 conf = {}
             source = SourceRecord(
                 id=identifier,
+                parser=PARSER,
                 source_id=source_id,
                 source_revision=source_revision,
                 session_id=r["session_id"],
@@ -169,8 +242,8 @@ def import_hermes(
                 tool_name=r.get("tool_name"),
                 timestamp_seconds=r["timestamp"],
                 parent_session_id=s.get("parent_session_id"),
-                delegated_from=conf.get("delegated_from")
-                if isinstance(conf.get("delegated_from"), str)
+                delegated_from=s.get("delegated_from")
+                if isinstance(s.get("delegated_from"), str)
                 else None,
                 active=bool(r.get("active", 1)),
                 compacted=bool(r.get("compacted", 0)),
@@ -209,6 +282,6 @@ def import_hermes(
                 cohort=cohort,
             )
             if not dry_run:
-                store.put_many([("run", run), ("case", case)])
+                store.put_many([("run", run), ("case", case), ("source-observation", observation)])
             stats["added_cases"] += 1
     return stats

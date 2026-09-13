@@ -3,19 +3,19 @@ import sqlite3
 from pathlib import Path
 
 import pytest
+from correction_aware_learning import historical_events
 from pydantic import ValidationError
 
 from agent_fix_lab.adapters import (
-    process_facts,
-    symptoms,
-    selected_config,
     configuration_difference,
+    process_facts,
+    selected_config,
+    symptoms,
 )
 from agent_fix_lab.history import import_hermes, snapshot
-from agent_fix_lab.models import Annotation, digest, Recipe
-from agent_fix_lab.runner import execute, compare
+from agent_fix_lab.models import Annotation, Recipe, digest
+from agent_fix_lab.runner import compare, execute
 from agent_fix_lab.store import Store
-from correction_aware_learning import historical_events
 
 
 @pytest.mark.parametrize(

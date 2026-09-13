@@ -4,17 +4,19 @@ import json
 import re
 from pathlib import PurePosixPath
 
-from triage.extractor import ErrorExtractor
-from petrichor.db import SoilDB
-from petrichor.soil import SoilMemory
-from petrichor.diff import compute_diff
 from correction_aware_learning import (
-    append_trace_context,
-    append_outcome_event,
     EventType,
     EvidenceSource,
     Polarity,
+    RelationKind,
+    append_outcome_event,
+    append_relation,
+    append_trace_context,
 )
+from petrichor.db import SoilDB
+from petrichor.diff import compute_diff
+from petrichor.soil import SoilMemory
+from triage.extractor import ErrorExtractor
 
 from .models import digest
 
@@ -44,11 +46,14 @@ def selected_config(fields):
     for k, v in fields.items():
         if k not in CONFIG_KEYS or not isinstance(v, str):
             continue
-        if k.endswith("_version") and re.fullmatch(r"\d+\.\d+(?:\.\d+)?", v):
-            result[k] = v
-        elif k == "platform" and v in {"linux", "darwin", "win32"}:
-            result[k] = v
-        elif k == "project_kind" and v == "python":
+        if (
+            k.endswith("_version")
+            and re.fullmatch(r"\d+\.\d+(?:\.\d+)?", v)
+            or k == "platform"
+            and v in {"linux", "darwin", "win32"}
+            or k == "project_kind"
+            and v == "python"
+        ):
             result[k] = v
     return result
 
@@ -93,7 +98,7 @@ def structural_annotation(root, annotation):
     case_id = annotation.case_id
     path = root / "correction.sqlite"
     append_trace_context(path, trace_id=case_id, session_id=None, created_at=0)
-    return append_outcome_event(
+    event = append_outcome_event(
         path,
         event_id=annotation.id,
         trace_id=case_id,
@@ -104,3 +109,13 @@ def structural_annotation(root, annotation):
         created_at=annotation.timestamp_seconds,
         evidence_digest="sha256:" + digest(annotation.model_dump()),
     )
+    if annotation.retracts:
+        append_relation(
+            path,
+            source_event_id=annotation.id,
+            target_event_id=annotation.retracts,
+            relation_kind=RelationKind.RETRACTS,
+            producer="structural_operator.v1",
+            created_at=annotation.timestamp_seconds,
+        )
+    return event
