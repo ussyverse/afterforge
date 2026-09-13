@@ -1,6 +1,6 @@
 name: agent-fix-lab
 version: 0.2.0
-manifest_version: 2
+manifest_version: 1
 api_version: 1
 description: Local-first regression workbench that turns Hermes failures and corrections into reproducible, evidence-backed test cases.
 license: MIT
