@@ -1,5 +1,9 @@
 # Changelog
 
+## Native plugin 0.2.0 — validation blocked
+
+Thin native registration, eight bounded JSON tools, two metadata-only hooks, slash/terminal commands, read-only bundled skill and lazy managed-runtime adapter. Eighteen adapter tests pass alongside the 68 existing tests. Real plugin doctor passes. Full pinned installation/setup/lifecycle is blocked by the host security scanner, not certified. Manifest v1 is required by the tested installer's version ceiling; additive metadata is retained. Standalone package version remains 0.1.0.
+
 ## 0.1.0 — initial working release
 
 - Standalone Python CLI, immutable SQLite evidence, schema-26 WAL-consistent import, bounded pagination and profile-local Hermes skill.

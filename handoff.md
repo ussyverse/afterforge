@@ -1,5 +1,7 @@
 # Handoff
 
+Native-plugin continuation: baseline 53c451334593943fc55e1a991b6620b477bec923 is immutable. Commits 5552ea7 (adapter/18 tests/host harness) and 167f3cc (installer-compatible v1 manifest) are pushed. Total 86 tests pass and real plugin doctor registers eight tools/two hooks. Pinned Git install is blocked by Hermes's DANGEROUS scan verdict; do not disable scanning, disguise canaries or manually bypass the installer. Managed setup, all-tool real registry dispatch and hook-to-import lifecycle remain unverified. See docs/native-plugin.md for exact command/results and required operator security review. The host has no plugins compat command. Preserve the standalone baseline and private history; this native-plugin continuation is not complete.
+
 Continue this checkout; do not recreate the private dataset or replace Hermes. The original milestone 6932ab8 is preserved. Continuation milestones: 51c3c0c (browser/dogfood hardening), d495b5a (correction candidates, bundles, security tests and CI). Repository is private by the latest explicit instruction; main has been pushed normally. First validation Actions run passed.
 
 Private history snapshot, original manifest/selection, real lab database, derived implementation repositories, source revisions and detailed reports remain in the installation's private sibling directory outside Git. The profile-local skill points to its own virtual environment and that private lab. Resolve these paths from the local installation configuration; do not publish them.
