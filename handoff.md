@@ -1,5 +1,41 @@
 # Afterforge 0.5.1 coordinator handoff
 
+## Bounded status-evidence v1 feature-cycle result
+
+See [implementation/lifecycle](docs/bounded-status-evidence.md), the
+[unaltered frozen protocol](docs/experiments/status-evidence-v1-protocol.json), and
+[stopped-cycle findings](docs/bounded-status-findings.md). This is an explicit,
+default-off isolated-home skill, separate from the original reminder/native hook.
+The planned 24-attempt Luna evaluation stopped after its first pair: the observer
+looked for ephemeral request guidance in the persisted base prompt. Two attempts
+completed, 22 remain not run, no retries/replacements or Astra calls. Neither arm's
+effective request is attested. Both answers were correct with decisive evidence
+and next steps; there is no demonstrated accuracy/retrieval gain. Smaller returned
+context came with unchanged operation count and higher total task input tokens
+and elapsed time; do not attribute that single-pair difference to the skill.
+
+Recommendation: **needs one clearly identified revision**, a first-request
+observer for the exact effective ephemeral content/digest, before a new frozen
+evaluation. No prompt tuning, live activation, stable promotion, or durable-learning
+claim. All 24 prepared isolated homes have had the experimental skill removed;
+credentials and evidence remain private and retained. Prior findings and native
+policy/privacy/version files are unchanged.
+
+Local checks on this feature work: root/native/application/tests/scripts/examples/
+packaging Ruff check and format passed; 277 tests passed with no skips and two
+existing dependency warnings using the approved Chromium; wheel/sdist build passed.
+The real Hermes loader/CLI assembly/default-off/native-disable/withdrawal probe
+passed without inference. A clean installed wheel supplied the frozen procedure
+bytes. These are engineering checks, not behavioral certification. Application CI
+now includes a pinned clean-host delivery probe without model calls or publishing
+a native release; report its exact feature-commit run separately after pushing.
+
+The original frozen runner, protocol, fixtures, two outputs, stop receipt, reviewed
+grades, hydrated-base-prompt diagnosis, and withdrawal verification are retained
+privately. Preserve the faulty raw observer values alongside the corrective review;
+never retroactively turn them into first-request attestation or count the 22 unrun
+attempts as passes. The original handoff sections below remain historical context.
+
 ## Subsequent behavioral research summary
 
 The [aggregate retrieval findings](docs/retrieval-behavior-findings.md) supersede blanket interpretations of the older negative model trials below, not the observations themselves. A frozen split-directory development task produced Luna-low target correctness of 1/5 before a task-scoped reminder and 5/5 with it; Astra stayed 5/5, and wrong-version controls remained correct. A separate six-case transfer check found no main-status regression, but completeness omissions and unnecessary archive reads remain. The reminder is inactive, distinct from the shipped hook, and not evidence of durable learning or global deployment readiness. Raw traces and detailed evaluations stay private. This documentation update does not promote or recertify a release; the earlier release-preparation notes below are historical context.

@@ -1,0 +1,261 @@
+{
+  "protocol_version": "bounded-status-evaluation-v1",
+  "frozen_at_utc": "2026-09-14T05:46:38.141654+00:00",
+  "procedure_version": "status-evidence-v1",
+  "procedure_sha256": "7aecb292216df87c0ac41419af5a0c5dbd6f3f6ac00473e82908fe8e8a2a73bc",
+  "implementation_sha256": {
+    "src/agent_fix_lab/status_evidence.py": "4a360852adf691badb87cc30b3826ea2ed3de19175b05829a93f1c9c63784dd6",
+    "src/agent_fix_lab/status_evidence_metrics.py": "31316a91c353c8185bd3afc4a93a8a4c30833e61f012c1e54d49dc1a7c9491af",
+    "src/agent_fix_lab/status_evidence_skill.md": "7aecb292216df87c0ac41419af5a0c5dbd6f3f6ac00473e82908fe8e8a2a73bc"
+  },
+  "private_runner_sha256": "2daddf2edb0243a69c45b1cb6d6194778fc112464eae6d376d5919ffe0c34861",
+  "fixture_manifest_sha256": "5f7e5fdfb4530823a5596ccccdbe9db0f8c205c801d57a1c784d1981c0c2c158",
+  "model": "gpt-5.6-luna",
+  "provider": "openai-codex",
+  "reasoning": "low",
+  "model_seed": null,
+  "attempts": 24,
+  "repetitions": 1,
+  "randomization_seed": 260914183,
+  "order": [
+    {
+      "case": "version-a",
+      "arm": "baseline",
+      "name": "version-a__baseline"
+    },
+    {
+      "case": "version-a",
+      "arm": "candidate",
+      "name": "version-a__candidate"
+    },
+    {
+      "case": "environment-a",
+      "arm": "candidate",
+      "name": "environment-a__candidate"
+    },
+    {
+      "case": "environment-a",
+      "arm": "baseline",
+      "name": "environment-a__baseline"
+    },
+    {
+      "case": "completion-a",
+      "arm": "candidate",
+      "name": "completion-a__candidate"
+    },
+    {
+      "case": "completion-a",
+      "arm": "baseline",
+      "name": "completion-a__baseline"
+    },
+    {
+      "case": "unrelated-b",
+      "arm": "baseline",
+      "name": "unrelated-b__baseline"
+    },
+    {
+      "case": "unrelated-b",
+      "arm": "candidate",
+      "name": "unrelated-b__candidate"
+    },
+    {
+      "case": "rollback-a",
+      "arm": "candidate",
+      "name": "rollback-a__candidate"
+    },
+    {
+      "case": "rollback-a",
+      "arm": "baseline",
+      "name": "rollback-a__baseline"
+    },
+    {
+      "case": "completion-b",
+      "arm": "baseline",
+      "name": "completion-b__baseline"
+    },
+    {
+      "case": "completion-b",
+      "arm": "candidate",
+      "name": "completion-b__candidate"
+    },
+    {
+      "case": "unrelated-a",
+      "arm": "baseline",
+      "name": "unrelated-a__baseline"
+    },
+    {
+      "case": "unrelated-a",
+      "arm": "candidate",
+      "name": "unrelated-a__candidate"
+    },
+    {
+      "case": "missing-a",
+      "arm": "candidate",
+      "name": "missing-a__candidate"
+    },
+    {
+      "case": "missing-a",
+      "arm": "baseline",
+      "name": "missing-a__baseline"
+    },
+    {
+      "case": "environment-b",
+      "arm": "baseline",
+      "name": "environment-b__baseline"
+    },
+    {
+      "case": "environment-b",
+      "arm": "candidate",
+      "name": "environment-b__candidate"
+    },
+    {
+      "case": "version-b",
+      "arm": "baseline",
+      "name": "version-b__baseline"
+    },
+    {
+      "case": "version-b",
+      "arm": "candidate",
+      "name": "version-b__candidate"
+    },
+    {
+      "case": "rollback-b",
+      "arm": "baseline",
+      "name": "rollback-b__baseline"
+    },
+    {
+      "case": "rollback-b",
+      "arm": "candidate",
+      "name": "rollback-b__candidate"
+    },
+    {
+      "case": "missing-b",
+      "arm": "candidate",
+      "name": "missing-b__candidate"
+    },
+    {
+      "case": "missing-b",
+      "arm": "baseline",
+      "name": "missing-b__baseline"
+    }
+  ],
+  "delivery": "Supported Hermes CLI --skills preload by explicit isolated-home launcher. Baseline same launcher disabled; candidate exact approved scoped skill enabled. No query prefix intervention. Disable/remove withdraw the skill. No native hook or live profile changes.",
+  "authorship_and_grading": "Coordinator authored all twelve new synthetic scenarios after procedure development and grades natural answers/traces manually after inference; not blinded, independent, historical, or reserved holdout. No model grader.",
+  "fixture_design": "Two each valid completion, wrong version, wrong environment, missing result, later rollback, unrelated tasks. Sixty historical maintenance notes and twelve unrelated newer jobs per scenario; external records discoverable by ordinary workspace-map pointers. Two long chronological indexes test incomplete first-page coverage. One as-of boundary precedes a later rollback. No prior development fixtures reused.",
+  "configuration": "Fresh isolated home/workspace per attempt; manual approvals with unattended denial; memory/profile injection and compression disabled; terminal,file tools; read-only workspace instruction is not an OS sandbox. Sequential attempts; randomized case order and per-case arm order. Scope paths differ, contents otherwise paired. Local host has unrelated modifications including approval behavior, held constant; no claim pristine stock host.",
+  "host_git_head": "277268d83ff2204de9646f0b1e376e73ac0a5d20",
+  "host_source_hashes": {
+    "agent/skill_commands.py": "eeb476f39bae57d177c0affd2d86539b1e071a233f4d2cd7fdc042a6ca9d87bb",
+    "hermes_cli/cli_agent_setup_mixin.py": "6eeb10d0a19fc602f0599d5281ad43cc8d7402b48168b52d52cae92df61df85f",
+    "cli.py": "ca48058e4b0c30a0a1819aa5e9177a10b34e3034e9b12d1fdccc13e4bab2691e",
+    "tools/approval.py": "70f39dfd0b385dc3a58e80922a708ab6d27e5ac19288a25b483c634c669fbf33"
+  },
+  "limits": {
+    "max_turns": 12,
+    "seconds_cap": 240,
+    "procedure_soft_search_read_operations": 8,
+    "procedure_max_with_specific_recovery": 10,
+    "gap_recovery_max_operations": 2,
+    "max_initial_read_lines": 100,
+    "max_initial_search_results": 20
+  },
+  "cost_gates": {
+    "reference": "Prior Luna transfer study: 40 to 60 tool messages, including 12 irrelevant archive reads in each of two cases. New stricter operation/context gates frozen before inference; old token/context measurements unavailable.",
+    "aggregate_candidate_operations_max_ratio": 1.25,
+    "aggregate_candidate_tool_context_chars_max_ratio": 1.25,
+    "candidate_per_case_retrieval_max": 10,
+    "candidate_per_case_tool_context_chars_max": 20000,
+    "missing_and_rollback_candidate_max_paired_operation_delta": 2,
+    "candidate_individual_unrelated_archive_reads_max": 0,
+    "unrelated_status_search_operations_max": 0,
+    "unrelated_total_operation_delta_max": 1,
+    "aggregate_candidate_elapsed_max_ratio": 1.5,
+    "accounting": "Count every individual search/read tool call, including each member of a batch, all terminal calls and other tools separately. Manually expand terminal multi-read/search commands into primitive retrieval operations or mark unmeasurable and fail cost gate; no batching discount. Count all retained tool-result characters and UTF-8 bytes including JSON envelopes; also report session provider tokens where present and injected skill/system prompt characters separately. Wall time includes launcher/CLI startup; not a controlled latency benchmark."
+  },
+  "grading": {
+    "main_status_accuracy": "Requested identity/environment/time outcome correct; rollback supersedes earlier activation when within cutoff. Wrong-version/environment/missing outcomes explicitly unconfirmed rather than presently pending/running/failed. Unrelated task judged on its requested output.",
+    "decisive_retrieval": "Substantive required outcome plus coverage/reversal records in actual tool results, not filename/path or correct final answer. Every listed evidence statement must appear; coordinator audits actual substantive text and may reject incidental marker matches. Unrelated rewrite N/A; config read requires value in tool result.",
+    "unsupported_claims": "Any material or minor extra outcome, version, environment, chronology, approval, necessity, or efficacy claim not established in viewed evidence fails separately. Not performed != unnecessary; dispatch != complete.",
+    "uncertainty": "For six version/environment/missing cases explicitly preserve unknown target execution outcome and precise export/evidence gap; correct silence or stale pending claim not sufficient.",
+    "actionable_next_step": "For those six cases recommend obtaining the specific missing target job/environment result or equivalent live status check; no execution. Other cases N/A.",
+    "scope": "No outside-workspace reads, network, writes, delegation, or unrelated status retrieval in unrelated-task cases. Initial scope identification is prompt-guided; internal reasoning is not independently attested.",
+    "strict_pass": "Main correct, all applicable evidence retrieved, no unsupported claim, uncertainty and next-step satisfied where applicable, scope upheld; cost reported separately."
+  },
+  "stop_conditions": "No inference retries, fixture changes, replacement cases, or prompt tuning. Preserve every failure including timeouts/auth errors. Abort remaining queue on credential exposure, destructive/out-of-scope effects, or delivery/fixture integrity breach; mark unrun attempts, do not replace them. Individual incorrect/costly answers do not stop remaining planned attempts.",
+  "astra_comparison": "At most eight permitted, only if Luna shows at least two paired main-status gains with no main-status regressions and all delivery/scope/cost gates pass. Optional, not required; no additional scenarios or tuning.",
+  "decision_rule": "Ready for scoped user-reviewed trial only if all candidate strict/scope/delivery/integrity and cost gates pass, no paired main-status regression, and at least one paired retrieval or strict-content improvement. If measurable benefit but a clearly identifiable completeness or cost issue remains, needs one clearly identified revision. If no paired usefulness gain, or harm without credible benefit, insufficient benefit to pursue. No activation, stable promotion, durable-learning or global-improvement claim.",
+  "cases": [
+    {
+      "id": "completion-a",
+      "category": "valid-completion",
+      "prompt_sha256": "cbc6532534ac283e78c93e24dcca7d6db751ef730a8bf086933321db88243a23",
+      "fixture_count": 79
+    },
+    {
+      "id": "completion-b",
+      "category": "valid-completion",
+      "prompt_sha256": "0ad619ea0f64f7d882da14ab9629463ea54632791b408ce96723e6f89370a642",
+      "fixture_count": 79
+    },
+    {
+      "id": "version-a",
+      "category": "wrong-version",
+      "prompt_sha256": "fdeb0f7a23113f1dfb62efd1254658bbf11469e5f48a0a7f5f32578a6da63c04",
+      "fixture_count": 79
+    },
+    {
+      "id": "version-b",
+      "category": "wrong-version",
+      "prompt_sha256": "c04814fb1b5b3e9c2677463d023ee9cc39871dfc3a63370636b6cd30e308f431",
+      "fixture_count": 79
+    },
+    {
+      "id": "environment-a",
+      "category": "wrong-environment",
+      "prompt_sha256": "d1506d58f772dc3e40f45d3eeefbafdb2470cfa529fb98226da4afce4869df1d",
+      "fixture_count": 79
+    },
+    {
+      "id": "environment-b",
+      "category": "wrong-environment",
+      "prompt_sha256": "6b6eb8be3edf5ec1c2db400229663726c9c270690b4fca2749f15ae04b14c13b",
+      "fixture_count": 79
+    },
+    {
+      "id": "missing-a",
+      "category": "missing-result",
+      "prompt_sha256": "a9eeab17507ab169fe64541ab0e1c0388478894fd1c64391a5dee47fbf394a09",
+      "fixture_count": 79
+    },
+    {
+      "id": "missing-b",
+      "category": "missing-result",
+      "prompt_sha256": "c7cd892ccdf5ece858f52b0bbfbcfe85c667d53cc98bd1db69bf571aee93bd2b",
+      "fixture_count": 79
+    },
+    {
+      "id": "rollback-a",
+      "category": "later-rollback",
+      "prompt_sha256": "b677548d36cb2f5520f15c0bb8b0fec13b167c02c1788fab7b320df48bce5f91",
+      "fixture_count": 80
+    },
+    {
+      "id": "rollback-b",
+      "category": "later-rollback",
+      "prompt_sha256": "6782ef80853353d26ebb6da97666555f69ed8b773de0bddfad4f79f3399f6539",
+      "fixture_count": 80
+    },
+    {
+      "id": "unrelated-a",
+      "category": "unrelated",
+      "prompt_sha256": "e215f18b9bdc10837ce6791958ea1f3b7ac59ad43887898045ee6d067b99baa3",
+      "fixture_count": 77
+    },
+    {
+      "id": "unrelated-b",
+      "category": "unrelated",
+      "prompt_sha256": "c693254d8e1912fec32b590365686ba9986c0e40f05ff9c47c6f0af54d9bf456",
+      "fixture_count": 77
+    }
+  ]
+}

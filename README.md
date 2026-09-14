@@ -100,6 +100,12 @@ Run runtime removal before removing source if environment cleanup is desired. Ev
 
 ## Privacy, evidence and development
 
+The separate [bounded status-evidence v1 experiment](docs/bounded-status-evidence.md)
+is default-off and uses explicit isolated-home skill delivery. Its
+[evaluation stopped after two of 24 planned attempts](docs/bounded-status-findings.md)
+because the observer could not attest ephemeral request-time guidance. It needs
+an observability revision, not activation; the remaining attempts are not run.
+
 See the [aggregate retrieval-behavior findings](docs/retrieval-behavior-findings.md) for model-specific premature-stopping experiments, an inactive task-scoped reminder, and new-case limitations. These are exploratory behavioral results, not efficacy claims for the shipped hook or deployment approval.
 
 Data is permission-restricted, not encrypted. Never publish private histories, session IDs, local paths, credentials or raw outputs. The loopback web service has mutation tokens, origin/host checks and text-only history rendering; it is not a multi-user hosted service. Read [privacy](docs/privacy.md) before import, execution or export. The stock scanner and its exact-warning gate remain enabled and unchanged in scope.

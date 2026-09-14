@@ -7,6 +7,25 @@ on:
 permissions:
   contents: read
 jobs:
+  status-skill-delivery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e
+        with:
+          version: '0.11.2'
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: NousResearch/hermes-agent
+          ref: 277268d83ff2204de9646f0b1e376e73ac0a5d20
+          path: .status-host
+      - name: Real skill preload, CLI assembly, disable and removal (no inference)
+        run: |
+          uv sync --locked
+          uv venv "$RUNNER_TEMP/status-host-env" --python 3.11
+          uv pip install --python "$RUNNER_TEMP/status-host-env/bin/python" --editable .status-host
+          uv run python scripts/status_skill_probe.py --host-python "$RUNNER_TEMP/status-host-env/bin/python" --host-root "$GITHUB_WORKSPACE/.status-host"
   product:
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -34,6 +53,8 @@ jobs:
           uv pip install --python "$RUNNER_TEMP/afl-wheel/bin/python" dist/agent_fix_lab-0.5.1-py3-none-any.whl
           "$RUNNER_TEMP/afl-wheel/bin/afterforge" --help
           "$RUNNER_TEMP/afl-wheel/bin/agent-fix-lab" --help
+          "$RUNNER_TEMP/afl-wheel/bin/python" -I -m agent_fix_lab.status_evidence --help
+          "$RUNNER_TEMP/afl-wheel/bin/python" -I -c 'from agent_fix_lab.status_evidence import procedure, digest; assert digest(procedure().encode()) == "7aecb292216df87c0ac41419af5a0c5dbd6f3f6ac00473e82908fe8e8a2a73bc"'
       - name: Synthetic browser fixtures
         run: |
           uv run python scripts/browser_fixture.py "$RUNNER_TEMP/afl-fixture"
