@@ -1,6 +1,6 @@
 # Afterforge 0.5.0 validation ledger
 
-Status: **release candidate; existing-fixture migration certification blocked**. One exclusive executor owns the integrated release. The original migration database differed from its privately recorded checksum before any upgrade write; its policy checksum matched. That fixture and baseline are preserved, not silently replaced. Supported promotion/tag/release remain withheld pending reconciliation of this external baseline evidence.
+Status: **bounded deterministic release gates exercised**. The exact supported version/source/distribution and successful CI runs are identified by the [checksum locator](https://raw.githubusercontent.com/ussyverse/afterforge/release-metadata/stable.json), not inferred from a version string. One exclusive executor owns final promotion after repeating CI/install for follow-up commits. The original fixture's pre-upgrade raw-hash discrepancy was independently verified to affect only two SQLite header counters; no baseline bytes were rewritten and all 13 immutable document IDs/bytes survived the actual prior-version upgrade.
 
 ## Evidence currently available
 
@@ -11,6 +11,8 @@ Status: **release candidate; existing-fixture migration certification blocked**.
 - Wheel/sdist builds and the exact staged privacy audit passed: 101 text files, zero excluded artifacts or sensitive-pattern matches. docs/privacy.md retains SHA-256 `bde77e91c873461941ef72b603edba6e195eff3977ecab33e8cf5906d5f83c15`. The current stock scanner verified all 41 candidate files with CAUTION, only the original reviewed high finding, no widened allowlist.
 - Both exact stock pins passed native GitHub CI: `277268d83ff2204de9646f0b1e376e73ac0a5d20` (schema 26) and `939e45c91d751fadd94dcd1b873ac3cb44846213` (schema 30). The lifecycle preserves each actual stock schema and inserts synthetic rows instead of copying a reduced database over it.
 - The exact candidate artifact was also installed from GitHub into a fresh isolated current-host profile locally. Managed setup/doctor/old alias, nonempty schema-30 import, 8 tools, hooks, bundled skill, red/green, reminder activation and rollback passed. Real stock setup interrupted while waiting for its installation lock preserved the old marker/runtime; retry published a ready new generation. Unit tests separately exercise interruption immediately before and after atomic publication with real uv installs.
+- Follow-up source `bfc39390aa634fbfc1a122cf25f7d1850b6963eb`: [application CI 34796918832](https://github.com/ussyverse/afterforge/actions/runs/34796918832) and [native CI 34796918831](https://github.com/ussyverse/afterforge/actions/runs/34796918831) passed. Exact artifact `bbaf933c1875e3034bbd39052642b8b87e679356` passed local fresh installation, 11 tool dispatches, 8 old/new slash checks, native retained execution, bad authorization exit 1, no duplicate hooks, pinned-update refusal, and owned removal with identical retained database hash.
+- The EXISTING prior-version migration fixture was upgraded, not recreated. Independent in-memory normalization of only its two documented header counters reproduced the exact original database checksum; its original policy checksum matched. All 13 original document IDs and body hashes remained identical. The old active approval stayed retained but inert with requires-reapproval, its old digest was rejected, a freshly reviewed implementation delivered once, and idempotent rollback restored the original incompatible approval without reactivating it. Real stock setup interruption/retry also preserved that fixture's evidence. Private baseline, record digests, screenshots and detailed logs remain outside Git.
 - Earlier dataset/component/browser/install/CI results are historical, retained in CHANGELOG.md and dataset-methodology.md rather than presented as new 0.5.0 results.
 
 ## Final release gates
@@ -19,11 +21,11 @@ Status: **release candidate; existing-fixture migration certification blocked**.
 | --- | --- | --- |
 | Quality/contracts | Full lint/format/tests/build; history identity, equivalence, capture bounds, native status, shared pagination | Passed for recorded candidate; repeat after changes |
 | Packaged workflows | Three fresh guided and expert/intervention flows, portable round trip, later commit/error recovery, real screenshot | Passed as above; screenshots private |
-| Installed migration | Exact original baseline, old IDs/bytes/aliases, reminder reapproval, rollback/removal retention | BLOCKED: reconcile pre-upgrade baseline discrepancy before modifying the original fixture |
+| Installed migration | Original baseline provenance, old IDs/bytes/aliases, reminder reapproval and rollback | Passed on the existing fixture; 13 immutable documents preserved, header-only baseline difference independently verified |
 | Locked runtime | Hashed lock/manifest, doctor readiness, interruption and serialized cleanup | Real uv tests and installed interruption/retry passed |
 | Stock host matrix | Exact GitHub artifact, stock scans/doctor/tools/hooks/skill, both native schemas | Both pins passed for recorded candidate |
 | Privacy | Exact index and generated projection audit plus manual review | Candidate audits passed; repeat for final follow-up |
-| CI/publication | Both exact-source CI runs, exact artifact installation, then supported locator/tag/release | Candidate CI/install passed; stable intentionally withheld for migration gate |
+| CI/publication | Both exact-source CI runs, exact artifact installation/migration, then supported locator/tag/release | Recorded candidates passed; authoritative final version/source/artifact/CI are in the supported checksum locator |
 
 ## Reproduction commands
 

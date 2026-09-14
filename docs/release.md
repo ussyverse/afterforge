@@ -1,6 +1,6 @@
 # Afterforge release protocol — 0.5.0
 
-Status: release candidate. Exact candidate source/distribution SHAs and successful CI/install evidence are recorded in [validation](validation.md). Supported 0.5.0 locator, tag and GitHub Release remain withheld while the original migration fixture's pre-upgrade baseline discrepancy is reconciled. Normal reviewed candidate commits/pushes are authorized; they do not constitute supported promotion.
+Exact candidate source/distribution SHAs and successful CI/install/migration evidence are recorded in [validation](validation.md). The original fixture's pre-upgrade hash discrepancy was independently reconciled as SQLite header counters only, without rewriting baseline evidence. Normal reviewed commits/pushes do not constitute supported promotion: the checksum locator and version release below identify the actual certified source/artifact after all gates.
 
 ## Three distinct surfaces
 
@@ -27,7 +27,7 @@ Run generation twice with identical inputs/parents and compare SHAs. Stock `plug
 
 The locator records version, repository, source_commit, distribution_commit, SHA-256 checksums for every distribution file (including RELEASE.json), exact CI URLs and a full-SHA install command. Git commit identity is distinct from SHA-256 file integrity. The locator is not a cryptographic signature or a statement of code trust. Its Actions artifact provenance plus Git/source checks bind the native-tested candidate; do not substitute the moving candidate branch when downloading evidence.
 
-Stable promotion intentionally creates no version tag, GitHub Release or package-registry publication. After all final gates, the coordinator may separately authorize the version tag and GitHub release with source/distribution SHA, checksum locator, install command, CI links and changelog. There is no PyPI publish step. Until that happens, docs remain candid about unreleased status.
+Stable promotion intentionally creates no version tag, GitHub Release or package-registry publication. After all final gates, the explicitly authorized release executor creates the immutable version tag and GitHub release with source/distribution SHA, checksum locator, install command, CI links and changelog. There is no PyPI publish step. Never move or replace a published version tag; correct later issues with a new version.
 
 ## Recovery and verification
 

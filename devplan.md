@@ -1,6 +1,6 @@
 # Afterforge 0.5.0 integration plan
 
-Current acceptance work, not a chronology. Historical milestones belong in [CHANGELOG](CHANGELOG.md). Integration is complete under one exclusive executor. Candidate CI, packaged workflows and stock-host installation passed as recorded in [validation](docs/validation.md); original-fixture migration remains blocked by a pre-upgrade baseline checksum discrepancy. Preserve that fixture and its original baseline; do not recreate either to obtain a passing result.
+Current acceptance work, not a chronology. Historical milestones belong in [CHANGELOG](CHANGELOG.md). Integration is complete under one exclusive executor. Candidate CI, packaged workflows, stock-host installation and original-fixture migration passed as recorded in [validation](docs/validation.md). The baseline checksum discrepancy was independently reconciled as two SQLite header counters only; all original evidence and its recorded baseline were preserved. Repeat exact-source CI/install before supported promotion after any follow-up change.
 
 | Area | Implemented boundary | Remaining acceptance gate |
 | --- | --- | --- |

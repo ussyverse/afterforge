@@ -4,7 +4,7 @@
 
 Afterforge is a local-first workbench for Python projects: inspect a failed agent tool run, review the correction, freeze a meaningful pytest regression, and retain evidence from real executions against committed code. A passing old run is not verification of today's code. Unknowns, failed checks and unreviewed proposals stay visible.
 
-Version **0.5.0 is a release candidate**, not a supported release yet. Packaged browser, portable bundle and both pinned stock-host CI gates have passed for the recorded candidate. Existing-fixture migration certification remains blocked by a pre-upgrade database baseline checksum discrepancy. Real packaged-browser screenshots are retained privately, not replaced by mock images. See the exact evidence and remaining gate in [validation](docs/validation.md).
+Version **0.5.0** provides a bounded deterministic regression-retention workflow. Packaged browser, portable bundle, both pinned stock-host CI and existing-fixture migration gates have passed for the recorded candidate. Real packaged-browser screenshots are retained privately, not replaced by mock images. The [stable locator](https://raw.githubusercontent.com/ussyverse/afterforge/release-metadata/stable.json) identifies the supported version and exact source/distribution checksums and CI; an unlisted candidate is not certified merely by its version. See [validation](docs/validation.md).
 
 This is bounded, reviewed regression retention—not autonomous learning, a model replay engine or an OS sandbox. An optional fixed verification reminder is [experimental and opt-in](docs/interventions.md); code receipts do not measure model efficacy.
 

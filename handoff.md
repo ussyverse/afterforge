@@ -19,7 +19,7 @@ Exclusive release executor integrated and normally pushed candidate source `72db
 
 ## Coordinator completion gates
 
-1. Resolve the private pre-upgrade baseline discrepancy without replacing the recorded baseline or recreating its fixture. Then upgrade that existing fixture to the exact final candidate and verify old document IDs/bytes, aliases, reminder implementation reapproval, rollback and teardown retention.
+1. Existing-fixture baseline reconciliation and prior-version upgrade passed: independent in-memory header-counter normalization reproduced the exact original checksum, and 13 document IDs/bytes were unchanged. Old approval is preserved, requires reapproval, rejects its old digest, delivers after fresh approval and remains inert after rollback. Preserve original baseline and all evidence; repeat exact final-artifact upgrade/removal retention after any follow-up source commit.
 2. Keep exact final-source application/native CI and installed-distribution evidence aligned after any follow-up commit. Run `uv run pytest -q tests packaging`; do not omit packaging tests or substitute skipped browser cases for the explicit packaged gate.
 3. Audit exact staged/generated content and reachable history. docs/privacy.md remains byte-identical; the scanner still allows only its original reviewed high finding. Screenshots remain private because they contain synthetic local fixture paths.
 4. Only after all gates, manually dispatch stable-release, verify locator/source/distribution/checksums, and create the separately authorized immutable 0.5.0 tag/GitHub release. No PyPI publication.
@@ -32,4 +32,4 @@ Exclusive release executor integrated and normally pushed candidate source `72db
 - Managed generation paths differ from the old single runtime directory; inspect final lifecycle harness expectations without editing runtime behavior merely to satisfy outdated tests.
 - Model efficacy remains unmeasured. Reminder delivery, code checks, shadow receipts and evidence acceptance are separate from deployment/learning claims.
 
-Detailed gate status and reproduction commands are in docs/validation.md. The private executor result contains final follow-up SHAs and exact baseline discrepancy details. Private histories, resolved paths, manifests and detailed reports remain outside Git. Do not recreate the private cohort or rewrite old observations to make a result green.
+Detailed gate status and reproduction commands are in docs/validation.md. The private executor result contains final follow-up SHAs, exact header-only baseline reconciliation, record digests and migration evidence. The supported locator identifies final certified source/artifact/CI without a self-referential source commit. Private histories, resolved paths, manifests and detailed reports remain outside Git. Do not recreate the private cohort or rewrite old observations to make a result green.

@@ -1,6 +1,6 @@
 # Guided regression workflow — 0.5.0 candidate
 
-The shared services and `/guided` screen provide the implemented workflow below. Three consecutive packaged guided flows now include correction review, draft authorization, red/green, later-commit retention and error recovery. Separate expert/intervention browser and portable installed-CLI checks passed. Exact candidate CI/native evidence and the remaining original-fixture migration baseline blocker are recorded in [validation](validation.md).
+The shared services and `/guided` screen provide the implemented workflow below. Three consecutive packaged guided flows include correction review, draft authorization, red/green, later-commit retention and error recovery. Separate expert/intervention browser and portable installed-CLI checks passed. Exact candidate CI/native and successful original-fixture migration evidence are recorded in [validation](validation.md).
 
 ## 1. Select an explicit source and scan bounded pages
 
