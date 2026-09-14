@@ -1,6 +1,16 @@
 # Afterforge 0.5.1 coordinator handoff
 
-## Closure and current tool repair (latest)
+## Current-upstream contribution (latest)
+
+[Draft upstream PR #110715](https://github.com/NousResearch/hermes-agent/pull/110715)
+at `a52c3943e4e4ae2b3202ba6849e0390f5ba5b06a` ports the repair to the current
+refactored module, including zero-match probes. Baseline: 94 failed/31 passed;
+repaired related tests: 362 passed/six Windows-only skips on Linux. Existing
+PR overlap is disclosed for consolidation. No upstream CI success claimed;
+see [source, evidence limits and later rollout/rollback plan](docs/upstream-search-contribution.md).
+Original pinned proof and live installation remain unchanged.
+
+## Closure and current tool repair
 
 The bounded-status intervention is **closed: insufficient demonstrated benefit**.
 Keep it inactive; do not restart its evaluation or tune its procedure. Original

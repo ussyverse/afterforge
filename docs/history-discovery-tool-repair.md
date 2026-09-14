@@ -195,3 +195,7 @@ Aggregate counts, source/patch hashes, preserved-artifact hashes and exact test
 names are in [the public evidence record](experiments/history-search-option-evidence.json).
 Private snapshots, linked event/call records, correction candidates, scripts,
 closure receipts and all test outcomes remain outside public Git.
+
+The separate [current-upstream contribution](upstream-search-contribution.md)
+records the refactored-source baseline, draft PR, verification limits and later
+reviewed installation/rollback plan. It does not replace this pinned proof.
