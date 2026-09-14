@@ -102,9 +102,13 @@ Run runtime removal before removing source if environment cleanup is desired. Ev
 
 The separate [bounded status-evidence v1 experiment](docs/bounded-status-evidence.md)
 is default-off and uses explicit isolated-home skill delivery. Its
-[evaluation stopped after two of 24 planned attempts](docs/bounded-status-findings.md)
-because the observer could not attest ephemeral request-time guidance. It needs
-an observability revision, not activation; the remaining attempts are not run.
+[original evaluation stopped after two of 24 planned attempts](docs/bounded-status-findings.md)
+because its observer could not attest ephemeral guidance. The separate
+[request-boundary revision](docs/request-boundary-observation.md) fixes measurement
+and [evaluated exactly the 22 previously unexecuted attempts](docs/request-boundary-findings.md).
+Both arms were equally correct and retrieved the required evidence. Candidate tool
+context was smaller, but operations/time increased and cost gates failed:
+**insufficient demonstrated benefit; no activation or scoped trial.**
 
 See the [aggregate retrieval-behavior findings](docs/retrieval-behavior-findings.md) for model-specific premature-stopping experiments, an inactive task-scoped reminder, and new-case limitations. These are exploratory behavioral results, not efficacy claims for the shipped hook or deployment approval.
 

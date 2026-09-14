@@ -31,8 +31,12 @@ two attempts under its frozen delivery gate. Loader/CLI assembly success is not
 request-time attestation. See the [stopped-cycle findings](bounded-status-findings.md).
 Do not interpret the missing stored body as proof the model did not receive it.
 Neither null storage nor a missing marker proves baseline non-delivery. The
-low-level `delivery_evidence` helper is not an authoritative certification API;
-it requires an actual effective prompt, which this observer did not retain.
+low-level `delivery_evidence` helper is now **retired and raises** for every input;
+a stored or reconstructed prompt cannot certify request delivery. The separate
+[request-boundary revision](request-boundary-observation.md) observes the actual
+serialized Codex client request and gates first-tool execution. Its
+[remaining-budget results](request-boundary-findings.md) preserve the original
+stopped study unchanged and show insufficient demonstrated behavioral benefit.
 
 ## Scope and evidence contracts
 

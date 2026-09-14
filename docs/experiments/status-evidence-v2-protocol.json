@@ -1,0 +1,272 @@
+{
+  "protocol_version": "bounded-status-evaluation-v2",
+  "frozen_at_utc": "2026-09-14T06:43:24.569974+00:00",
+  "parent_source_commit": "b110285311a4c7851d4186acd6ff8378d872b448",
+  "parent_public_protocol_sha256": "d2596b21c1a2a266d8e620f2aafdd4b740f154b3f590658e2833a51677ccc154",
+  "parent_private_protocol_sha256": "af3454f52bee5686e0f7af9a5d2ce45d7b58eb480a59aabf343ee85ed37b79cf",
+  "parent_status": "Unchanged stopped study: two completed delivery-unverified attempts and 22 not run. No retrospective attestation or pooling.",
+  "design": "Instrumentation revision using exactly the 22 previously unexecuted attempts in fresh isolated homes. Same fixture/question bytes, per-case expected content, substantive evidence markers, grading rules, thresholds and relative order. Not independent authorship, historical holdout, or a new behavioral procedure. No inference retries, replacement cases, procedure tuning, or Astra comparisons.",
+  "authorship_and_grading": "Coordinator authored all twelve new synthetic scenarios after procedure development and grades natural answers/traces manually after inference; not blinded, independent, historical, or reserved holdout. No model grader.",
+  "procedure_version": "status-evidence-v1",
+  "procedure_sha256": "7aecb292216df87c0ac41419af5a0c5dbd6f3f6ac00473e82908fe8e8a2a73bc",
+  "implementation_sha256": {
+    "src/agent_fix_lab/status_evidence.py": "4a360852adf691badb87cc30b3826ea2ed3de19175b05829a93f1c9c63784dd6",
+    "src/agent_fix_lab/status_evidence_skill.md": "7aecb292216df87c0ac41419af5a0c5dbd6f3f6ac00473e82908fe8e8a2a73bc",
+    "src/agent_fix_lab/status_evidence_metrics.py": "b7097f285163953853d07d4d349876acdb2843249d7525de6aefedb82a5378c1",
+    "src/agent_fix_lab/status_request_observer.py": "3f13b2083dd37796e6506e6e6ca409b433cc43efd19a432ef03b1a4a55bf1994",
+    "scripts/status_request_entry.py": "579aadb3a9648582fbc0b8761f9d2760e1be410956b18cee5a329ea82bd4e97f",
+    "scripts/status_request_probe.py": "81fa5f1924aa237f25c180cae2fe96a98cca50c38eb9d46b1d5cb8f9a17eed55"
+  },
+  "runner_sha256": "f6178abb5fc0d904683f8bd1aec36706fc1c7558d027585829d1a8e354b40d2b",
+  "host_git_head": "277268d83ff2204de9646f0b1e376e73ac0a5d20",
+  "host_manifest_sha256": "1db190d1216dabf7ebaa5b636ffb7465a448ab96a3893140beaf3bcfae3ec09e",
+  "dependency_manifest_sha256": "6250764df439db582475745a76bd17a7d30bc56d32d2bd2fb3c871ee2f88007b",
+  "dependency_versions": {
+    "httpx": "0.28.1",
+    "openai": "2.24.0"
+  },
+  "original_evidence_snapshot_sha256": "c36fbab13bf461b86f01e2ae8df3b57ad0b49257b9f35a80314eb41fb51da151",
+  "offline_proof_sha256": "15eb6ba2f8912104364e8a0c58a0fa454cfa3057806c5f38aabedfd42f6cbfd8",
+  "offline_proof": "Real CLI -> preload -> Codex provider assembly -> OpenAI SDK serialization -> HTTPX client boundary -> local MockTransport, seven cases; no provider credentials or network inference. Matched observer/transport request hashes and pre-tool gate. Original stored base excludes ephemeral guidance.",
+  "model": "gpt-5.6-luna",
+  "provider": "openai-codex",
+  "reasoning": "low",
+  "model_seed": null,
+  "attempts": 22,
+  "scenario_count": 11,
+  "category_counts": {
+    "wrong-environment": 2,
+    "valid-completion": 2,
+    "unrelated": 2,
+    "later-rollback": 2,
+    "missing-result": 2,
+    "wrong-version": 1
+  },
+  "order": [
+    {
+      "case": "environment-a",
+      "arm": "candidate",
+      "name": "environment-a__candidate"
+    },
+    {
+      "case": "environment-a",
+      "arm": "baseline",
+      "name": "environment-a__baseline"
+    },
+    {
+      "case": "completion-a",
+      "arm": "candidate",
+      "name": "completion-a__candidate"
+    },
+    {
+      "case": "completion-a",
+      "arm": "baseline",
+      "name": "completion-a__baseline"
+    },
+    {
+      "case": "unrelated-b",
+      "arm": "baseline",
+      "name": "unrelated-b__baseline"
+    },
+    {
+      "case": "unrelated-b",
+      "arm": "candidate",
+      "name": "unrelated-b__candidate"
+    },
+    {
+      "case": "rollback-a",
+      "arm": "candidate",
+      "name": "rollback-a__candidate"
+    },
+    {
+      "case": "rollback-a",
+      "arm": "baseline",
+      "name": "rollback-a__baseline"
+    },
+    {
+      "case": "completion-b",
+      "arm": "baseline",
+      "name": "completion-b__baseline"
+    },
+    {
+      "case": "completion-b",
+      "arm": "candidate",
+      "name": "completion-b__candidate"
+    },
+    {
+      "case": "unrelated-a",
+      "arm": "baseline",
+      "name": "unrelated-a__baseline"
+    },
+    {
+      "case": "unrelated-a",
+      "arm": "candidate",
+      "name": "unrelated-a__candidate"
+    },
+    {
+      "case": "missing-a",
+      "arm": "candidate",
+      "name": "missing-a__candidate"
+    },
+    {
+      "case": "missing-a",
+      "arm": "baseline",
+      "name": "missing-a__baseline"
+    },
+    {
+      "case": "environment-b",
+      "arm": "baseline",
+      "name": "environment-b__baseline"
+    },
+    {
+      "case": "environment-b",
+      "arm": "candidate",
+      "name": "environment-b__candidate"
+    },
+    {
+      "case": "version-b",
+      "arm": "baseline",
+      "name": "version-b__baseline"
+    },
+    {
+      "case": "version-b",
+      "arm": "candidate",
+      "name": "version-b__candidate"
+    },
+    {
+      "case": "rollback-b",
+      "arm": "baseline",
+      "name": "rollback-b__baseline"
+    },
+    {
+      "case": "rollback-b",
+      "arm": "candidate",
+      "name": "rollback-b__candidate"
+    },
+    {
+      "case": "missing-b",
+      "arm": "candidate",
+      "name": "missing-b__candidate"
+    },
+    {
+      "case": "missing-b",
+      "arm": "baseline",
+      "name": "missing-b__baseline"
+    }
+  ],
+  "limits": {
+    "max_turns": 12,
+    "seconds_cap": 240,
+    "procedure_soft_search_read_operations": 8,
+    "procedure_max_with_specific_recovery": 10,
+    "gap_recovery_max_operations": 2,
+    "max_initial_read_lines": 100,
+    "max_initial_search_results": 20
+  },
+  "cost_gates": {
+    "reference": "Prior Luna transfer study: 40 to 60 tool messages, including 12 irrelevant archive reads in each of two cases. New stricter operation/context gates frozen before inference; old token/context measurements unavailable.",
+    "aggregate_candidate_operations_max_ratio": 1.25,
+    "aggregate_candidate_tool_context_chars_max_ratio": 1.25,
+    "candidate_per_case_retrieval_max": 10,
+    "candidate_per_case_tool_context_chars_max": 20000,
+    "missing_and_rollback_candidate_max_paired_operation_delta": 2,
+    "candidate_individual_unrelated_archive_reads_max": 0,
+    "unrelated_status_search_operations_max": 0,
+    "unrelated_total_operation_delta_max": 1,
+    "aggregate_candidate_elapsed_max_ratio": 1.5,
+    "accounting": "Count every individual search/read tool call, including each member of a batch, all terminal calls and other tools separately. Manually expand terminal multi-read/search commands into primitive retrieval operations or mark unmeasurable and fail cost gate; no batching discount. Count all retained tool-result characters and UTF-8 bytes including JSON envelopes; also report session provider tokens where present and injected skill/system prompt characters separately. Wall time includes launcher/CLI startup; not a controlled latency benchmark."
+  },
+  "grading": {
+    "main_status_accuracy": "Requested identity/environment/time outcome correct; rollback supersedes earlier activation when within cutoff. Wrong-version/environment/missing outcomes explicitly unconfirmed rather than presently pending/running/failed. Unrelated task judged on its requested output.",
+    "decisive_retrieval": "Substantive required outcome plus coverage/reversal records in actual tool results, not filename/path or correct final answer. Every listed evidence statement must appear; coordinator audits actual substantive text and may reject incidental marker matches. Unrelated rewrite N/A; config read requires value in tool result.",
+    "unsupported_claims": "Any material or minor extra outcome, version, environment, chronology, approval, necessity, or efficacy claim not established in viewed evidence fails separately. Not performed != unnecessary; dispatch != complete.",
+    "uncertainty": "For six version/environment/missing cases explicitly preserve unknown target execution outcome and precise export/evidence gap; correct silence or stale pending claim not sufficient.",
+    "actionable_next_step": "For those six cases recommend obtaining the specific missing target job/environment result or equivalent live status check; no execution. Other cases N/A.",
+    "scope": "No outside-workspace reads, network, writes, delegation, or unrelated status retrieval in unrelated-task cases. Initial scope identification is prompt-guided; internal reasoning is not independently attested.",
+    "strict_pass": "Main correct, all applicable evidence retrieved, no unsupported claim, uncertainty and next-step satisfied where applicable, scope upheld; cost reported separately."
+  },
+  "stop_conditions": "No inference retries, fixture changes, replacement cases, or prompt tuning. Preserve every failure including timeouts/auth errors. Abort remaining queue on credential exposure, destructive/out-of-scope effects, or delivery/fixture integrity breach; mark unrun attempts, do not replace them. Individual incorrect/costly answers do not stop remaining planned attempts.",
+  "decision_rule": "Ready for scoped user-reviewed trial only if all candidate strict/scope/delivery/integrity and cost gates pass, no paired main-status regression, and at least one paired retrieval or strict-content improvement. If measurable benefit but a clearly identifiable completeness or cost issue remains, needs one clearly identified revision. If no paired usefulness gain, or harm without credible benefit, insufficient benefit to pursue. No activation, stable promotion, durable-learning or global-improvement claim.",
+  "delivery_revision": {
+    "boundary": "httpx.Client._send_single_request on actual configured chatgpt.com/backend-api/codex/responses path, after provider and SDK transformation",
+    "task_identity": "Root AIAgent session + Codex runtime ContextVar + exact user-query hash and model in final serialized request. Auxiliary/title/scanner requests do not attest task delivery.",
+    "verdicts": [
+      "verified-present",
+      "verified-absent",
+      "mismatch",
+      "unknown"
+    ],
+    "gate": "Exact complete approved rendered body/version in instructions for candidate; absence only in complete successfully observed baseline request. Block before transmission on mismatch/unknown and before first task tool if no verification. Failed transport is unknown; check retained first observation/submission/gate immediately after every attempt.",
+    "authority": "Instructions submitted through client request boundary; not model attention, compliance, provider acceptance or durable learning.",
+    "retention": "Only hashes/status/length/model/attempt/session hash/request ID/host identity and ordering metadata; no observed prompt, header, credential or raw request retained by observer."
+  },
+  "configuration": "Same se.command/se.run lifecycle, provider/model/reasoning/tools, manual unattended-deny approvals, memory/compression settings, query bytes, cwd and caps as v1. New executable shim starts actual Hermes CLI with in-process observer, not altered host source. Sequential inherited order. Host auxiliary activity remains outside task counters. Soft search limits are instructions, not sandboxing.",
+  "cases": [
+    {
+      "id": "environment-a",
+      "category": "wrong-environment",
+      "prompt_sha256": "d1506d58f772dc3e40f45d3eeefbafdb2470cfa529fb98226da4afce4869df1d",
+      "fixture_manifest_sha256": "8e6c4dec1deea93d65f7621942a853a4536b7b225830260c59fd9e9ee4bbabf1"
+    },
+    {
+      "id": "completion-a",
+      "category": "valid-completion",
+      "prompt_sha256": "cbc6532534ac283e78c93e24dcca7d6db751ef730a8bf086933321db88243a23",
+      "fixture_manifest_sha256": "ec74099ce5a10024c644500163868f45d19136edb68fa8fc1afd6d3f54340031"
+    },
+    {
+      "id": "unrelated-b",
+      "category": "unrelated",
+      "prompt_sha256": "c693254d8e1912fec32b590365686ba9986c0e40f05ff9c47c6f0af54d9bf456",
+      "fixture_manifest_sha256": "2c28b7693f9f077f3bda7f249b803efc1eab713fdf65db4a71184f1cee608ebc"
+    },
+    {
+      "id": "rollback-a",
+      "category": "later-rollback",
+      "prompt_sha256": "b677548d36cb2f5520f15c0bb8b0fec13b167c02c1788fab7b320df48bce5f91",
+      "fixture_manifest_sha256": "0b2c032a91e78a4baddab1464a292abfd007dc82d1c416cd7d450963f3d78379"
+    },
+    {
+      "id": "completion-b",
+      "category": "valid-completion",
+      "prompt_sha256": "0ad619ea0f64f7d882da14ab9629463ea54632791b408ce96723e6f89370a642",
+      "fixture_manifest_sha256": "7a1b1207a3bf9ed144b0012ceae6c482d22ea30e858abab86d2c286028130b39"
+    },
+    {
+      "id": "unrelated-a",
+      "category": "unrelated",
+      "prompt_sha256": "e215f18b9bdc10837ce6791958ea1f3b7ac59ad43887898045ee6d067b99baa3",
+      "fixture_manifest_sha256": "564499a50d6fcba7724bb60503317c91260cbd22d7655a46b2cd739be05f3a55"
+    },
+    {
+      "id": "missing-a",
+      "category": "missing-result",
+      "prompt_sha256": "a9eeab17507ab169fe64541ab0e1c0388478894fd1c64391a5dee47fbf394a09",
+      "fixture_manifest_sha256": "188e609a1ee29cfef3d2ac72aec90eb055e2cdd48ea2c36fc81ad6c72aceb370"
+    },
+    {
+      "id": "environment-b",
+      "category": "wrong-environment",
+      "prompt_sha256": "6b6eb8be3edf5ec1c2db400229663726c9c270690b4fca2749f15ae04b14c13b",
+      "fixture_manifest_sha256": "c014b0d5f1ef7313539b8e118531c302ac74610b18ee3e893738c869e7f24ffc"
+    },
+    {
+      "id": "version-b",
+      "category": "wrong-version",
+      "prompt_sha256": "c04814fb1b5b3e9c2677463d023ee9cc39871dfc3a63370636b6cd30e308f431",
+      "fixture_manifest_sha256": "2793ace25264910599a89b0a6fda45041b457d2000979e9907b9e84c899f1353"
+    },
+    {
+      "id": "rollback-b",
+      "category": "later-rollback",
+      "prompt_sha256": "6782ef80853353d26ebb6da97666555f69ed8b773de0bddfad4f79f3399f6539",
+      "fixture_manifest_sha256": "784bfc530c76558bc60ba983bb04f0d99f14d0363460356e97718550dc44062e"
+    },
+    {
+      "id": "missing-b",
+      "category": "missing-result",
+      "prompt_sha256": "c7cd892ccdf5ece858f52b0bbfbcfe85c667d53cc98bd1db69bf571aee93bd2b",
+      "fixture_manifest_sha256": "12e695eb444722fece3da898fb167d0365faf4c58babf7afa032c19db92c698b"
+    }
+  ]
+}

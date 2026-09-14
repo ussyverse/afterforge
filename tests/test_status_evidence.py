@@ -151,16 +151,13 @@ def test_evidence_accounting_counts_batch_and_context():
     assert m["returned_context_chars"] == 11 and m["returned_context_utf8_bytes"] == 12
 
 
-def test_delivery_requires_whole_body_not_marker_or_exit_status(isolated):
+def test_stored_prompt_helper_is_retired_including_missing_baseline(isolated):
     _, workspace, project, _, _ = isolated
     skill = se.render(workspace, project)
-    assert delivery_evidence("prefix\n" + body(skill), skill, True)["delivery_matches"]
-    assert not delivery_evidence("Afterforge bounded status evidence, version 1", skill, True)[
-        "delivery_matches"
-    ]
-    assert delivery_evidence("normal system prompt", skill, False)["delivery_matches"]
-    assert not delivery_evidence(body(skill), skill, False)["delivery_matches"]
-    assert not delivery_evidence(None, skill, True)["delivery_matches"]
+    for prompt in (None, "", "normal system prompt", body(skill)):
+        for enabled in (False, True):
+            with pytest.raises(RuntimeError, match="retired"):
+                delivery_evidence(prompt, skill, enabled)
 
 
 def test_frozen_protocol_binds_procedure_implementation_and_schedule():
@@ -168,7 +165,12 @@ def test_frozen_protocol_binds_procedure_implementation_and_schedule():
     protocol = json.loads((root / "docs/experiments/status-evidence-v1-protocol.json").read_text())
     assert protocol["procedure_sha256"] == se.digest(se.procedure().encode())
     for relative, expected in protocol["implementation_sha256"].items():
-        assert se.digest((root / relative).read_bytes()) == expected
+        # The v1 measurement helper is retired by the explicitly separate v2
+        # instrumentation revision. Its historical hash is not a current-code pin.
+        if relative.endswith("status_evidence_metrics.py"):
+            assert expected == "31316a91c353c8185bd3afc4a93a8a4c30833e61f012c1e54d49dc1a7c9491af"
+        else:
+            assert se.digest((root / relative).read_bytes()) == expected
     assert len(protocol["cases"]) == 12
     assert len(protocol["order"]) == 24
     for case in protocol["cases"]:
@@ -186,11 +188,12 @@ def test_ephemeral_guidance_is_not_proven_by_retained_base_prompt(isolated):
     assert "--skills" in se.command(home, query)[0]
     skill = se.render(workspace, project)
     retained_base = "synthetic base system prompt without ephemeral guidance"
-    assert not delivery_evidence(retained_base, skill, True)["delivery_matches"]
-    # A constructed request demonstrates what the observer would need; it does
-    # not retrofit request-time attestation onto an already completed attempt.
+    with pytest.raises(RuntimeError, match="retired"):
+        delivery_evidence(retained_base, skill, True)
+    # Even a reconstructed prompt may no longer be passed off as observation.
     constructed_request = retained_base + "\n\n" + body(skill)
-    assert delivery_evidence(constructed_request, skill, True)["delivery_matches"]
+    with pytest.raises(RuntimeError, match="retired"):
+        delivery_evidence(constructed_request, skill, True)
 
 
 def test_procedure_contracts_and_no_automatic_plugin_registration():

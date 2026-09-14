@@ -24,8 +24,9 @@ jobs:
         run: |
           uv sync --locked
           uv venv "$RUNNER_TEMP/status-host-env" --python 3.11
-          uv pip install --python "$RUNNER_TEMP/status-host-env/bin/python" --editable .status-host
+          uv pip install --python "$RUNNER_TEMP/status-host-env/bin/python" --editable .status-host 'httpx==0.28.1' 'openai==2.24.0'
           uv run python scripts/status_skill_probe.py --host-python "$RUNNER_TEMP/status-host-env/bin/python" --host-root "$GITHUB_WORKSPACE/.status-host"
+          uv run python scripts/status_request_probe.py --host-python "$RUNNER_TEMP/status-host-env/bin/python" --host-root "$GITHUB_WORKSPACE/.status-host"
   product:
     runs-on: ubuntu-latest
     timeout-minutes: 20

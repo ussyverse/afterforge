@@ -10,16 +10,11 @@ def body(skill: str) -> str:
 
 
 def delivery_evidence(system_prompt: str | None, skill: str, enabled: bool) -> dict:
-    expected = body(skill)
-    present = expected in (system_prompt or "")
-    marker_present = "Afterforge bounded status evidence, version 1" in (system_prompt or "")
-    return {
-        "expected_enabled": enabled,
-        "exact_body_present": present,
-        "marker_present": marker_present,
-        "delivery_matches": present if enabled else not marker_present,
-        "authority": "retained-session-system-prompt; not provider-wire attestation",
-    }
+    raise RuntimeError(
+        "Stored-prompt delivery_evidence is retired: it cannot attest ephemeral guidance. "
+        "Use status_request_observer.assess on a complete observed client request; "
+        "outcomes are verified-present, verified-absent, mismatch, or unknown."
+    )
 
 
 def trace_metrics(rows: list[dict]) -> dict:

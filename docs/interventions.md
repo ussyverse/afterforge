@@ -64,10 +64,14 @@ Target success requires matched-failure comparison with compatible regression in
 
 A separate [bounded status-evidence v1 launcher/skill](bounded-status-evidence.md)
 now supports explicit approved delivery in newly created isolated homes only.
-Its [frozen cycle stopped at the delivery observer gate](bounded-status-findings.md):
-2 completed task-agent attempts, 22 not run, no activation. A request-time
-attestation revision is required before a new evaluation. This does not revise
-the original reminder or establish efficacy of the native hook.
+Its [original cycle stopped at the delivery observer gate](bounded-status-findings.md):
+2 completed task-agent attempts, 22 not run, no activation. The separate
+[request-boundary instrumentation revision](request-boundary-observation.md)
+verified delivery for the 22 previously unexecuted attempts in fresh homes, without
+pooling the original two. [Results](request-boundary-findings.md): equal accuracy,
+retrieval and strict content, smaller tool context but increased operations/time
+and failed cost gates. Recommendation: insufficient demonstrated benefit; no trial.
+This does not revise the original reminder or establish efficacy of the native hook.
 
 Synthetic tests cover lifecycle, digest/revision/assertion mismatch, legacy reapproval, symlink abstention, repeated rollback, controls, immutable conflicts, CLI/web mutation protection and malicious-looking text. Final 0.5.0 packaged browser and real-host migration must rerun these contracts; earlier milestone totals belong in CHANGELOG.md, not current certification.
 

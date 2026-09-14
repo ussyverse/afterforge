@@ -1,5 +1,31 @@
 # Afterforge 0.5.1 coordinator handoff
 
+## Request-boundary v2 continuation result (latest)
+
+[Observer/offline proof](docs/request-boundary-observation.md),
+[separate frozen protocol](docs/experiments/status-evidence-v2-protocol.json), and
+[verified remaining-budget findings](docs/request-boundary-findings.md).
+The procedure and original stopped v1 study are unchanged. The old stored-prompt
+helper is retired; actual Codex client-boundary evidence now verifies instructions
+before first task tools, without claiming model attention or compliance.
+
+All 22 previously unexecuted attempts ran once in fresh isolated homes: 11 verified
+candidate-present and 11 verified baseline-absent. Both arms scored 11/11 main and
+strict-content accuracy, 10/10 applicable substantive retrieval, 5/5 uncertainty
+and next steps, and no unsupported claims. Candidate tool context decreased
+442,953 -> 57,484 characters, but operations increased 61 -> 84 and elapsed time
+184.317 -> 286.284 seconds; four frozen cost gates failed. Recommendation:
+**insufficient demonstrated benefit; do not activate or trial.** No Astra runs,
+retries, replacement cases, retrospective attestation or pooled original attempts.
+
+Local validation: 305 tests/no skips, lint/format/build and both real-host offline
+probes passed. CI includes full request-boundary tests on pinned Hermes/SDKs; check
+workflow status for the exact feature commit, separately from behavioral evidence.
+All 22 new-home experimental skills were removed with evidence/credentials intact.
+Main, live profile, stable release and original research/reminder remain unchanged.
+
+The v1 entry below records its historical decision, not outstanding v2 work.
+
 ## Bounded status-evidence v1 feature-cycle result
 
 See [implementation/lifecycle](docs/bounded-status-evidence.md), the
