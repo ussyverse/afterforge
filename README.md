@@ -8,6 +8,8 @@ Version **0.5.1** adds bounded notification-shaped correction abstention while p
 
 This is bounded, reviewed regression retention—not autonomous learning, a model replay engine or an OS sandbox. An optional fixed verification reminder is [experimental and opt-in](docs/interventions.md); code receipts do not measure model efficacy.
 
+The bounded-status study is closed with insufficient demonstrated benefit and remains inactive. A [30/90-day private-history follow-on](docs/history-discovery-tool-repair.md) instead reproduced a current search-tool argument defect, retained a minimal failing regression, and verified a five-line repair against real tools in isolated source copies. The patch is not installed in the live host or stable release.
+
 ## Install into Hermes
 
 Requires Linux, Git, Python 3.11+ and [uv](https://docs.astral.sh/uv/). The public repository is [ussyverse/afterforge](https://github.com/ussyverse/afterforge), renamed in place without changing repository identity or visibility. No GitHub credentials are needed merely to read the public source. Dependency installation needs network initially; normal local analysis does not need model API keys or personal logs.

@@ -2,6 +2,8 @@
 
 Afterforge's stable objective is deterministic reviewed regression retention. Intervention evidence, committed-check receipts and the optional native reminder have different authority. None establishes autonomous learning or measured model improvement.
 
+The bounded-status intervention is closed: insufficient demonstrated benefit; keep it inactive. The [historical-discovery follow-on](history-discovery-tool-repair.md) is a deterministic search-tool repair with a retained current-source red/green regression, not another prompt-tuning cycle or live policy activation.
+
 ## Committed checks
 
 `afterforge --home LAB current-check-plan RECIPE_ID` returns the reviewed corrected-commit recipe and digest without execution. Inspect the code and inputs, then authorize with `verify-current RECIPE_ID --approve-digest DIGEST`. Native equivalents use `hermes afterforge` (legacy `hermes fixlab`). Tool JSON success means operation completion; inspect `data.status`. Native terminal operation errors/nonpassing verification exit nonzero.

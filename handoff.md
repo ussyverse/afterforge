@@ -1,6 +1,28 @@
 # Afterforge 0.5.1 coordinator handoff
 
-## Request-boundary v2 continuation result (latest)
+## Closure and current tool repair (latest)
+
+The bounded-status intervention is **closed: insufficient demonstrated benefit**.
+Keep it inactive; do not restart its evaluation or tune its procedure. Original
+findings, evidence and reminder are preserved. All 46 evaluation homes were
+checked: manifests remain removed/disabled and the procedure files are absent.
+
+[Historical discovery and tool repair](docs/history-discovery-tool-repair.md)
+reuses the existing private 30/90-day snapshots, identities, deduplication and
+notification filter. At the frozen cutoff, development coverage is 28,282 unique
+tool observations in 30 days and 152,560 in 90 days. Only one source supplies
+older-than-30-day history; gaps and dependency-group counts are explicit.
+
+Four linked-session groups exposed a real current tool defect: leading-hyphen
+regex patterns become ripgrep options. The minimal current-source regression
+failed before repair, with four successful controls. A five-line patch now passes
+all ten synthetic checks, including a separate CSS alternation case, actual tool
+wrapper, grep fallback and zero-match probes. The patch and red/green proof
+scripts are retained publicly; original/private records remain private. This is
+an isolated source-copy repair, **not a live install or stable promotion**. No
+prompt intervention, inference, Windows/remote-backend or general-learning claim.
+
+## Request-boundary v2 continuation result (closed; historical result)
 
 [Observer/offline proof](docs/request-boundary-observation.md),
 [separate frozen protocol](docs/experiments/status-evidence-v2-protocol.json), and

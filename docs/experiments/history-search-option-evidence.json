@@ -1,0 +1,359 @@
+{
+  "bounded_status": {
+    "decision": "closed: insufficient demonstrated benefit",
+    "inactive": true,
+    "evaluation_homes_without_skill": 46,
+    "protected_artifact_sha256": {
+      "src/agent_fix_lab/status_evidence_skill.md": "7aecb292216df87c0ac41419af5a0c5dbd6f3f6ac00473e82908fe8e8a2a73bc",
+      "src/agent_fix_lab/status_evidence.py": "4a360852adf691badb87cc30b3826ea2ed3de19175b05829a93f1c9c63784dd6",
+      "docs/bounded-status-findings.md": "e1267fae3e43fbb0316576bad0007593c67655a90dd1a0e7c1520cf4d81fd24d",
+      "docs/request-boundary-findings.md": "820002218253893813b517ffabcf199271dc5557a417e2f8bc6d5fc93d31a20f",
+      "docs/retrieval-behavior-findings.md": "559a3ebaac700001d2c2bb10c708fc1331cc254fd51b1729e3528b8508e15afd",
+      "docs/experiments/status-evidence-v2-protocol.json": "d4f90a973f2c0e45ed39ec6f6a3d726d434a598dfc5f1885b2becc11f50e5d7a"
+    }
+  },
+  "discovery": {
+    "cutoff_utc": "2026-09-14T02:19:41.012576+00:00",
+    "30d_start_utc": "2026-08-15T02:19:41.012576+00:00",
+    "90d_start_utc": "2026-06-16T02:19:41.012576+00:00",
+    "inventory_entries": 14,
+    "nonempty_canonical_sources": 12,
+    "partition_group_counts_all_retained_metadata": {
+      "development": 2727,
+      "heldout": 594
+    },
+    "window_totals": {
+      "30d": {
+        "tools_scanned": 29147,
+        "users_scanned": 1774,
+        "duplicates": 865,
+        "oversized_tools": 36,
+        "whole_notifications": 244,
+        "notification_spans": 244,
+        "uncertain_notifications": 324,
+        "markers": 178,
+        "unique_tool_observations": 28282,
+        "all_role_rows": 53496
+      },
+      "90d": {
+        "tools_scanned": 153602,
+        "users_scanned": 8843,
+        "duplicates": 1042,
+        "oversized_tools": 1213,
+        "whole_notifications": 244,
+        "notification_spans": 244,
+        "uncertain_notifications": 1689,
+        "markers": 2284,
+        "unique_tool_observations": 152560,
+        "all_role_rows": 330397
+      }
+    },
+    "source_coverage": [
+      {
+        "label": "S01",
+        "oldest_retained_utc": "2026-09-07T16:26:02.347598+00:00",
+        "newest_retained_utc": "2026-09-12T16:21:52.423970+00:00",
+        "null_timestamps": 0,
+        "messages_after_cutoff": 0,
+        "30d_all_role_rows": 16778,
+        "30d_recorded_day_bins": 5,
+        "30d_reviewable_tool_rows": 9938,
+        "90d_all_role_rows": 16778,
+        "90d_recorded_day_bins": 5,
+        "90d_reviewable_tool_rows": 9938
+      },
+      {
+        "label": "S02",
+        "oldest_retained_utc": "2026-08-19T22:16:56.412952+00:00",
+        "newest_retained_utc": "2026-08-20T00:19:46.535703+00:00",
+        "null_timestamps": 0,
+        "messages_after_cutoff": 0,
+        "30d_all_role_rows": 16,
+        "30d_recorded_day_bins": 1,
+        "30d_reviewable_tool_rows": 5,
+        "90d_all_role_rows": 16,
+        "90d_recorded_day_bins": 1,
+        "90d_reviewable_tool_rows": 5
+      },
+      {
+        "label": "S03",
+        "oldest_retained_utc": "2026-08-20T02:14:51.486564+00:00",
+        "newest_retained_utc": "2026-08-20T02:15:31.897776+00:00",
+        "null_timestamps": 0,
+        "messages_after_cutoff": 0,
+        "30d_all_role_rows": 8,
+        "30d_recorded_day_bins": 1,
+        "30d_reviewable_tool_rows": 2,
+        "90d_all_role_rows": 8,
+        "90d_recorded_day_bins": 1,
+        "90d_reviewable_tool_rows": 2
+      },
+      {
+        "label": "S04",
+        "oldest_retained_utc": "2026-08-20T20:25:44.824954+00:00",
+        "newest_retained_utc": "2026-08-25T17:25:06.813272+00:00",
+        "null_timestamps": 0,
+        "messages_after_cutoff": 0,
+        "30d_all_role_rows": 55,
+        "30d_recorded_day_bins": 3,
+        "30d_reviewable_tool_rows": 0,
+        "90d_all_role_rows": 55,
+        "90d_recorded_day_bins": 3,
+        "90d_reviewable_tool_rows": 0
+      },
+      {
+        "label": "S05",
+        "oldest_retained_utc": "2026-08-19T22:28:43.600706+00:00",
+        "newest_retained_utc": "2026-08-25T20:09:25.547876+00:00",
+        "null_timestamps": 0,
+        "messages_after_cutoff": 0,
+        "30d_all_role_rows": 151,
+        "30d_recorded_day_bins": 4,
+        "30d_reviewable_tool_rows": 84,
+        "90d_all_role_rows": 151,
+        "90d_recorded_day_bins": 4,
+        "90d_reviewable_tool_rows": 84
+      },
+      {
+        "label": "S06",
+        "oldest_retained_utc": "2026-08-19T22:28:48.034762+00:00",
+        "newest_retained_utc": "2026-09-07T19:26:28.825171+00:00",
+        "null_timestamps": 0,
+        "messages_after_cutoff": 0,
+        "30d_all_role_rows": 4553,
+        "30d_recorded_day_bins": 8,
+        "30d_reviewable_tool_rows": 2867,
+        "90d_all_role_rows": 4553,
+        "90d_recorded_day_bins": 8,
+        "90d_reviewable_tool_rows": 2867
+      },
+      {
+        "label": "S07",
+        "oldest_retained_utc": "2026-09-07T22:49:24.415187+00:00",
+        "newest_retained_utc": "2026-09-08T01:13:34.258897+00:00",
+        "null_timestamps": 0,
+        "messages_after_cutoff": 0,
+        "30d_all_role_rows": 222,
+        "30d_recorded_day_bins": 1,
+        "30d_reviewable_tool_rows": 123,
+        "90d_all_role_rows": 222,
+        "90d_recorded_day_bins": 1,
+        "90d_reviewable_tool_rows": 123
+      },
+      {
+        "label": "S08",
+        "oldest_retained_utc": "2026-08-19T22:28:53.233335+00:00",
+        "newest_retained_utc": "2026-08-25T20:01:16.210768+00:00",
+        "null_timestamps": 0,
+        "messages_after_cutoff": 0,
+        "30d_all_role_rows": 627,
+        "30d_recorded_day_bins": 6,
+        "30d_reviewable_tool_rows": 294,
+        "90d_all_role_rows": 627,
+        "90d_recorded_day_bins": 6,
+        "90d_reviewable_tool_rows": 294
+      },
+      {
+        "label": "S09",
+        "oldest_retained_utc": "2026-08-19T21:46:16.621649+00:00",
+        "newest_retained_utc": "2026-08-20T16:15:05.576874+00:00",
+        "null_timestamps": 0,
+        "messages_after_cutoff": 0,
+        "30d_all_role_rows": 483,
+        "30d_recorded_day_bins": 2,
+        "30d_reviewable_tool_rows": 184,
+        "90d_all_role_rows": 483,
+        "90d_recorded_day_bins": 2,
+        "90d_reviewable_tool_rows": 184
+      },
+      {
+        "label": "S10",
+        "oldest_retained_utc": "2026-08-20T02:06:37.421865+00:00",
+        "newest_retained_utc": "2026-09-07T17:06:24.828990+00:00",
+        "null_timestamps": 0,
+        "messages_after_cutoff": 0,
+        "30d_all_role_rows": 5740,
+        "30d_recorded_day_bins": 8,
+        "30d_reviewable_tool_rows": 2842,
+        "90d_all_role_rows": 5740,
+        "90d_recorded_day_bins": 8,
+        "90d_reviewable_tool_rows": 2842
+      },
+      {
+        "label": "S11",
+        "oldest_retained_utc": "2026-09-08T15:12:09.365031+00:00",
+        "newest_retained_utc": "2026-09-14T03:51:38.864918+00:00",
+        "null_timestamps": 0,
+        "messages_after_cutoff": 78,
+        "30d_all_role_rows": 8590,
+        "30d_recorded_day_bins": 6,
+        "30d_reviewable_tool_rows": 4906,
+        "90d_all_role_rows": 8590,
+        "90d_recorded_day_bins": 6,
+        "90d_reviewable_tool_rows": 4906
+      },
+      {
+        "label": "S12",
+        "oldest_retained_utc": "2026-04-01T21:42:51.435611+00:00",
+        "newest_retained_utc": "2026-09-12T16:19:16.706450+00:00",
+        "null_timestamps": 0,
+        "messages_after_cutoff": 0,
+        "30d_all_role_rows": 16273,
+        "30d_recorded_day_bins": 16,
+        "30d_reviewable_tool_rows": 7902,
+        "90d_all_role_rows": 293174,
+        "90d_recorded_day_bins": 76,
+        "90d_reviewable_tool_rows": 132357
+      }
+    ],
+    "existing_source_identities_dedup_and_notification_filter_reused": true,
+    "snapshot_bytes_preserved": true,
+    "heldout_bodies_read": false,
+    "observation_counts_are_not_adjudicated_behavior_failure_rates": true
+  },
+  "ranked_families": [
+    {
+      "priority": 1,
+      "family": "rg-option-boundary",
+      "observations": 4,
+      "sessions": 4,
+      "lineages": 4,
+      "dependency_groups": 4,
+      "windows": {
+        "7d": 2,
+        "30d-extension": 2
+      },
+      "tools": {
+        "search_files": 4
+      },
+      "classification": "confirmed current tool defect; selected and repaired in isolated copy"
+    },
+    {
+      "priority": 2,
+      "family": "rg-invalid-regex",
+      "observations": 8,
+      "sessions": 6,
+      "lineages": 6,
+      "dependency_groups": 6,
+      "windows": {
+        "30d-extension": 7,
+        "7d": 1
+      },
+      "tools": {
+        "search_files": 8
+      },
+      "classification": "input/regex diagnostic; proper tool rejection is not itself an agent behavior failure"
+    },
+    {
+      "priority": 3,
+      "family": "patch-target-mismatch",
+      "observations": 61,
+      "sessions": 51,
+      "lineages": 45,
+      "dependency_groups": 45,
+      "windows": {
+        "30d-extension": 8,
+        "90d-extension": 53
+      },
+      "tools": {
+        "patch": 8,
+        "null": 53
+      },
+      "classification": "edit target/safeguard diagnostic; caller, environmental or intentional-test attribution unresolved"
+    },
+    {
+      "priority": 4,
+      "family": "missing-path",
+      "observations": 234,
+      "sessions": 189,
+      "lineages": 132,
+      "dependency_groups": 122,
+      "windows": {
+        "7d": 31,
+        "30d-extension": 27,
+        "90d-extension": 176
+      },
+      "tools": {
+        "search_files": 22,
+        "terminal": 35,
+        "null": 177
+      },
+      "classification": "path/environment diagnostic; not one established implementation defect"
+    },
+    {
+      "priority": 5,
+      "family": "transport-unavailable",
+      "observations": 29,
+      "sessions": 22,
+      "lineages": 18,
+      "dependency_groups": 11,
+      "windows": {
+        "7d": 5,
+        "30d-extension": 3,
+        "90d-extension": 21
+      },
+      "tools": {
+        "terminal": 7,
+        "null": 21,
+        "process": 1
+      },
+      "classification": "transport/environment diagnostic; not an answer-quality failure"
+    }
+  ],
+  "tool_repair": {
+    "host_commit": "277268d83ff2204de9646f0b1e376e73ac0a5d20",
+    "backend": "real Linux bash, rg 14.1.1 and grep; no inference",
+    "proof": {
+      "verified": true,
+      "live_source_unchanged": true,
+      "baseline": {
+        "suite": "baseline",
+        "synthetic": true,
+        "tests_run": 5,
+        "test_names": [
+          "test_control_glob_and_modes",
+          "test_control_invalid_regex_stays_error",
+          "test_control_no_match",
+          "test_control_regex_semantics",
+          "test_minimal_leading_option_is_pattern"
+        ],
+        "failed_tests": [
+          "test_minimal_leading_option_is_pattern"
+        ],
+        "error_tests": [],
+        "skipped": 0,
+        "success": false,
+        "subject_sha256": "f78960962d844315019e4f835f5116f6bbdaa41ff30d8b1e52901f521bbfb0b1",
+        "regression_sha256": "a463e450886271b4b4685b0e7e1d205e8908663b7e43278adb2d4d75326f9886"
+      },
+      "candidate": {
+        "suite": "all",
+        "synthetic": true,
+        "tests_run": 10,
+        "test_names": [
+          "test_control_glob_and_modes",
+          "test_control_invalid_regex_stays_error",
+          "test_control_no_match",
+          "test_control_regex_semantics",
+          "test_minimal_leading_option_is_pattern",
+          "test_relevant_actual_tool_wrapper",
+          "test_relevant_css_alternation_modes",
+          "test_relevant_grep_fallback",
+          "test_relevant_recognized_flag_is_not_executed",
+          "test_relevant_zero_match_probes"
+        ],
+        "failed_tests": [],
+        "error_tests": [],
+        "skipped": 0,
+        "success": true,
+        "subject_sha256": "510bb9133dee820ec31d9f159652afddc9dd87ba606668e6e1b59b5bb87c6b83",
+        "regression_sha256": "a463e450886271b4b4685b0e7e1d205e8908663b7e43278adb2d4d75326f9886"
+      },
+      "patch_sha256": "0ce4ec6766d8e3ba9defbc094154fd4ccd15692e3dcdcb33b1f8db3b2fa250c2",
+      "inference": false,
+      "historical_content_replayed": false
+    },
+    "deployed_to_live_host": false,
+    "limitation": "No Windows, remote terminal, provider or general behavioral benefit claim"
+  }
+}
