@@ -96,6 +96,27 @@ def main():
     assert (
         call("verify_regression", {"recipe_id": registered["id"]})["comparison"]["status"] == "pass"
     )
+    import subprocess
+
+    def current_command(*arguments):
+        process = subprocess.run(
+            ["hermes", "fixlab", *arguments],
+            capture_output=True,
+            text=True,
+            timeout=120,
+            check=False,
+        )
+        assert process.returncode == 0, process.stdout + process.stderr
+        response = json.loads(process.stdout)
+        assert response["success"], response
+        return response["data"]
+
+    plan = current_command("current-check-plan", registered["id"])
+    checked = current_command(
+        "verify-current", registered["id"], "--approve-digest", plan["recipe_digest"]
+    )
+    assert checked["status"] == "pass", checked
+    assert checked["live_environment_verified"] is False
     assert "CANARY_PRIVATE" not in json.dumps(call("report", {"case_id": cid}))
     handler = get_plugin_command_handler("fixlab")
     assert handler

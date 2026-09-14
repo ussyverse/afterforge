@@ -34,6 +34,15 @@ def dispatch(home, operation, args):
             "total": len(rows),
             "next_offset": offset + limit if offset + limit < len(rows) else None,
         }
+    if operation == "verify_current":
+        from .current_check import verify
+
+        return verify(lab, args["recipe_id"], args["approve_digest"])
+    if operation == "current_check_plan":
+        from .models import digest
+
+        recipe = lab.store.get("recipe", args["recipe_id"])
+        return {"recipe": recipe, "recipe_digest": digest(recipe), "status": "not-run"}
     if operation == "policy_origin":
         from .models import digest
 

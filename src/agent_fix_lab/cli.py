@@ -118,6 +118,11 @@ def parser():
     r.add_argument(
         "--reviewed", action="store_true", help="Confirm code, revisions and fixture inspection"
     )
+    plan = commands.add_parser("current-check-plan")
+    plan.add_argument("recipe_id")
+    current = commands.add_parser("verify-current")
+    current.add_argument("recipe_id")
+    current.add_argument("--approve-digest", required=True)
     for name in ("run", "compare"):
         x = commands.add_parser(name)
         x.add_argument("recipe_id")
@@ -296,11 +301,22 @@ def main(argv=None):
                 )
             elif args.command == "recipe":
                 result = lab.add_recipe(json.loads(args.file.read_text()), args.reviewed)
+            elif args.command == "current-check-plan":
+                from .models import digest
+
+                recipe = lab.store.get("recipe", args.recipe_id)
+                result = {"recipe": recipe, "recipe_digest": digest(recipe), "status": "not-run"}
+            elif args.command == "verify-current":
+                from .current_check import verify
+
+                result = verify(lab, args.recipe_id, args.approve_digest)
             elif args.command == "run":
                 result = lab.run(args.recipe_id)
             elif args.command == "compare":
                 result = lab.comparison(args.recipe_id)
         print(json.dumps(result, indent=2, ensure_ascii=True))
+        if args.command == "verify-current":
+            return 0 if result["status"] == "pass" else 2
         if args.command == "run":
             return 0 if result["comparison"]["status"] == "pass" else 2
         return 0

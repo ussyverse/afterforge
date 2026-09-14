@@ -340,6 +340,21 @@ class Runtime:
                         root, args.operation, args.generation, item, args.approve_digest
                     )
                 result = {"success": True, "data": data}
+            elif action in ("current-check-plan", "verify-current"):
+                if not self.ready():
+                    raise RuntimeError("Run hermes fixlab setup before checking")
+                payload = {"recipe_id": args.recipe_id}
+                if action == "verify-current":
+                    payload["approve_digest"] = args.approve_digest
+                result = self.invoke(
+                    [str(self.executable()), "-m", "agent_fix_lab.plugin_bridge"],
+                    {
+                        "home": str(self.root() / "data"),
+                        "operation": action.replace("-", "_"),
+                        "args": payload,
+                    },
+                    timeout=self.config()[1],
+                )
             elif action == "setup":
                 result = {"success": True, "data": self.setup()}
             elif action == "uninstall-runtime":

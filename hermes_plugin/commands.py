@@ -8,6 +8,11 @@ def configure(parser, **kwargs):
     subs = parser.add_subparsers(dest="fixlab_action", required=True)
     for name in ("setup", "doctor", "scan"):
         subs.add_parser(name)
+    for name in ("current-check-plan", "verify-current"):
+        check = subs.add_parser(name)
+        check.add_argument("recipe_id")
+        if name == "verify-current":
+            check.add_argument("--approve-digest", required=True)
     policy = subs.add_parser("policy")
     policy.add_argument("operation", choices=["propose", "status", "activate", "rollback"])
     policy.add_argument("--scope")
