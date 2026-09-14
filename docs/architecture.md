@@ -1,4 +1,4 @@
-# Afterforge architecture — 0.5.0
+# Afterforge architecture — 0.5.1
 
 The standalone `agent_fix_lab` package is independent of Hermes runtime imports. CLI and web call the shared Lab service; the installed wheel contains its browser assets, with no CDN/frontend server dependency. A thin standard-library native adapter delegates to an explicitly installed private backend. Aliases register around one Runtime, not duplicate tools/hooks.
 

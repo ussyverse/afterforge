@@ -1,4 +1,4 @@
-# Afterforge specification — 0.5.0
+# Afterforge specification — 0.5.1
 
 Turn agent mistakes into lasting regression checks.
 

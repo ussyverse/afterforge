@@ -17,7 +17,7 @@ from contextlib import contextmanager
 from .hooks import Capture
 from .schemas import SCHEMAS
 
-VERSION = "0.5.0"
+VERSION = "0.5.1"
 RESPONSE_LIMIT = 65536
 LOG_LIMIT = 1048576
 

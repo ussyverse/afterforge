@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "agent-fix-lab"
-version = "0.5.0"
+version = "0.5.1"
 description = "Local-first regression workbench that turns Hermes failures and corrections into reproducible, evidence-backed test cases."
 readme = "README.md"
 keywords = ["hermes", "regression", "pytest", "local-first", "agent-evaluation"]

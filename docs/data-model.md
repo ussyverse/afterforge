@@ -1,4 +1,4 @@
-# Data model and version boundaries — 0.5.0
+# Data model and version boundaries — 0.5.1
 
 The application SQLite document store retains `PRAGMA user_version=1`; individual contract versions evolve separately. `documents` has append sequence, kind, stable ID and canonical JSON. Atomic insertion rejects changed content under an existing identity; identical insertion is idempotent. Unknown fields/versions fail explicitly. No Hermes writer is instantiated during import and its schema is never migrated.
 

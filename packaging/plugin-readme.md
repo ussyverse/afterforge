@@ -1,4 +1,4 @@
-# Afterforge 0.5.0 — native Hermes distribution
+# Afterforge 0.5.1 — native Hermes distribution
 
 Turn agent mistakes into lasting regression checks.
 

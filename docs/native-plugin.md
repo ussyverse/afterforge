@@ -1,4 +1,4 @@
-# Native Afterforge plugin — 0.5.0
+# Native Afterforge plugin — 0.5.1
 
 The native adapter registers tools, slash/terminal aliases and one bundled skill around the standalone core. Registration imports only standard-library adapter code; application dependencies live in a separately managed environment. The package/import/plugin IDs are unchanged. Installation does not activate a reminder or grant evidence deployment authority.
 

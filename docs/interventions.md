@@ -1,4 +1,4 @@
-# Reviewed evidence and experimental reminder — 0.5.0
+# Reviewed evidence and experimental reminder — 0.5.1
 
 Afterforge's stable objective is deterministic reviewed regression retention. Intervention evidence, committed-check receipts and the optional native reminder have different authority. None establishes autonomous learning or measured model improvement.
 

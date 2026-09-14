@@ -2,6 +2,21 @@
 
 Historical evidence is retained here rather than mixed into current installation/support claims. Earlier test totals and CI links certify only their recorded revisions, not 0.5.0.
 
+## 0.5.1 (candidate; certification required)
+
+- Correction discovery v3 abstains on complete, bounded notification-shaped
+  envelopes rather than treating embedded report markers as direct corrections.
+  Quoted envelopes preserve surrounding speech; malformed/unsupported shapes
+  remain UNCERTAIN. Text never authenticates a worker or human origin.
+- Original fourteen-candidate field rescan: ten notification-shaped exclusions,
+  four other pending hypotheses. This is the same development snapshot, not
+  independent generalization. The wider 360-row scan excludes 108 shapes and
+  selects five hypotheses, including one beyond the prior short inspection window.
+- All 5,562 original documents were checked against the existing retained
+  kind/ID/body baseline digest; prior reviews and newer evidence remain immutable.
+- No model-learning claim, live intervention deployment, component-pin upgrade,
+  or modification of the immutable 0.5.0 release.
+
 ## 0.5.0
 
 - Product renamed in place to Afterforge: “Turn agent mistakes into lasting regression checks.” Existing public repository identity/visibility preserved; canonical URL is https://github.com/ussyverse/afterforge.

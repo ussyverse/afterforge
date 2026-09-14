@@ -1,4 +1,4 @@
-# Afterforge release protocol — 0.5.0
+# Afterforge release protocol — 0.5.1
 
 Exact candidate source/distribution SHAs and successful CI/install/migration evidence are recorded in [validation](validation.md). The original fixture's pre-upgrade hash discrepancy was independently reconciled as SQLite header counters only, without rewriting baseline evidence. Normal reviewed commits/pushes do not constitute supported promotion: the checksum locator and version release below identify the actual certified source/artifact after all gates.
 
@@ -20,7 +20,7 @@ Run generation twice with identical inputs/parents and compare SHAs. Stock `plug
 
 ## Workflow gates
 
-1. `validation.yml`: locked sync; exact-index audit; full root/native/core/test/script/example lint/format; tests; wheel/sdist build; clean 0.5.0 wheel installation and both aliases; three consecutive fresh-server packaged browser runs; portable installed-CLI round trip. Fixtures are synthetic; no model credentials/history are required.
+1. `validation.yml`: locked sync; exact-index audit; full root/native/core/test/script/example lint/format; tests; wheel/sdist build; clean 0.5.1 wheel installation and both aliases; three consecutive fresh-server packaged browser runs; portable installed-CLI round trip. Fixtures are synthetic; no model credentials/history are required.
 2. `native-plugin.yml`: reproducible candidate export/push and a native-distribution artifact containing its exact SHA. Both inspected host pins are required matrix entries, not allow-failure experiments. Each scans/doctors the same distribution and installs that exact SHA via the stock GitHub installer; real registry/tool/hook/skill/command/regression and teardown checks follow. The previous host pin is retained. Schema-30 adapter and real host validation must be completed, not inferred from schema-26 fixtures.
 3. `stable-release.yml`: manually dispatched only after the executor reviews exact-artifact fresh installation and migration evidence. It checks out only the repository's trusted current default branch, looks up successful application/native runs for that exact source, downloads the SHA artifact from that exact native run, and validates distribution blobs against recorded source hashes. `plugin_release.py --certify` independently checks completed/success status, exact source, expected workflow paths, same repository and push/manual event through GitHub's API. Missing checks leave stable untouched; failed/mismatched evidence cannot produce a locator.
 4. Before publication it checks the source is still current and the prior stable distribution is an ancestor. A normal atomic push advances plugin-stable and the release-metadata locator together; no force push. The candidate can advance without stable advancing. Permissions/branch-protection/network failures leave publication blocked and require normal recovery, not weakening gates.

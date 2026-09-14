@@ -173,7 +173,7 @@ def test_real_locked_install_upgrade_failures_and_removal(runtime, tmp_path, mon
     assert result["runtime_ready"] and runtime.ready()
     assert not runtime.status()["update_available"]
     manifest = result["installation"]
-    assert manifest["application_version"] == "0.5.0"
+    assert manifest["application_version"] == "0.5.1"
     assert manifest["installer"].startswith("uv ")
     generation = runtime.generation(manifest)
     requirements = (generation / "requirements.lock").read_bytes()
@@ -182,7 +182,7 @@ def test_real_locked_install_upgrade_failures_and_removal(runtime, tmp_path, mon
     assert manifest["requirements_sha256"] == hashlib.sha256(requirements).hexdigest()
     assert manifest["lock_sha256"] == hashlib.sha256((source / "uv.lock").read_bytes()).hexdigest()
     packages = {row["name"].lower(): row["version"] for row in manifest["packages"]}
-    assert packages["agent-fix-lab"] == "0.5.0" and "annotated-types" in packages
+    assert packages["agent-fix-lab"] == "0.5.1" and "annotated-types" in packages
     assert "playwright" not in packages and "ruff" not in packages
     assert dict(os.environ) == initial_environment
     assert not (tmp_path / "host-must-not-exist").exists()
@@ -201,7 +201,7 @@ def test_real_locked_install_upgrade_failures_and_removal(runtime, tmp_path, mon
         assert (root / "runtime-install.json").read_bytes() == marker
         assert runtime.executable() == python and runtime.ready()
         doctor = runtime.invoke([str(python), "-m", "agent_fix_lab.cli", "doctor"])
-        assert doctor["package_version"] == "0.5.0"
+        assert doctor["package_version"] == "0.5.1"
         assert list((root / "runtimes").iterdir()) == [generation]
         assert retained.read_text() == "immutable synthetic evidence"
 
@@ -244,7 +244,7 @@ def test_real_locked_install_upgrade_failures_and_removal(runtime, tmp_path, mon
     assert second["installation"]["generation"] != manifest["generation"]
     assert runtime.ready() and python.exists()
     for executable in (python.parent / "afterforge", runtime.executable().parent / "agent-fix-lab"):
-        assert runtime.invoke([str(executable), "doctor"])["package_version"] == "0.5.0"
+        assert runtime.invoke([str(executable), "doctor"])["package_version"] == "0.5.1"
 
     def interrupt_after_commit(src, dst):
         result = replace(src, dst)
@@ -261,7 +261,7 @@ def test_real_locked_install_upgrade_failures_and_removal(runtime, tmp_path, mon
         runtime.invoke([str(runtime.executable()), "-m", "agent_fix_lab.cli", "doctor"])[
             "package_version"
         ]
-        == "0.5.0"
+        == "0.5.1"
     )
     with pytest.raises(ValueError, match="confirm"):
         runtime.remove(False)

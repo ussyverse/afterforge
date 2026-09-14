@@ -31,7 +31,7 @@ jobs:
         run: |
           uv build
           uv venv "$RUNNER_TEMP/afl-wheel"
-          uv pip install --python "$RUNNER_TEMP/afl-wheel/bin/python" dist/agent_fix_lab-0.5.0-py3-none-any.whl
+          uv pip install --python "$RUNNER_TEMP/afl-wheel/bin/python" dist/agent_fix_lab-0.5.1-py3-none-any.whl
           "$RUNNER_TEMP/afl-wheel/bin/afterforge" --help
           "$RUNNER_TEMP/afl-wheel/bin/agent-fix-lab" --help
       - name: Synthetic browser fixtures

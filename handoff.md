@@ -1,4 +1,9 @@
-# Afterforge 0.5.0 coordinator handoff
+# Afterforge 0.5.1 coordinator handoff
+
+0.5.1 integrates the reviewed original repair plus bounded envelope hardening.
+Final installed-wheel, existing-installation migration and exact-source CI
+certification are required before publication. Historical 0.5.0 evidence below
+is retained, not reused as certification for this revision.
 
 ## Unreleased local attribution repair
 

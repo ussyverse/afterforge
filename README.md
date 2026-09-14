@@ -4,7 +4,7 @@
 
 Afterforge is a local-first workbench for Python projects: inspect a failed agent tool run, review the correction, freeze a meaningful pytest regression, and retain evidence from real executions against committed code. A passing old run is not verification of today's code. Unknowns, failed checks and unreviewed proposals stay visible.
 
-Version **0.5.0** provides a bounded deterministic regression-retention workflow. Packaged browser, portable bundle, both pinned stock-host CI and existing-fixture migration gates have passed for the recorded candidate. Real packaged-browser screenshots are retained privately, not replaced by mock images. The [stable locator](https://raw.githubusercontent.com/ussyverse/afterforge/release-metadata/stable.json) identifies the supported version and exact source/distribution checksums and CI; an unlisted candidate is not certified merely by its version. See [validation](docs/validation.md).
+Version **0.5.1** adds bounded notification-shaped correction abstention while preserving surrounding user speech and immutable prior evidence. Shape is not authenticated origin, and selected corrections remain pending hypotheses. The [stable locator](https://raw.githubusercontent.com/ussyverse/afterforge/release-metadata/stable.json) identifies the supported version and exact source/distribution checksums and CI; an unlisted candidate is not certified merely by its version. Earlier 0.5.0 validation does not certify this revision. See [validation](docs/validation.md).
 
 This is bounded, reviewed regression retention—not autonomous learning, a model replay engine or an OS sandbox. An optional fixed verification reminder is [experimental and opt-in](docs/interventions.md); code receipts do not measure model efficacy.
 
@@ -12,11 +12,11 @@ This is bounded, reviewed regression retention—not autonomous learning, a mode
 
 Requires Linux, Git, Python 3.11+ and [uv](https://docs.astral.sh/uv/). The public repository is [ussyverse/afterforge](https://github.com/ussyverse/afterforge), renamed in place without changing repository identity or visibility. No GitHub credentials are needed merely to read the public source. Dependency installation needs network initially; normal local analysis does not need model API keys or personal logs.
 
-Once a supported 0.5.0 release is certified, its stable locator will be at:
+Once a supported 0.5.1 release is certified, its stable locator will be at:
 
 `https://raw.githubusercontent.com/ussyverse/afterforge/release-metadata/stable.json`
 
-The locator must name version 0.5.0, the full source and distribution commits, SHA-256 file checksums, and successful application/native CI links for that exact source. An absent locator or one for an older version is **not** a verified 0.5.0 installation. `plugin-release` is only a candidate branch. Do not install a moving branch or development SHA as a supported release.
+The locator must name version 0.5.1, the full source and distribution commits, SHA-256 file checksums, and successful application/native CI links for that exact source. An absent locator or one for an older version is **not** a verified 0.5.1 installation. `plugin-release` is only a candidate branch. Do not install a moving branch or development SHA as a supported release.
 
 After inspecting the locator, distribution and stock scanner warnings, substitute its full `distribution_commit`:
 

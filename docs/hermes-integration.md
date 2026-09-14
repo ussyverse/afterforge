@@ -1,4 +1,4 @@
-# Legacy profile-local skill integration — 0.5.0
+# Legacy profile-local skill integration — 0.5.1
 
 For native Afterforge aliases and managed locked setup use [native-plugin.md](native-plugin.md). This page describes the retained older editable skill, not a second native plugin. Do not install both merely to rename the product. Existing data/environments are preserved; see [migration](migration.md).
 
@@ -14,7 +14,7 @@ From the public source checkout, in an isolated environment:
 uv sync --locked
 uv build
 uv venv "$HERMES_HOME/venvs/agent-fix-lab"
-uv pip install --python "$HERMES_HOME/venvs/agent-fix-lab/bin/python" dist/agent_fix_lab-0.5.0-py3-none-any.whl
+uv pip install --python "$HERMES_HOME/venvs/agent-fix-lab/bin/python" dist/agent_fix_lab-0.5.1-py3-none-any.whl
 python3 scripts/install_hermes.py --hermes-home "$HERMES_HOME" --lab-home "$AGENT_FIX_LAB_HOME" --executable "$HERMES_HOME/venvs/agent-fix-lab/bin/agent-fix-lab"
 python3 "$HERMES_HOME/skills/agent-fix-lab/scripts/lab.py" doctor
 ```
@@ -27,7 +27,7 @@ Wrapper commands: `doctor`, `find QUERY`, `inspect CASE_ID`, `import AFTER_UNIX_
 
 ## Updating and removing
 
-Build the new wheel, then `uv pip install --reinstall-package agent-fix-lab --python "$HERMES_HOME/venvs/agent-fix-lab/bin/python" dist/agent_fix_lab-0.5.0-py3-none-any.whl`. This legacy wheel route is not the native managed lock/generation guarantee. For a wrapper update, remove the owned skill and rerun the installer:
+Build the new wheel, then `uv pip install --reinstall-package agent-fix-lab --python "$HERMES_HOME/venvs/agent-fix-lab/bin/python" dist/agent_fix_lab-0.5.1-py3-none-any.whl`. This legacy wheel route is not the native managed lock/generation guarantee. For a wrapper update, remove the owned skill and rerun the installer:
 
 ```sh
 python3 scripts/install_hermes.py --remove --hermes-home "$HERMES_HOME"

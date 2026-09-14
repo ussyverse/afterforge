@@ -1,4 +1,21 @@
-# Afterforge 0.5.0 validation ledger
+# Afterforge 0.5.1 validation ledger
+
+## 0.5.1 local candidate evidence
+
+Full locked suite plus packaging: 263 passed, no skips, two dependency warnings.
+Root/native/core/tests/scripts/examples/packaging Ruff check and format passed
+(87 Python files). Wheel/sdist built; clean wheel installation and both aliases
+passed. Three consecutive installed-wheel guided browser tests passed, as did
+three separate expert/intervention flows with zero console errors and failed
+workflow requests. Portable installed-CLI export/import: faulty fail, corrected
+pass, comparison pass. Existing Chromium was used without installation.
+
+These are local candidate results, not publication certification. Both exact
+final-source CI runs, generated distribution scanning, fresh stock installation
+and upgrade of the existing 0.5.0 fixture remain required. The locator must name
+0.5.1 before it can certify this version. No old release tag is changed.
+
+## Historical 0.5.0 evidence (not 0.5.1 certification)
 
 Status: **bounded deterministic release gates exercised**. The exact supported version/source/distribution and successful CI runs are identified by the [checksum locator](https://raw.githubusercontent.com/ussyverse/afterforge/release-metadata/stable.json), not inferred from a version string. One exclusive executor owns final promotion after repeating CI/install for follow-up commits. The original fixture's pre-upgrade raw-hash discrepancy was independently verified to affect only two SQLite header counters; no baseline bytes were rewritten and all 13 immutable document IDs/bytes survived the actual prior-version upgrade.
 
@@ -36,7 +53,7 @@ uv run ruff format --check __init__.py hermes_plugin src tests scripts examples 
 uv run pytest -q tests packaging
 uv build
 uv venv "$WHEEL_ENV"
-uv pip install --python "$WHEEL_ENV/bin/python" dist/agent_fix_lab-0.5.0-py3-none-any.whl
+uv pip install --python "$WHEEL_ENV/bin/python" dist/agent_fix_lab-0.5.1-py3-none-any.whl
 "$WHEEL_ENV/bin/afterforge" --help
 "$WHEEL_ENV/bin/agent-fix-lab" --help
 uv run python scripts/browser_fixture.py "$SYNTHETIC_FIXTURE"
