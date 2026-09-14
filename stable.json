@@ -2,19 +2,19 @@
   "checksums": {
     "LICENSE": "3d2181d52897645c234241f767d3070606911b87803d4a35c1a0403a66069ee6",
     "NOTICE": "bbb0e65979e1600741225af8b32f6602c648b89ad22f9fa31c0a1684d5a906c9",
-    "README.md": "f0b23d7f6258f9394ae0dd9cf180c0cb6ab2d3fee92b55e7bdd63eb83120ea60",
-    "RELEASE.json": "b08e017efe43c030d30e47410604c352dece5b8406f4db437910e22f82442c9b",
+    "README.md": "57b08a6f57d63b37abc2b8bf4ce9cc501ba9fcedd09a2c06a76d13764368296c",
+    "RELEASE.json": "ea88017b07bdf9ff21dd74b7fe9b74732494d5eb4a92ae2570abd48d04b56091",
     "__init__.py": "db7d8e5d1f3e0b7bb7056e621b0f8ea778f0d7f9a74f6f125cb150b4c3f5dfa2",
-    "docs/interventions.md": "a74d148130130f13a2e50c6b8b3d2af520c18e1f4fc9cd7ffcef2c15745d07d4",
+    "docs/interventions.md": "c4b2b434ae2b2b6291181c9f7691d35b65900e5ba6f4e4a0439b88a73e12d918",
     "docs/privacy.md": "bde77e91c873461941ef72b603edba6e195eff3977ecab33e8cf5906d5f83c15",
     "hermes_plugin/__init__.py": "e67889d8d4ef6cd5934e029933b21e8242269478e6b69aeafc8125c426bb6058",
     "hermes_plugin/commands.py": "ef9c5ff917cb6ae9794f4c5a0bdcdbc3f4cf0b2b18234c6b280f6839089781e2",
     "hermes_plugin/hooks.py": "844ff8b3fc6daa7adc09d76f35fe85b5d6b094a7ecd2033d45b5a3f0418d9fff",
     "hermes_plugin/policy.py": "d875b56139ed4143f12a27fdae522c5999e4b4d7f17cc98390ef9a9e0e760aa4",
-    "hermes_plugin/runtime.py": "158d0dcac87c038a8e91c6b62b029c4b30200ee6fc5aa547c211c69ddcdebca9",
+    "hermes_plugin/runtime.py": "6d4aed8c2cee59f27e5adc24661058420d91a74091e646a77e5aff0adcbdf402",
     "hermes_plugin/schemas.py": "c5afc3be15b56148048926e108fce85b8210eb04169f9685b48f90ffcabe6879",
-    "plugin.yaml": "a045d5712d451c0fb638e0d60591c664f7fca5c3c56b440b5a8c142e3dceeb87",
-    "pyproject.toml": "206d67a6ee1269878b19660280b1a053faf2ce14cd43c95d52c724fb37f45a85",
+    "plugin.yaml": "4164b941ac0e83e9fec6cb1da30dee4897915569d13f36fab953d9b6b29bffef",
+    "pyproject.toml": "9880e2d03d0d61f7bb406343b2f6d0ed07b1a264c36f3fda88e0121b60e7a20e",
     "skills/regression-workflow/SKILL.md": "fd2880e87ca380fd176f6f65dd5f59274058a0f760150eb54be5136cd0c2c943",
     "src/agent_fix_lab/__init__.py": "073bd6ae0a5dcaadf4fcb4ed83e4a06203ad6b001cae0889188758d1b65274f8",
     "src/agent_fix_lab/adapters.py": "d8c214d38770a8d3a69ff828b21692a142a06c706890095a73b6bc070ba9fe2f",
@@ -27,7 +27,7 @@
     "src/agent_fix_lab/assets/style.css": "9e6cc733be23bc15e3a2ed2ea8768dd96826483c95a2d94d290df6dc4d4032f6",
     "src/agent_fix_lab/bundles.py": "248ea3cf8c530a5e53c3544fb9771ffab9f0d414642db7c6cc1e65e74ef85976",
     "src/agent_fix_lab/cli.py": "5bc3d521d6412c778f4e5e75529b7a73721c2c1ebbaed604aaa4fb32a97d608b",
-    "src/agent_fix_lab/corrections.py": "4e2d9534c3745d51462acbfd3596f4599d3fee58c65176a74435e32e0ddffd75",
+    "src/agent_fix_lab/corrections.py": "45bc1431f38ac603e45708a30f4a9435490e7c1e24df5ec2eaf4885b7ce78509",
     "src/agent_fix_lab/current_check.py": "799d5779356e6c990c217830524da493a6381822e6a78d9252231d4c81832110",
     "src/agent_fix_lab/history.py": "69b39c9a81c69fe8da4a9a41b6e74a4f218d48f7621621737570798cd3f33776",
     "src/agent_fix_lab/interventions.py": "2d683ae0c6a7a30a08e90e4a1bedbaf30db72ba5d7f7147f72ba4f78368c0284",
@@ -40,16 +40,16 @@
     "src/agent_fix_lab/verification.py": "a26b4cd5d7f844e687b07f140492bf6cef05049bf3d826b57cebe511377454ff",
     "src/agent_fix_lab/verification_binding.py": "703338688d1de2f99156124fc737c3a15046581cac97c655751b2e041e465584",
     "src/agent_fix_lab/web.py": "3d26766a5e107184ca9423db6324844bb811f6e3392fcde106eb3b6bd27f85b3",
-    "uv.lock": "beb3bb0c11356d20886b92e146976e433b34d0edbb2c6300006f209d725b160c"
+    "uv.lock": "035bfeee4bc5f95687e96d027502e26b9da73f01d169bdf69111dd277137fd34"
   },
   "ci": {
-    "application": "https://github.com/ussyverse/afterforge/actions/runs/34797662350",
-    "native": "https://github.com/ussyverse/afterforge/actions/runs/34797662389"
+    "application": "https://github.com/ussyverse/afterforge/actions/runs/34802631894",
+    "native": "https://github.com/ussyverse/afterforge/actions/runs/34802631848"
   },
-  "distribution_commit": "1a8766dc80fbb26536ce89e1eca2c70040114a6c",
+  "distribution_commit": "fa876d66df48fae3409737ea6a2f488f4358701f",
   "format_version": 1,
-  "install": "hermes plugins install ussyverse/afterforge --ref 1a8766dc80fbb26536ce89e1eca2c70040114a6c --enable",
+  "install": "hermes plugins install ussyverse/afterforge --ref fa876d66df48fae3409737ea6a2f488f4358701f --enable",
   "repository": "ussyverse/afterforge",
-  "source_commit": "91c7cc154ee22b36611cf2d85980a4086d947025",
-  "version": "0.5.0"
+  "source_commit": "4158ca50692566cf3e1e78b15b8eb952e35e221f",
+  "version": "0.5.1"
 }
