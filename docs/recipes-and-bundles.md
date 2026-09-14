@@ -4,7 +4,7 @@ Afterforge 0.5.0 uses recipe v2, result v3 and bundle v2. Legacy immutable recor
 
 ## Review before execution
 
-A recipe registers an inspected pytest file, not a shell command. An existing-file registration is not generated regression code. A draft must be a concrete artifact with source references, expected failure, fixture/input declarations and unknowns; neither a draft nor an inferred correction is execution authorization. The guided draft path is under integration; the explicit JSON recipe interface remains available.
+A recipe registers an inspected pytest file, not a shell command. An existing-file registration is not generated regression code. The guided draft path generates a concrete artifact with source references, expected failure, frozen input declarations and unknowns; neither a draft nor an inferred correction is execution authorization. The explicit JSON recipe interface remains available.
 
 Example input to `afterforge recipe --file recipe.json --reviewed` (replace symbolic values with inspected local paths/commits):
 

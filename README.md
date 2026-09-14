@@ -4,7 +4,7 @@
 
 Afterforge is a local-first workbench for Python projects: inspect a failed agent tool run, review the correction, freeze a meaningful pytest regression, and retain evidence from real executions against committed code. A passing old run is not verification of today's code. Unknowns, failed checks and unreviewed proposals stay visible.
 
-Version **0.5.0 is an integration candidate**, not a certified release yet. Final guided-browser, installed migration, host-matrix and exact-source CI gates are recorded in [validation](docs/validation.md). No final verified source/distribution SHA or screenshot is claimed here. The real packaged-app screenshot awaits the coordinator's final browser run; no mock image is substituted.
+Version **0.5.0 is a release candidate**, not a supported release yet. Packaged browser, portable bundle and both pinned stock-host CI gates have passed for the recorded candidate. Existing-fixture migration certification remains blocked by a pre-upgrade database baseline checksum discrepancy. Real packaged-browser screenshots are retained privately, not replaced by mock images. See the exact evidence and remaining gate in [validation](docs/validation.md).
 
 This is bounded, reviewed regression retention—not autonomous learning, a model replay engine or an OS sandbox. An optional fixed verification reminder is [experimental and opt-in](docs/interventions.md); code receipts do not measure model efficacy.
 
@@ -29,7 +29,7 @@ hermes afterforge scan
 hermes afterforge serve
 ```
 
-Use `/afterforge status`, `/afterforge scan` and `/afterforge review` in a Hermes session. Launch Hermes with the same explicit AFTERFORGE_SOURCE_ID used by the browser/native scans and standalone `--source-id`; choose a different value for an independent store. The guided queue/draft/retained-check interfaces are present but final browser/native acceptance remains open; see [workflow](docs/workflow.md). `hermes fixlab`, `/fixlab` and the standalone `agent-fix-lab` command remain aliases for this migration release. The plugin ID remains `agent-fix-lab`: do not install a second plugin under the new brand.
+Use `/afterforge status`, `/afterforge scan` and `/afterforge review` in a Hermes session. Launch Hermes with the same explicit AFTERFORGE_SOURCE_ID used by the browser/native scans and standalone `--source-id`; choose a different value for an independent store. See the guided queue/draft/retained-check [workflow](docs/workflow.md). `hermes fixlab`, `/fixlab` and the standalone `agent-fix-lab` command remain aliases for this migration release. The plugin ID remains `agent-fix-lab`: do not install a second plugin under the new brand.
 
 Setup uses the committed uv lock and a private staged environment, records transitive hashes/resolved packages, and switches readiness only after doctor. It never installs dependencies into Hermes's environment. Failed upgrades retain the last working runtime. See [native installation/host matrix](docs/native-plugin.md), [release protocol](docs/release.md) and [migration](docs/migration.md).
 
@@ -47,7 +47,7 @@ uv run afterforge --home "$DEMO_ROOT/lab" demo
 uv run afterforge --home "$DEMO_ROOT/lab" serve
 ```
 
-Open http://127.0.0.1:8765/guided and select the synthetic case. Inspect the generated draft, both miniature source revisions, assertion, frozen examples and unknowns. Declare code review and deterministic input completeness only after inspection; authorize the exact draft, then run faulty/corrected archives. The source workbench remains at `/` for expert JSON/configuration evidence. The worker exercised the installed-wheel demo/authorization/red-green CLI path and three fresh packaged guided servers successfully. Final broader portable/later-commit/reminder browser acceptance remains open; see the validation ledger.
+Open http://127.0.0.1:8765/guided and select the synthetic case. Inspect the generated draft, both miniature source revisions, assertion, frozen examples and unknowns. Declare code review and deterministic input completeness only after inspection; authorize the exact draft, then run faulty/corrected archives. The source workbench remains at `/` for expert JSON/configuration evidence. Three consecutive fresh packaged guided servers exercised scan, correction review, draft authorization, red/green, retained checks and a later reviewed commit despite failing live edits. Separate packaged expert/intervention workflows and a portable installed-CLI round trip also passed; see the validation ledger.
 
 In a second shell, using the same `DEMO_ROOT`, review and execute the fixture:
 

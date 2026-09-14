@@ -1,6 +1,6 @@
 # Guided regression workflow — 0.5.0 candidate
 
-The shared services and `/guided` screen are present in the integration tree. Final browser/native/migration acceptance is still open. The documentation worker exercised the installed-wheel synthetic demo, exact draft authorization and real two-variant comparison, plus three fresh packaged guided servers covering demo/authorization/comparison/corrected-commit retention. This narrower local result is not the entire final portable/newer-commit/reminder browser path or CI certification.
+The shared services and `/guided` screen provide the implemented workflow below. Three consecutive packaged guided flows now include correction review, draft authorization, red/green, later-commit retention and error recovery. Separate expert/intervention browser and portable installed-CLI checks passed. Exact candidate CI/native evidence and the remaining original-fixture migration baseline blocker are recorded in [validation](validation.md).
 
 ## 1. Select an explicit source and scan bounded pages
 
@@ -8,11 +8,11 @@ Set `AFTERFORGE_SOURCE_ID` to a private stable identifier for one logical profil
 
 Native `hermes afterforge scan`, `/afterforge scan` and the guided scan action delegate to shared bounded ingestion. Tool import and correction discovery retain independent cursors: tool message ID and correction timestamp/message-ID pair. A bounded tool page arriving later can link a deferred correction without rescanning or inventing a candidate. Repeat pages/reviews must remain idempotent. `correction-scan --after TIMESTAMP --after-id ID` resumes its own stream; inspect returned next_cursor. Dry run does not approve or persist corrections.
 
-Unknown source schemas fail closed. The inspected current host is schema 30; real adapter acceptance remains required. Merely changing the allowed integer is not validation.
+Unknown source schemas fail closed. Both pinned native host lifecycles populate and import their actual stock schemas (26 and 30); the current-host nonempty import also passed locally. Merely changing the allowed integer is not validation.
 
 ## 2. Inspect and review a correction
 
-The guided queue exposes pending/accepted/rejected state, details and review controls. Session aliases `/afterforge review` and `/fixlab review` show the bounded queue. Inspect the installed help for current page/detail syntax while integration proceeds. The terminal queue is `hermes afterforge review --offset 0 --limit 10`.
+The guided queue exposes pending/accepted/rejected state, details and review controls. Session aliases `/afterforge review` and `/fixlab review` show the bounded queue; `review page OFFSET`, `review accept/reject ID NOTE` and `review retract ID REVIEW_ID NOTE` provide explicit review actions. The terminal queue is `hermes afterforge review --offset 0 --limit 10`.
 
 Standalone review is explicit:
 

@@ -1,6 +1,6 @@
 # Afterforge release protocol — 0.5.0
 
-Status: integration candidate. No final source/distribution SHA, green final CI pair, supported 0.5.0 locator, tag or GitHub Release is asserted here. The coordinator integrates and audits before committing/pushing. This worker does not publish.
+Status: release candidate. Exact candidate source/distribution SHAs and successful CI/install evidence are recorded in [validation](validation.md). Supported 0.5.0 locator, tag and GitHub Release remain withheld while the original migration fixture's pre-upgrade baseline discrepancy is reconciled. Normal reviewed candidate commits/pushes are authorized; they do not constitute supported promotion.
 
 ## Three distinct surfaces
 

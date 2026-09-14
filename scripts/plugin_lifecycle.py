@@ -62,6 +62,8 @@ def main():
 
     manager = get_plugin_manager()
     manager.discover_and_load()
+    for hook in ("post_tool_call", "on_session_end", "pre_verify"):
+        assert len(manager._hooks.get(hook, [])) == 1, "Aliases must not duplicate hooks"
     assert "regression-workflow" in manager.list_plugin_skills("agent-fix-lab")
     from policy_lifecycle import policy_lifecycle
 
@@ -149,11 +151,32 @@ def main():
     )
     assert checked["status"] == "pass", checked
     assert checked["live_environment_verified"] is False
+    rejected_check = subprocess.run(
+        ["hermes", "afterforge", "verify-current", registered["id"], "--approve-digest", "0" * 64],
+        capture_output=True,
+        text=True,
+        timeout=120,
+        check=False,
+    )
+    assert rejected_check.returncode != 0
+    assert json.loads(rejected_check.stdout)["success"] is False
+    retained = current_command("retained-plan", registered["id"], registered["corrected_revision"])
+    assert (
+        current_command(
+            "retained-check",
+            retained["id"],
+            "--approve-digest",
+            retained["plan_digest"],
+            "--reviewed",
+        )["status"]
+        == "pass"
+    )
     assert "CANARY_PRIVATE" not in json.dumps(call("report", {"case_id": cid}))
-    handler = get_plugin_command_handler("fixlab")
-    assert handler
-    for command in ("status", "failures", "review", "help"):
-        assert json.loads(handler(command))["success"]
+    for alias in ("fixlab", "afterforge"):
+        handler = get_plugin_command_handler(alias)
+        assert handler
+        for command in ("status", "failures", "review", "help"):
+            assert json.loads(handler(command))["success"]
     for statefile in (home / "plugin-data").rglob("state.json"):
         assert "HOOK_SECRET_CANARY" not in statefile.read_text()
     print(
@@ -164,7 +187,10 @@ def main():
                 "successful_dispatches": count,
                 "hooks": 3,
                 "policy_lifecycle": policy_result,
-                "slash_commands_checked": 4,
+                "slash_commands_checked": 8,
+                "native_retained_check": "pass",
+                "native_bad_authorization_exit": rejected_check.returncode,
+                "duplicate_hooks": False,
                 "first_scan_added": first["added_cases"],
                 "repeat_added": second["added_cases"],
                 "failed_incidents": len(rows),

@@ -2,7 +2,7 @@
 
 Historical evidence is retained here rather than mixed into current installation/support claims. Earlier test totals and CI links certify only their recorded revisions, not 0.5.0.
 
-## 0.5.0 — unreleased integration candidate
+## 0.5.0 — unreleased candidate
 
 - Product renamed in place to Afterforge: “Turn agent mistakes into lasting regression checks.” Existing public repository identity/visibility preserved; canonical URL is https://github.com/ussyverse/afterforge.
 - Standalone/native metadata unified at 0.5.0; afterforge, /afterforge and hermes afterforge aliases retain package/import/plugin/tool/data IDs and old commands.
@@ -10,9 +10,9 @@ Historical evidence is retained here rather than mixed into current installation
 - Recipe v2 declared-v1 frozen inputs, result v3 and bundle v2 prevent same-count/hash or custom-ID false equivalence; immutable legacy readers retain their original authority.
 - Capture outcomes independently bounded to 32 sessions/64 events; native operation/nonpassing verification failures return nonzero.
 - Managed uv locked staged generations, hashed dependency export/resolved manifest, serialized lifecycle and atomic doctor readiness retain the prior usable runtime on failed upgrades.
-- Shared guided correction/review/draft/retained-check and SQL pagination work remains under integration and final acceptance.
+- Shared guided correction/review/draft/retained-check and SQL pagination are integrated. Three packaged flows include a later reviewed commit, ignored live edits and error recovery; legacy or missing input identity cannot certify retained checks.
 - Fork-safe candidate workflow and separate fail-closed stable checksum/CI locator promotion prepared. Both old and inspected v2026.9.11 host pins retained as required gates; schema 30 is not silently treated as 26.
-- Current docs replace accumulated milestones. Final packaged-browser screenshot, installed migration, exact-source CI, tag and release are not yet certified.
+- Current docs replace accumulated milestones. Packaged browser screenshots are retained privately; exact candidate application/native CI and local GitHub installation passed. Original-fixture migration is blocked by a pre-upgrade baseline discrepancy, so supported locator/tag/release remain withheld.
 
 ## Pre-0.5.0 native reminder and committed-check milestones
 
