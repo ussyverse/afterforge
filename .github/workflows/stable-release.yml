@@ -1,0 +1,67 @@
+name: stable-release
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: stable-release-${{ github.repository }}
+  cancel-in-progress: false
+jobs:
+  certify:
+    # Dispatch only after the release executor's exact-artifact install and migration review.
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPOSITORY: ${{ github.repository }}
+      DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+    steps:
+      # Never check out a pull-request head in this privileged workflow.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.repository.default_branch }}
+      - name: Select completed checks for this exact default-branch source
+        id: checks
+        run: |
+          SOURCE=$(git rev-parse HEAD)
+          APP=$(gh api "repos/$REPOSITORY/actions/workflows/validation.yml/runs?head_sha=$SOURCE&status=success&per_page=100" --jq '.workflow_runs | map(select(.event == "push" or .event == "workflow_dispatch")) | first | .id // empty')
+          NATIVE=$(gh api "repos/$REPOSITORY/actions/workflows/native-plugin.yml/runs?head_sha=$SOURCE&status=success&per_page=100" --jq '.workflow_runs | map(select(.event == "push" or .event == "workflow_dispatch")) | first | .id // empty')
+          if test -z "$APP" || test -z "$NATIVE"; then
+            printf 'Not promoted: both exact-source checks must complete successfully.\n'
+            exit 0
+          fi
+          gh run download "$NATIVE" --repo "$REPOSITORY" --name native-distribution --dir "$RUNNER_TEMP/native-evidence"
+          RELEASE_SHA=$(<"$RUNNER_TEMP/native-evidence/release.sha")
+          test "${#RELEASE_SHA}" -eq 40
+          git fetch origin "$RELEASE_SHA"
+          python scripts/plugin_release.py "$RUNNER_TEMP/stable.json" --certify "$RELEASE_SHA" --repository "$REPOSITORY" --app-run-id "$APP" --native-run-id "$NATIVE"
+          test "$(jq -r .source_commit "$RUNNER_TEMP/stable.json")" = "$SOURCE"
+          printf 'ready=true\n' >> "$GITHUB_OUTPUT"
+      - name: Atomically advance supported distribution and checksum locator
+        if: steps.checks.outputs.ready == 'true'
+        run: |
+          SOURCE=$(git rev-parse HEAD)
+          test "$(git ls-remote origin "refs/heads/$DEFAULT_BRANCH" | cut -f1)" = "$SOURCE"
+          RELEASE_SHA=$(jq -r .distribution_commit "$RUNNER_TEMP/stable.json")
+          if git show-ref --verify --quiet refs/remotes/origin/plugin-stable; then
+            git merge-base --is-ancestor origin/plugin-stable "$RELEASE_SHA"
+          fi
+          mkdir "$RUNNER_TEMP/locator"
+          if git show-ref --verify --quiet refs/remotes/origin/release-metadata; then
+            git worktree add --detach "$RUNNER_TEMP/locator-tree" origin/release-metadata
+          else
+            git worktree add --detach "$RUNNER_TEMP/locator-tree" HEAD
+            git -C "$RUNNER_TEMP/locator-tree" checkout --orphan release-metadata
+            git -C "$RUNNER_TEMP/locator-tree" rm -rf .
+          fi
+          cp "$RUNNER_TEMP/stable.json" "$RUNNER_TEMP/locator-tree/stable.json"
+          git -C "$RUNNER_TEMP/locator-tree" add stable.json
+          git -C "$RUNNER_TEMP/locator-tree" -c user.name='Afterforge release' -c user.email='release@example.invalid' commit --allow-empty -m "Certify $RELEASE_SHA"
+          LOCATOR=$(git -C "$RUNNER_TEMP/locator-tree" rev-parse HEAD)
+          git push --atomic origin "$RELEASE_SHA:refs/heads/plugin-stable" "$LOCATOR:refs/heads/release-metadata"
+          # No version tag, GitHub Release, or package-registry publish is performed.

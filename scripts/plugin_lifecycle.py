@@ -22,7 +22,39 @@ def main():
         sqlite3.connect(source.as_uri() + "?mode=ro", uri=True) as src,
         sqlite3.connect(home / "state.db") as dest,
     ):
-        src.backup(dest)
+        # Keep the actual stock SessionDB schema created by the matrix host.
+        # Copy synthetic rows, not the v26 fixture schema, into the empty host DB.
+        schema_version = dest.execute("select version from schema_version").fetchone()[0]
+        assert schema_version in (26, 30)
+        assert dest.execute("select count(*) from messages").fetchone()[0] == 0
+        for row in src.execute("select id,parent_session_id,model_config,archived from sessions"):
+            dest.execute(
+                "insert into sessions(id,parent_session_id,model_config,archived,source,started_at) "
+                "values(?,?,?,?,?,?)",
+                (*row, "synthetic-lifecycle", 1),
+            )
+        supported = {row[1] for row in dest.execute("pragma table_info(messages)")}
+        names = [
+            name
+            for name in (
+                "id",
+                "session_id",
+                "role",
+                "content",
+                "tool_call_id",
+                "tool_name",
+                "timestamp",
+                "active",
+                "compacted",
+            )
+            if name in supported
+        ]
+        columns = ",".join(names)
+        placeholders = ",".join("?" for _ in names)
+        dest.executemany(
+            f"insert into messages({columns}) values({placeholders})",
+            src.execute(f"select {columns} from messages"),
+        )
     # Test-host interfaces, verified against its own compatibility fixtures.
     # No such manager/registry imports exist in the production adapter.
     from hermes_cli.plugins import get_plugin_command_handler, get_plugin_manager
@@ -127,6 +159,7 @@ def main():
     print(
         json.dumps(
             {
+                "stock_schema_version": schema_version,
                 "real_registry_tools": 8,
                 "successful_dispatches": count,
                 "hooks": 3,

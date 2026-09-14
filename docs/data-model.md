@@ -1,20 +1,31 @@
-# Data model and versions
+# Data model and version boundaries — 0.5.0
 
-Application database `PRAGMA user_version=1`; Pydantic contract `schema_version=1`. Unknown versions/extra model fields fail explicitly rather than migrate or guess. The source Hermes database must have an explicit schema version 26. Units are Unix seconds in fields named `timestamp_seconds`; message IDs are identities, not timestamps.
+The application SQLite document store retains `PRAGMA user_version=1`; individual contract versions evolve separately. `documents` has append sequence, kind, stable ID and canonical JSON. Atomic insertion rejects changed content under an existing identity; identical insertion is idempotent. Unknown fields/versions fail explicitly. No Hermes writer is instantiated during import and its schema is never migrated.
 
-SQLite `documents` has an append sequence, kind, stable ID and canonical JSON. `put_many` is atomic and rejects changed content under an existing identity. Repeated identical insertion is a no-op. Source observations and derived annotations are separate documents.
+| Record | Current contract | Authority |
+| --- | --- | --- |
+| SourceRecord / Run / Case | Base model v1; `hermes.sqlite.v4` parser | Source namespace, session/message/call IDs, lineage, payload digest, bounded facts and unknowns; process outcome separate from symptoms |
+| Legacy reconciliation | `legacy-exact-observation.v1` | Explicitly reviewed exact retained observation only; `transfers_case_authority=false` |
+| Annotation / CorrectionCandidate / CorrectionReview | Immutable source-derived and review documents | Author/reviewer kind is caller-declared; reviews/retractions append, original candidate stays pending |
+| ConfigurationSnapshot | Selected allowlisted field set and normalized logical path | Comparable local configuration evidence, not reconstructed historical configuration |
+| Recipe | v2; v1 reader retained | Explicit reviewed revisions/assertion/limits and `input_contract=declared-v1` or unknown |
+| FrozenInput | logical_path, UTF-8 content, SHA-256 | Reviewed fixture bytes separate from either subject revision |
+| ReproductionResult | v3; v1/v2 readers retained | Fresh process evidence, recipe/runtime digests, collected identities and frozen-input digest; unknowns explicit |
+| Comparison | References both immutable result IDs | Matched intended failure plus corrected pass only with sufficient compatible evidence |
+| Portable bundle | `agent-fix-lab.regression.v2`; v1 reader retained | Sanitized selected code/assertion/frozen inputs, checksums and declared provenance, not execution authorization |
+| Managed runtime marker | schema v2 | Generation, source/lock/requirements digests, package versions and doctor result; no model-efficacy claim |
+| Reminder policy | contract v2 | Message/scope/implementation/case digest and generation-bound local approval; no automatic authority transfer |
 
-- SourceRecord: source namespace, parser version, session/message/tool-call IDs, parent/delegation IDs, archived/compacted flags, time and payload digest.
-- Run: process status/exit code, capture source, bounded output, symptoms/context, duplicate source records and explicitly unknown fields. Bundle projections have their own capture-source value and do not masquerade as historical captures.
-- Case: stable run identity, incident group, historical/dogfood cohort, development/held-out/unassigned split and real/derived/synthetic provenance.
-- Annotation: author-kind declaration, expected behavior, text, time, optional retraction target. Effective state is computed without destroying the history.
-- CorrectionCandidate: inferred selection, failed-operation and assistant-claim references, subsequent user-role record, rationale/confidence, permanently pending original record. Effective review status is computed from separate CorrectionReview documents. Reviewer identity is declared, not authenticated.
-- ConfigurationSnapshot/baseline: selected non-secret fields, logical path, content hash and compatible field-set comparison. Missing historical configuration remains unknown.
-- Recipe: repository/revisions, test SHA-256, expected behavior/intended failure, reviewed flag, timeout/output limits, pytest dependency and provenance. External fixture references are rejected; commit inspected fixtures.
-- Reproduction: new UUID, variant, revision/test/diff identities, interpreter/runtime fields, direct process capture, exit code, status, test counts, failure text and bounded output.
-- Comparison: references to both fresh results and a justified pass/fail/inconclusive/not-run classification.
-- Bundle: `agent-fix-lab.regression.v1`, selected source variants, one shared assertion, sanitized metadata, original-revision uncertainty, per-file and manifest checksums. See recipes-and-bundles.md.
+## History identity and reconciliation
 
-Historical tool-call duplicate identity is stronger than output similarity. Every compacted observation is retained even when linked to an existing case. Dataset grouping may be more conservative than incident deduplication and is not an automatic recurrence-strengthening operation.
+Canonical v4 identity uses explicit source and lineage, call identity when available, and conservative observation distinctions. A `call_1` in unrelated roots is not one incident. Parent/compaction observations may legitimately refer to the same incident; missing calls and conflicts cannot invent equality. Generic repeated output does not prove recurrence or causal repair. Dataset grouping is a separate, potentially more conservative analysis.
 
-Changing a parser does not overwrite already imported facts. A future migration must explicitly version/relate derived records and preserve original provenance.
+`history.reconcile_legacy_identity` accepts a legacy Run and a bounded source-scoped page of v4 candidates. It compares source_id, session_id, message_id, tool_call_id, tool_name and payload_digest. Exactly one matching retained observation plus explicit reviewer attribution can produce linked-observation. Partial-page absence stays unresolved. Persist its returned document separately; it does not mutate either input. Discarded legacy observations and annotation/split applicability remain unknown. Reimport actual source rather than synthesizing a split from a reused call ID.
+
+## Regression identity
+
+Recipe v2 includes frozen_inputs and path-specific reviewed_data_changes. `declared-v1` means inspected deterministic code, supported typed pytest values and frozen bytes; it is not inferred dependency closure. External ArtifactReference fixtures remain unsupported. Ambient filesystem/network/clock/random/environment dependencies, hidden mutable globals or fixture side effects cannot be certified by changing a flag.
+
+Result v3 adds input_contract/input_unknowns, recipe/runtime digests, collection_identities and frozen_input_digest. Custom pytest IDs do not hide changed typed parameter values. Unsupported values or absent identity evidence mean equivalence is unavailable. A new recipe review creates new authority; loading/rerunning a legacy recipe does not upgrade the old record. A later-commit retained check must create a new reviewed binding and receipt while preserving historical recipes/results.
+
+The inspected source-host schemas are 26 and 30, separately from application/model versions. Schema 30 inspection is not automatic adapter support; consult [host matrix](native-plugin.md) and final validation. Unix timestamps are seconds; message IDs are identities, not timestamps. Source mapping across profiles and surfaces must be explicit, never inferred solely from `state.db`.

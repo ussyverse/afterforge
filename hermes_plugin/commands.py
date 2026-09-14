@@ -13,6 +13,17 @@ def configure(parser, **kwargs):
         check.add_argument("recipe_id")
         if name == "verify-current":
             check.add_argument("--approve-digest", required=True)
+    subs.add_parser("demo")
+    queue = subs.add_parser("review")
+    queue.add_argument("--offset", type=int, default=0)
+    queue.add_argument("--limit", type=int, default=10)
+    plan = subs.add_parser("retained-plan")
+    plan.add_argument("recipe_id")
+    plan.add_argument("target_revision")
+    run = subs.add_parser("retained-check")
+    run.add_argument("plan_id")
+    run.add_argument("--approve-digest", required=True)
+    run.add_argument("--reviewed", action="store_true")
     policy = subs.add_parser("policy")
     policy.add_argument("operation", choices=["propose", "status", "activate", "rollback"])
     policy.add_argument("--scope")
@@ -31,6 +42,29 @@ def slash(runtime, raw, **kwargs):
     try:
         words = shlex.split(raw)
         action = words[0] if words else "help"
+        if action == "review":
+            if len(words) == 1:
+                return json.dumps(runtime.backend("review_queue", {"limit": 10}))
+            if words[1] == "page" and len(words) == 3:
+                return json.dumps(
+                    runtime.backend("review_queue", {"offset": int(words[2]), "limit": 10})
+                )
+            if words[1] in ("accept", "reject", "retract") and len(words) >= 4:
+                decisions = {"accept": "accepted", "reject": "rejected", "retract": "retracted"}
+                payload = {
+                    "candidate_id": words[2],
+                    "decision": decisions[words[1]],
+                    "reviewer": "operator",
+                    "note": " ".join(words[3:]),
+                }
+                if words[1] == "retract":
+                    if len(words) < 5:
+                        raise ValueError("Review ID and note required")
+                    payload.update(retracts=words[3], note=" ".join(words[4:]))
+                return json.dumps(runtime.backend("review_correction", payload))
+            raise ValueError(
+                "Use review [page OFFSET | accept/reject ID NOTE | retract ID REVIEW_ID NOTE]"
+            )
         if len(words) > 1:
             return json.dumps(
                 {

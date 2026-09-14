@@ -4,6 +4,7 @@ import json
 import re
 import threading
 import time
+from collections import OrderedDict
 
 
 def identifier(value):
@@ -14,8 +15,8 @@ def identifier(value):
 
 class Capture:
     def __init__(self):
-        self.pending = {}
-        self.outcomes = {}
+        self.pending = OrderedDict()
+        self.outcomes = OrderedDict()
         self.sequence = 0
         self.lock = threading.Lock()
         self.enabled = True
@@ -26,9 +27,10 @@ class Capture:
             return
         try:
             prior = self.pending.get(session, {})
+            self.sequence += 1
             if not ended:
-                self.sequence += 1
                 history = self.outcomes.setdefault(session, {"events": [], "truncated": False})
+                self.outcomes.move_to_end(session)
                 history["events"].append(
                     {
                         "sequence": self.sequence,
@@ -40,10 +42,13 @@ class Capture:
                 if len(history["events"]) > 64:
                     del history["events"][0]
                     history["truncated"] = True
+                while len(self.outcomes) > 32:
+                    self.outcomes.popitem(last=False)
             if ended:
                 status = prior.get("status", status)
             self.pending[session] = {
                 "session_id": session,
+                "generation": self.sequence,
                 "tool_name": identifier(tool) or prior.get("tool_name"),
                 "tool_call_id": identifier(call) or prior.get("tool_call_id"),
                 "status": status,
@@ -52,10 +57,9 @@ class Capture:
                 "pending_import": True,
                 "eligible": ended or prior.get("eligible", False),
             }
+            self.pending.move_to_end(session)
             while len(self.pending) > 32:
-                oldest = next(iter(self.pending))
-                self.pending.pop(oldest)
-                self.outcomes.pop(oldest, None)
+                self.pending.popitem(last=False)
         finally:
             self.lock.release()
 
@@ -82,6 +86,14 @@ class Capture:
                     status = "fail"
                 elif type(code) is int and code == 0:
                     status = "pass"
+            # Documented host observer failures take precedence over result text.
+            # Host "ok" means dispatch completed, not that a required process passed.
+            host_status = kwargs.get("status")
+            host_error = kwargs.get("error_type")
+            if host_status in ("error", "blocked") or (
+                isinstance(host_error, str) and 0 < len(host_error) <= 128
+            ):
+                status = "fail"
             self.record(session_id or task_id, tool_name, tool_call_id, status)
         except Exception:
             pass
@@ -108,4 +120,11 @@ class Capture:
 
     def snapshot(self):
         with self.lock:
-            return dict(self.pending)
+            return {key: dict(value) for key, value in self.pending.items()}
+
+    def complete(self, completed):
+        """Acknowledge only the scanned generation, not concurrent callbacks."""
+        with self.lock:
+            for session, metadata in completed.items():
+                if self.pending.get(session) == metadata:
+                    self.pending.pop(session, None)

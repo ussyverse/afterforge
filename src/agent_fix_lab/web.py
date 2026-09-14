@@ -9,8 +9,6 @@ from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, JSONResponse, Response
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from .history import import_hermes
-
 
 def default_app():
     from .service import Lab
@@ -20,7 +18,7 @@ def default_app():
 
 
 def create_app(lab):
-    app = FastAPI(title="Agent Fix Lab", docs_url=None, redoc_url=None, openapi_url=None)
+    app = FastAPI(title="Afterforge", docs_url=None, redoc_url=None, openapi_url=None)
     token = secrets.token_urlsafe(32)
     app.add_middleware(
         TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost", "testserver"]
@@ -73,7 +71,7 @@ def create_app(lab):
 
     @app.get("/assets/{name}")
     def asset(name: str):
-        if name not in ("app.js", "style.css", "interventions.js"):
+        if name not in ("app.js", "style.css", "interventions.js", "guided.js"):
             return Response(status_code=404)
         return Response(
             (Path(__file__).parent / "assets" / name).read_text(),
@@ -134,14 +132,75 @@ def create_app(lab):
         )
 
     @app.get("/api/cases")
-    def cases(q: str = "", status: str | None = None):
-        return lab.list_cases(q, status)
+    def cases(q: str = "", status: str | None = None, offset: int = 0, limit: int = 100):
+        return lab.list_cases(q, status, offset=offset, limit=limit)
 
     @app.get("/api/corrections")
-    def corrections():
+    def corrections(status: str | None = None, offset: int = 0, limit: int = 100):
         from .corrections import candidates
 
-        return candidates(lab.store)
+        return candidates(lab.store, status, offset=offset, limit=limit)
+
+    @app.get("/guided", response_class=HTMLResponse)
+    def guided_page():
+        return (
+            (Path(__file__).parent / "assets/guided.html").read_text().replace("TOKEN_VALUE", token)
+        )
+
+    @app.get("/api/guided/{case_id}")
+    def guided_case(case_id: str):
+        return lab.guided(case_id)
+
+    @app.post("/api/demo")
+    def demo():
+        return lab.synthetic_demo()
+
+    @app.post("/api/drafts")
+    def draft(body: dict):
+        required = {
+            "case_id",
+            "repository",
+            "faulty_revision",
+            "corrected_revision",
+            "module",
+            "function",
+            "examples",
+            "expected_behavior",
+            "intended_failure",
+        }
+        if not required.issubset(body) or set(body) - required - {
+            "provenance",
+            "reviewed_data_changes",
+        }:
+            raise ValueError(
+                "Draft requires case, repository, both revisions, module/function, examples, expected behavior and intended failure"
+            )
+        return lab.draft_regression(**body)
+
+    @app.post("/api/drafts/{draft_id}/authorize")
+    def authorize(draft_id: str, body: dict):
+        return lab.authorize_draft(
+            draft_id,
+            body["approve_digest"],
+            reviewed=body.get("reviewed", False),
+            declared_inputs=body.get("declared_inputs", False),
+        )
+
+    @app.post("/api/retained-plan")
+    def retained_plan(body: dict):
+        from .current_check import retained_plan
+
+        return retained_plan(
+            lab, body["recipe_id"], body["target_revision"], body.get("reviewed_data_changes")
+        )
+
+    @app.post("/api/retained-check/{plan_id}")
+    def retained_check(plan_id: str, body: dict):
+        from .current_check import retained_check
+
+        return retained_check(
+            lab, plan_id, body["approve_digest"], reviewed=body.get("reviewed", False)
+        )
 
     @app.post("/api/corrections/{candidate_id}/review")
     def correction_review(candidate_id: str, body: dict):
@@ -154,8 +213,8 @@ def create_app(lab):
         )
 
     @app.get("/api/cases/{case_id}")
-    def detail(case_id: str):
-        return lab.detail(case_id)
+    def detail(case_id: str, offset: int = 0, limit: int = 100):
+        return lab.detail(case_id, offset, limit)
 
     @app.get("/api/cases/{case_id}/export")
     def export(case_id: str):
@@ -187,14 +246,23 @@ def create_app(lab):
     def import_current(body: dict):
         # Browser cannot choose arbitrary files or source identity.
         home = Path(os.environ.get("HERMES_HOME", Path.home() / ".hermes"))
-        if set(body) - {"after", "before", "session", "limit", "dry_run"}:
+        if set(body) - {
+            "after",
+            "before",
+            "session",
+            "limit",
+            "dry_run",
+            "after_id",
+            "correction_cursor",
+        }:
             raise ValueError("Unknown import fields")
-        return import_hermes(
-            lab.store,
+        return lab.scan(
             home / "state.db",
-            source_id="local-hermes",
+            source_id=os.environ.get("AFTERFORGE_SOURCE_ID"),
             before=body.get("before", time.time()),
             after=body.get("after", 0),
+            after_id=body.get("after_id"),
+            correction_cursor=body.get("correction_cursor"),
             session=body.get("session"),
             limit=body.get("limit", 100),
             dry_run=body.get("dry_run", False),

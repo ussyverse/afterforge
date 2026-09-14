@@ -22,7 +22,7 @@ def main():
     assert actual == set(provenance["files"]) | {"RELEASE.json"}
     from tools.plugin_guard import scan_plugin
 
-    result = scan_plugin(root, source="ussyverse/agent-fix-lab")
+    result = scan_plugin(root, source=provenance["source_repository"])
     assert result.verdict != "dangerous", "Stock scanner blocked release"
     reviewed = []
     for finding in result.findings:

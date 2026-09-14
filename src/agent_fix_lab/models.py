@@ -85,7 +85,26 @@ class Case(Contract):
     split: Literal["development", "held-out", "unassigned"] = "unassigned"
 
 
+class FrozenInput(Contract):
+    """Reviewed UTF-8 bytes, materialized separately from either subject revision."""
+
+    logical_path: str
+    content: str = Field(max_length=262144)
+    sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+
+
 class Recipe(Contract):
+    schema_version: Literal[1, 2] = 1
+    # declared-v1 is an operator assertion, NOT automatic dependency discovery.
+    # Supported: deterministic reviewed code, typed pytest arguments and the
+    # frozen UTF-8 files below via AFTERFORGE_FROZEN_INPUTS. No ambient file,
+    # network, clock, random or environment inputs, hidden mutable globals or
+    # fixture side effects. If inspection cannot establish this, use unknown.
+    input_contract: Literal["unknown", "declared-v1"] = "unknown"
+    frozen_inputs: list[FrozenInput] = Field(default_factory=list, max_length=50)
+    # Subject data is allowed to change only as explicitly reviewed behavior,
+    # never as regression input. Paths map to nonempty review rationales.
+    reviewed_data_changes: dict[str, str] = Field(default_factory=dict)
     id: str
     case_id: str
     repository: str
@@ -104,6 +123,11 @@ class Recipe(Contract):
 
 
 class ReproductionResult(Contract):
+    schema_version: Literal[1, 2, 3] = 1
+    recipe_digest: str | None = None
+    runtime_digest: str | None = None
+    input_contract: Literal["unknown", "declared-v1"] = "unknown"
+    input_unknowns: list[str] = Field(default_factory=list)
     id: str
     recipe_id: str
     variant: Literal["faulty", "corrected"]
@@ -121,7 +145,11 @@ class ReproductionResult(Contract):
     failures: int = 0
     errors: int = 0
     skipped: int = 0
-    capture_source: Literal["local-runner.v1"] = "local-runner.v1"
+    capture_source: Literal["local-runner.v1", "local-runner.v2", "local-runner.v3"] = (
+        "local-runner.v1"
+    )
+    collection_identities: list[str] = Field(default_factory=list)
+    frozen_input_digest: str | None = None
 
 
 class Comparison(Contract):

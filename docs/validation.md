@@ -1,43 +1,56 @@
-# Validation record
+# Afterforge 0.5.0 validation ledger
 
-## Measured development and continuation results
+Status: **integration candidate; final release gates open**. Current implementation is being integrated by multiple workers. Intermediate local tests do not certify the final source, a generated distribution, installed migration or GitHub CI. No final verified SHA, screenshot or successful final CI pair is invented here.
 
-The first continuation code commit with bundles/security, d495b5a, passed 64 local tests. GitHub validation run https://github.com/ussyverse/agent-fix-lab/actions/runs/34781817583 completed successfully for that commit. Final-tree results are recorded below after the final validation pass.
+## Evidence currently available
 
-Versions used: uv 0.11.2; isolated Python 3.11.15; FastAPI 0.141.1, Pydantic 2.13.5, Uvicorn 0.52.4, pytest 9.1.1, Ruff 0.16.7, Playwright 1.62.0. Full transitive pins are in uv.lock. Two Starlette/httpx/AnyIO deprecation warnings are present; they are not test failures. Upstream component suites: Triage 160, Petrichor 140, correction-aware-learning 76, all passed at the exact revisions in sources.md.
+- Coordinator reported 195 tests passing at an intermediate identity/input/runtime state. That is supplied intermediate evidence, not this worker's final rerun or a release total.
+- Documentation/release worker ran `uv run pytest -q tests/test_plugin_release.py packaging`: **18 passed**. These are real local tests of committed-source reproducibility, fork metadata, exact-distribution binding, complete runtime projection, tampering rejection, fail-closed CI logic and documentation links. The CI responses in rejection tests are explicitly synthetic mocks, not actual GitHub results.
+- Latest worker local snapshot: **231 passed, 2 deprecation warnings, no skips** with AFL_CHROMIUM set to the available cached executable and AFL_BROWSER_PYTHON set to the clean installed 0.5.0 wheel environment. This includes three consecutive fresh packaged guided servers exercising synthetic demo, authorization, red/green comparison and retained execution at the corrected commit. It does not cover every final portable/later-commit/reminder browser requirement or certify final committed source. An earlier concurrent integration run had a stale branding assertion in tests/test_web.py; it passed after the owning worker's changes, without edits to that file by this worker.
+- Full root/native/core/test/script/example/packaging Ruff check and formatting passed (63 files). Wheel and sdist built; both installed CLI aliases worked. Installed-wheel demo generated an unapproved synthetic draft, exact-digest authorization succeeded, and real execution returned faulty=fail, corrected=pass, comparison=pass with two collected assertions and matching input identity.
+- actionlint v1.7.7 validated all three workflow files. A temporary index containing the assigned current docs/release changes passed the repository audit: 91 text files, zero excluded artifacts or sensitive-pattern matches. The real index was not changed; this is not the coordinator's final integrated/staged audit.
+- docs/privacy.md retained SHA-256 `bde77e91c873461941ef72b603edba6e195eff3977ecab33e8cf5906d5f83c15`; the stock scanner warning allowlist was not broadened. This digest preservation is not a final stock scan of the changed distribution.
+- Current official host source was inspected at `939e45c91d751fadd94dcd1b873ac3cb44846213`: loader/slash/terminal registration, post_tool_call structured status/error payload, pre_verify continuation and schema **30**. The prior exact pin `277268d83ff2204de9646f0b1e376e73ac0a5d20` is retained. Inspection is not compatibility certification; see [native-plugin.md](native-plugin.md).
+- Earlier dataset/component/browser/install/CI results are historical, retained in CHANGELOG.md and dataset-methodology.md rather than presented as new 0.5.0 results.
 
-## Commands (private paths represented by shell variables)
+## Final release gates
+
+| Gate | Required evidence | Current status |
+| --- | --- | --- |
+| Full quality/build | Root/native/core/test/script/example/packaging Ruff + formatting; full tests; 0.5.0 wheel/sdist | Local snapshot passed as above; final exact-source CI pending |
+| A: history identity | Unrelated reused call IDs separated; lineage/compaction retained; absent/conflicting/repeated observations; explicit legacy reconciliation | Implementation/tests present; final integrated acceptance pending |
+| B: input equivalence | Identical external pytest with CASES=[-1]/[1], custom IDs, frozen input/fixture changes; explicit data review; legacy immutable authority | Implementation/tests present; final guided/portable acceptance pending |
+| C: capture bounds | Independent 32-session/64-event outcomes, LRU, pending cleanup, races, best-effort truncation | Implementation/tests present; real-host acceptance pending |
+| D: native status | Actual registered terminal errors/nonpassing verification nonzero; JSON success separate from data.status | Implementation/tests present; both host dispatch gates pending |
+| Shared workflow/scale | Native/browser/CLI explicit source mapping; independent same-time correction cursor; deferred linking; idempotent review; SQL-bounded pages/details | Guided worker integration pending |
+| Packaged browser | Three consecutive fresh wheel servers: draft, review, authorize, red/green, portable import, later commit, errors/reminder controls if exposed | Three installed guided runs passed for demo/authorization/comparison/corrected-commit retention; broader final path and real screenshot pending |
+| Installed migration | Old aliases/evidence retained, no duplicate hooks; prior approval inert after fingerprint change; owned removal | Final distribution migration pending |
+| Locked runtime | Transitive hashed export/resolved manifest, doctor-before-readiness, interrupted upgrade old-runtime retention, serialized teardown | Unit implementation present; final installed interruption/upgrade pending |
+| Stock host matrix | Exact GitHub distribution install, unchanged scanner/doctor/manager/tools/hooks/skill, old pin + inspected v2026.9.11 source/schema | Both final matrix runs pending; schema 30 must not be blindly allowed |
+| Privacy | Exact staged diff/index, generated distribution and reachable history review; no private paths/raw data | Final coordinator audit pending; scanner alone is insufficient |
+| CI certification | Both application and complete native matrix green for exact final source and native-tested distribution artifact | Not run for final source |
+| Publication | Stable checksum/CI locator, supported pointer, then coordinator-approved tag/GitHub Release | Not published; no PyPI step |
+
+## Reproduction commands
 
 ```sh
 uv sync --locked
-uv run ruff check src tests scripts examples
-uv run ruff format --check src tests scripts examples
-uv run pytest -q
+uv run ruff check __init__.py hermes_plugin src tests scripts examples packaging
+uv run ruff format --check __init__.py hermes_plugin src tests scripts examples packaging
+uv run pytest -q tests packaging
 uv build
 uv venv "$WHEEL_ENV"
-uv pip install --python "$WHEEL_ENV/bin/python" dist/agent_fix_lab-0.1.0-py3-none-any.whl
+uv pip install --python "$WHEEL_ENV/bin/python" dist/agent_fix_lab-0.5.0-py3-none-any.whl
+"$WHEEL_ENV/bin/afterforge" --help
 "$WHEEL_ENV/bin/agent-fix-lab" --help
-uv run python scripts/browser_smoke.py --python "$WHEEL_ENV/bin/python" --home "$PRIVATE_LAB" --recipe-file "$PRIVATE_REVIEWED_RECIPE" --repeat 3
-uv run python scripts/bundle_smoke.py --python "$WHEEL_ENV/bin/python" --home "$PRIVATE_LAB" --recipe-file "$PRIVATE_REVIEWED_RECIPE" --output-directory "$PRIVATE_NEW_ROUNDTRIP" --file regression_subject.py
+uv run python scripts/browser_fixture.py "$SYNTHETIC_FIXTURE"
+uv run python scripts/browser_smoke.py --python "$WHEEL_ENV/bin/python" --home "$SYNTHETIC_FIXTURE/lab" --recipe-file "$SYNTHETIC_FIXTURE/recipe.json" --query Unfamiliar --repeat 3 --interventions
+uv run python scripts/bundle_smoke.py --python "$WHEEL_ENV/bin/python" --home "$SYNTHETIC_FIXTURE/lab" --recipe-file "$SYNTHETIC_FIXTURE/recipe.json" --output-directory "$NEW_ROUNDTRIP" --file implementation.py
 uv run python scripts/audit_index.py
 ```
 
-For an existing system Chromium, set AFL_CHROMIUM to its executable; otherwise `uv run playwright install chromium`. CI installs browser OS dependencies and uses synthetic fixtures. Set WHEEL_ENV/PRIVATE_LAB and other variables outside the repository; never commit their local values.
+Set variables to private paths outside the checkout and use a new synthetic fixture directory. `AFL_CHROMIUM` selects an available cached browser executable; no installation is needed when that executable is already available. CI installs browser OS dependencies on its fresh runner. Use a writable UV_CACHE_DIR if the default is read-only; the worker's initial default-cache command failed with read-only filesystem and was rerun successfully with an isolated writable cache. No dependency version was changed to work around it.
 
-The wheel browser workflow passed three consecutive fresh-server real-case runs, then three more with explicit reversed-response and synthetic XSS probes. Every run saved annotation/configuration, reviewed a recipe, executed faulty/corrected processes, displayed a passing comparison, rejected unreviewed creation and tokenless execution, and reported zero console errors and zero failed workflow requests. Intentional rejected probes are counted separately. Readiness uses a health check and UI completion attributes; no arbitrary browser sleeps.
+The validation workflow separately runs the three guided browser tests with an explicit installed-wheel interpreter and a real Chromium path, so their environment-dependent skips cannot masquerade as that gate. The older expert browser smoke is retained. Final full portable/later-commit/reminder/error paths must still be exercised by the coordinator, not inferred from narrower passing tests. Read actual completion states/health checks, not arbitrary delays. Keep screenshots limited to synthetic data from the shipped app.
 
-The actual grouped-search reduced regression exported selected reviewed code, validated checksums, imported into a new private data home through the wheel CLI, and returned faulty=fail/corrected=pass/comparison=pass. Provenance remains derived; original historical revisions are unknown.
-
-## Coverage and interpretation
-
-Tests cover immutable identities, version rejection, malformed/partial records, WAL backup, bounded imports, duplicate/compacted observations, delegation, cohorts, annotations/candidates/retractions, selected configuration, direct adapter contracts, reviewed recipes, assertion changes/weakening, collection/empty/skip/timeouts, revision/argument rejection, environment/workspace separation, archive traversal/links, output limits, safe summaries, bundle checksums/unsafe paths, CSRF/body/CSP checks and installer ownership/removal. Browser tests cover actual wheel assets and asynchronous stale responses.
-
-Five dogfood tests initially failed and passed after fixes to wrapped results, actual delegation markers, pagination, compacted provenance and retraction restoration. The browser failures came from both stale test assumptions and an application overwrite race. A missing favicon also generated a console 404 and was fixed with an explicit response.
-
-Frozen real dataset: 53 cases, 20 failures/33 controls; 52 development and one held-out control, no held-out failures. 53/53 agreement is with process-derived labels, not independent semantic accuracy/generalization. Three synthetic reductions derived from real history achieved meaningful red/green checks. Two conservative correction candidates remain pending. See dataset-methodology.md for grouping audit and exclusions.
-
-## Final gate
-
-Completed against code commit c1d980dd517da58b7806c83bff7d1b5b42a12dde: 68 local tests passed; a fresh authenticated GitHub clone independently passed all 68 tests, Ruff checking/formatting, wheel and sdist builds, isolated-wheel installation, three consecutive fresh-server browser workflows and a synthetic portable bundle round trip through the installed CLI. All browser runs reported zero console errors and failed workflow requests, two expected security rejections and comparison=pass. The installed Hermes skill loader again returned success=true and readiness_status=available. The installed wrapper doctor reached the real package and profile. Installation/removal/ownership checks are included in the suite.
-
-The exact-index audit covered 52 text files with zero excluded artifacts or sensitive-pattern matches. All four existing committed trees also passed. Private history and detailed evidence stayed outside Git. The clean-clone commands follow the sequence above with synthetic fixtures created by scripts/browser_fixture.py and query Unfamiliar. Actual source data was not copied into the clean checkout. Final documentation-only commits do not change the validated implementation; their required Actions run is checked separately before delivery.
+The application is not an OS sandbox, full capture attestation or model-efficacy evaluator. Historical process-derived labels, weak holdout and synthetic reductions cannot support semantic/generalization claims. Final release certification uses [release.md](release.md), not a remembered green candidate.

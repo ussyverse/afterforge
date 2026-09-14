@@ -38,6 +38,7 @@ class Context:
         self.hooks = {}
         self.skills = {}
         self.commands = {}
+        self.clis = {}
 
     def get_config(self, key, default=None):
         return self.settings.get(key, default)
@@ -53,6 +54,7 @@ class Context:
 
     def register_cli_command(self, **kw):
         self.cli = kw
+        self.clis[kw["name"]] = kw
 
     def register_skill(self, name, path):
         self.skills[name] = path
@@ -74,7 +76,9 @@ def test_registration_lightweight():
         "on_session_end",
         "pre_verify",
     }
-    assert ctx.cli["name"] == "fixlab" and "fixlab" in ctx.commands
+    assert set(ctx.clis) == {"fixlab", "afterforge"}
+    assert set(ctx.commands) == {"fixlab", "afterforge"}
+    assert ctx.clis["fixlab"]["handler_fn"] == ctx.clis["afterforge"]["handler_fn"]
     assert ctx.skills["regression-workflow"].is_file() and ctx.state.data == {}
 
 
@@ -139,7 +143,8 @@ def test_slash_and_cli_registration():
 
     ctx = Context()
     plugin.register(ctx)
-    assert json.loads(ctx.commands["fixlab"]("review"))["success"]
+    # Review is a real backend queue now, not a help response; setup is required.
+    assert json.loads(ctx.commands["fixlab"]("review"))["success"] is False
     parser = argparse.ArgumentParser()
     ctx.cli["setup_fn"](parser)
     assert parser.parse_args(["setup"]).fixlab_action == "setup"

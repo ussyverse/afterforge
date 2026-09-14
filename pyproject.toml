@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "agent-fix-lab"
-version = "0.2.0"
+version = "0.5.0"
 description = "Local-first regression workbench that turns Hermes failures and corrections into reproducible, evidence-backed test cases."
 readme = "README.md"
 keywords = ["hermes", "regression", "pytest", "local-first", "agent-evaluation"]
@@ -18,11 +18,12 @@ dependencies = [
 ]
 
 [project.scripts]
+afterforge = "agent_fix_lab.cli:main"
 agent-fix-lab = "agent_fix_lab.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/ussyverse/agent-fix-lab"
-Issues = "https://github.com/ussyverse/agent-fix-lab/issues"
+Homepage = "https://github.com/ussyverse/afterforge"
+Issues = "https://github.com/ussyverse/afterforge/issues"
 
 [dependency-groups]
 dev = ["ruff==0.16.7", "httpx==0.28.1", "build==1.3.0", "playwright==1.62.0"]

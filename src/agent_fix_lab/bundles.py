@@ -12,8 +12,8 @@ from typing import Literal
 from pydantic import Field
 
 from .adapters import selected_config
-from .models import Case, Contract, Recipe, Run, SourceRecord, Status, digest
-from .runner import git, resolve_recipe
+from .models import Case, Contract, FrozenInput, Recipe, Run, SourceRecord, Status, digest
+from .runner import git, resolve_recipe, validate_input_contract
 
 README = (
     "Inspect every source and assertion before import --reviewed. This bundle contains "
@@ -25,7 +25,13 @@ README = (
 
 
 class Bundle(Contract):
-    format: Literal["agent-fix-lab.regression.v1"] = "agent-fix-lab.regression.v1"
+    schema_version: Literal[1, 2] = 1
+    format: Literal["agent-fix-lab.regression.v1", "agent-fix-lab.regression.v2"] = (
+        "agent-fix-lab.regression.v1"
+    )
+    input_contract: Literal["unknown", "declared-v1"] = "unknown"
+    frozen_inputs: list[FrozenInput] = Field(default_factory=list, max_length=50)
+    reviewed_data_changes: dict[str, str] = Field(default_factory=dict)
     case_id: str = Field(pattern=r"^[a-f0-9]{64}$")
     problem: str = Field(min_length=1, max_length=4000)
     expected_behavior: str = Field(min_length=1, max_length=4000)
@@ -93,7 +99,16 @@ def validate(path):
     raw = Path(path).read_bytes()
     if len(raw) > 2 * 1024 * 1024:
         raise ValueError("Bundle exceeds 2MiB limit")
+    original = json.loads(raw)
     data = Bundle.model_validate_json(raw).model_dump()
+    if data["format"] != f"agent-fix-lab.regression.v{data['schema_version']}":
+        raise ValueError("Bundle format/schema mismatch")
+    if data["schema_version"] == 1 and (
+        data["input_contract"] != "unknown"
+        or data["frozen_inputs"]
+        or data["reviewed_data_changes"]
+    ):
+        raise ValueError("Legacy bundle cannot claim frozen input authority")
     if set(data["source_files"]) != {"faulty", "corrected"} or set(data["source_revisions"]) != {
         "faulty",
         "corrected",
@@ -116,8 +131,28 @@ def validate(path):
         raise ValueError("Configuration contains excluded fields")
     if data["checksums"] != file_checksums(data):
         raise ValueError("Bundle file checksum mismatch")
-    if data["integrity"] != digest({k: v for k, v in data.items() if k != "integrity"}):
+    if data["integrity"] != digest({k: v for k, v in original.items() if k != "integrity"}):
         raise ValueError("Bundle manifest integrity mismatch")
+    # Validate the portable input contract before any import filesystem writes.
+    validate_input_contract(
+        Recipe(
+            schema_version=data["schema_version"],
+            id="bundle-validation",
+            case_id=data["case_id"],
+            repository="",
+            faulty_revision="",
+            corrected_revision="",
+            test_file="",
+            test_sha256="",
+            expected_behavior=data["expected_behavior"],
+            intended_failure=data["intended_failure"],
+            input_contract=data["input_contract"],
+            frozen_inputs=data["frozen_inputs"],
+            reviewed_data_changes=data["reviewed_data_changes"],
+        )
+    )
+    # Exported status is not a receipt, including legacy pass summaries.
+    data["result_status"] = "not-run"
     privacy_check(raw.decode())
     return data
 
@@ -145,6 +180,13 @@ def export_bundle(
         sources[variant] = mapping
     detail = lab.detail(recipe.case_id)
     body = Bundle(
+        schema_version=2,
+        format="agent-fix-lab.regression.v2",
+        input_contract=recipe.input_contract if recipe.schema_version == 2 else "unknown",
+        frozen_inputs=recipe.frozen_inputs,
+        reviewed_data_changes={
+            name: reason for name, reason in recipe.reviewed_data_changes.items() if name in files
+        },
         case_id=digest(recipe.case_id),
         problem=problem,
         expected_behavior=expected,
@@ -154,7 +196,7 @@ def export_bundle(
         source_files=sources,
         assertion=Path(recipe.test_file).read_text(),
         observed_status=detail["observations"]["observed_status"],
-        result_status=lab.comparison(recipe_id)["status"],
+        result_status="not-run",
         timeout_seconds=recipe.timeout_seconds,
         output_limit_bytes=recipe.output_limit_bytes,
         redaction_manifest=[
@@ -267,6 +309,10 @@ def import_bundle(lab, path, reviewed=False):
     )
     case = Case(id=cid, run_id=cid, incident_group=cid, provenance=data["provenance"])
     recipe = Recipe(
+        schema_version=data["schema_version"],
+        input_contract=data["input_contract"],
+        frozen_inputs=data["frozen_inputs"],
+        reviewed_data_changes=data["reviewed_data_changes"],
         id=key,
         case_id=cid,
         repository=str(root / "repository"),

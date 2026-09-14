@@ -54,7 +54,7 @@ def workflow(url, recipe, query, screenshot=None, interventions=False):
         page.locator("#baseline-form button").click()
         ready("baseline")
         expect(page.locator("#config")).to_contain_text("diff")
-        page.get_by_text("Create a reviewed reproduction recipe", exact=True).click()
+        page.get_by_text("Register an existing reviewed pytest file", exact=True).click()
         for element, key in [
             ("repo", "repository"),
             ("faulty", "faulty_revision"),
@@ -65,6 +65,7 @@ def workflow(url, recipe, query, screenshot=None, interventions=False):
         ]:
             page.locator("#" + element).fill(recipe[key])
         page.locator("#reviewed").check()
+        page.locator("#input-declared").check()
         page.locator("#recipe-form button").click()
         ready("recipe")
         page.locator("#run").click()

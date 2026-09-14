@@ -1,29 +1,34 @@
-# Agent Fix Lab specification — 0.1
+# Afterforge specification — 0.5.0
 
-Local-first regression workbench that turns Hermes failures and corrections into reproducible, evidence-backed test cases.
+Turn agent mistakes into lasting regression checks.
 
-## Acceptance contract
+## Product contract
 
-A single-user Linux/Python 3.11+ installation imports bounded Hermes schema-26 observations without writing to Hermes. An operator can inspect facts and unknowns, annotate expected behavior, review a conservative correction candidate, select compatible configuration evidence, run a reviewed pytest assertion against two committed implementations, inspect both subprocess results, and export either a summary or reviewed portable bundle.
+A local, single-user Linux/Python 3.11+ workbench for reviewed pytest regression retention. Import bounded Hermes observations without writing to its database; distinguish process facts from symptoms and unknowns; review inferred corrections; inspect a draft or register an existing assertion; explicitly authorize frozen inputs and committed source; run both variants; retain immutable receipts and portable reviewed reductions. Historical success is not fresh verification. This is not autonomous learning.
 
-The CLI contract is `agent-fix-lab --home HOME COMMAND`; `--help` on each command is authoritative. Commands: doctor, import-hermes, list, show, annotate, baseline, recipe, run, compare, report, export, serve, correction-scan, corrections, review-correction, bundle-export, bundle-validate, bundle-import.
+The standalone entry point is `afterforge --home HOME COMMAND`. `agent-fix-lab` remains an alias. Native entry points are `/afterforge` and `hermes afterforge`; `/fixlab` and `hermes fixlab` remain aliases. Package/import/plugin/tool/data identities are preserved for the migration release. Each command's `--help` and the installed native help are authoritative for available operations. See [migration](docs/migration.md).
 
-## Invariants
+## Evidence and execution invariants
 
-- Source documents are immutable. Re-import does not create recurrence or overwrite annotations.
-- Exit status is independent of symptom recognition. Missing process evidence is inconclusive.
-- Pending correction candidates are not user-authored ground truth. Review records declare their authority.
-- Compaction/delegation and exact duplicates retain source identity; import does not certify independent incidents.
-- Only explicitly reviewed pytest recipes execute. No shell-command or transcript-execution endpoint exists.
-- Same assertion bytes, interpreter/dependencies and test count are required across two distinct revisions. Faulty assertion failures must match the intended reason.
-- Collection errors, skips, zero tests, timeouts, truncation and incompatibility cannot verify a fix.
-- Portable imports never inherit execution authorization or fresh-result authority from a bundle.
-- No automatic policy, prompt, memory or permission mutation.
+- Source documents are immutable. The v4 history parser scopes call identity by explicit source and lineage, not a globally reused call ID. Compaction observations remain traceable; conflicting or missing-call observations cannot silently merge unrelated incidents.
+- Legacy records remain readable. Reconciliation links only an exactly retained source observation under explicit review; it does not transfer annotation, split, correction or recurrence authority. Missing original evidence stays unknown.
+- Inferred correction candidates are pending hypotheses. Reviewer kind is declared, not authenticated; an agent review is not a human review. Reviews/retractions append records instead of rewriting evidence.
+- Historical commands never execute. Draft creation, existing-file registration, execution authorization, comparison and retained-check authorization are separate operations.
+- Recipe v2 `declared-v1` is an explicit review of deterministic regression inputs, not automatic dependency discovery. Frozen UTF-8 fixtures are separate from subject code. Intentional subject data changes require path-specific review and cannot excuse changed regression inputs.
+- Result v3 comparisons require compatible recipe/runtime/assertion identity, collected test identities and frozen/typed parameter-input identity, plus the intended faulty assertion failure and corrected pass. Same test count/hash alone is insufficient; custom IDs cannot conceal different values.
+- Missing equivalence evidence, skips, zero tests, collection/setup errors, timeouts, truncation and incompatible evidence cannot verify a fix. Old recipes/results do not acquire new equivalence authority on load or rerun.
+- A later-commit retained check requires a new explicitly reviewed binding/receipt; it must preserve the historical recipe and frozen regression. Execution certifies the committed archive only, not live edits or the surrounding environment.
+- Portable bundle v2 transfers selected reviewed code and frozen inputs, not transcripts or execution authority. Imports require fresh local review and execution. Legacy v1 stays readable without new claims.
+- Passive capture is bounded independently to 32 sessions and 64 outcomes/session, best-effort and nonauthoritative. Missing host process evidence is inconclusive. Tool-envelope success is separate from `data.status`; native command errors/nonpassing verification must exit nonzero.
 
-## Delivery gates
+## Runtime and release invariants
 
-Unit/adapter/integration/privacy tests, three fresh-server browser runs, wheel/sdist build, clean-wheel CLI/web checks, portable red/green round trip, reversible installed Hermes skill, exact-index audit, clean-checkout verification, private remote push and green Actions. See validation.md for measured results, not implied certification.
+Managed setup uses the committed uv lock, transitive hashed export and resolved manifest in a private staged generation. Setup/update/removal are serialized; readiness is published atomically only after doctor. Failed upgrades retain the previously usable runtime. No application dependencies are installed into Hermes's environment.
 
-## Scoped exclusions
+Candidate distribution and supported release are separate. The supported pointer/locator may advance only after both application CI and the complete native host matrix succeed for the exact final source and generated distribution. Locator records version, source SHA, distribution SHA, file checksums and CI links. No release SHA is verified by this document. [Release protocol](docs/release.md) and [validation gates](docs/validation.md) define the evidence required.
 
-Not a model reasoning replay engine, OS sandbox, multi-user service, semantic truth oracle, authenticated-human identity provider or arbitrary dependency installer. Legacy Hermes logs and schemas other than 26 require a future explicit adapter. Historical source reconstruction is unavailable for the three included reductions.
+## Optional experiment and exclusions
+
+The fixed project-scoped verification reminder is opt-in and experimental. Approval binds message, scope, implementation digest and optional case provenance; state transitions use generations and conflict-safe rollback. Changed implementation requires reapproval, with symlink abstention. Synthetic hook receipts are not evidence of model efficacy. No arbitrary prompt, memory, skill or permission mutation is permitted.
+
+Not an OS sandbox, multi-user service, semantic truth oracle, authenticated-human identity provider, historical model replay engine, or arbitrary dependency installer. The inspected newer Hermes schema is 30; inspection alone does not authorize its import or establish native compatibility. Retain the schema-26 host pin and test both exact hosts before support claims. Final guided-workflow/browser/migration and CI gates remain open as recorded in the handoff.

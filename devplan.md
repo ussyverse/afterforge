@@ -1,12 +1,26 @@
-# Development record
+# Afterforge 0.5.0 integration plan
 
-The existing implementation and private evidence were retained during continuation.
+Current acceptance work, not a chronology. Historical milestones belong in [CHANGELOG](CHANGELOG.md). Implementation and immutable evidence must be preserved; the coordinator integrates parallel workers before any commit or publication.
 
-1. Discovery: inspected installed Hermes, schema 26, bounded WAL-consistent history and seven reference revisions. Recorded private manifests and selected 53 actual tool observations.
-2. Vertical slice: import → observations → annotation/configuration → reviewed pytest → comparison → safe summary. Preserved milestone 6932ab8.
-3. Dogfood hardening: five failing tests reproduced wrapped payload, delegation, pagination, compaction and retraction issues. Fixed them; suite reached 31 passes.
-4. Browser continuation: fixed application out-of-order responses and stale smoke-test completion assumptions. Added operation states, mutation locks, fresh-server wheel tests and explicit stale-response/XSS probes. Three consecutive real-case workflows passed.
-5. Correction and portability: pending candidate scan/review/retraction, selected-source bundles, validation/checksums, fresh-import review and actual red/green execution. Security suite reached 64 passes.
-6. Delivery: pinned Actions workflow, documentation, isolated-wheel/clean-checkout checks, installed-skill verification and exact-index audit. Final result is recorded in docs/validation.md and handoff.md.
+| Area | Implemented boundary | Remaining acceptance gate |
+| --- | --- | --- |
+| Branding | 0.5.0 metadata, Afterforge entry-point aliases; stable package/plugin/tool IDs | Installed old-alias and evidence migration on final distribution |
+| History identity | v4 source/lineage identity and explicit exact-observation reconciliation | Final native/browser/CLI mapping and migration integration |
+| Regression equivalence | Recipe v2, declared-v1 frozen inputs, result v3 and bundle v2; immutable legacy readers | Full guided authorization/red-green/portable/later-commit run |
+| Capture/CLI | Independently bounded capture and nonzero operation/verification failures | Real registry dispatch on both inspected hosts |
+| Managed runtime | uv locked staged generations, bounded private logs, atomic doctor readiness | Interrupted installed upgrade and old-runtime retention, then teardown |
+| Guided workflow | Shared scan/review/draft/retained-check work is being integrated | Paginated correction discovery, deferred linking, reviewer-kind controls, SQL scale tests and browser validation |
+| Reminder | Digest-bound fixed reminder and generation-safe rollback | Final migration/UI controls; model efficacy remains unmeasured |
+| Distribution | Fork-safe candidate generation and fail-closed stable locator promotion | Exact final source application/native CI, public install, audits and coordinator release approval |
+| Documentation | Current contracts, installation, privacy, migration and gate ledger | Real final packaged-app screenshot and exact release/CI evidence |
 
-No frozen source observation was rewritten to improve a result. A separate grouping audit explains the weak holdout; no held-out failure was manufactured. Further work should first acquire genuinely independent sessions and reviewed labels before making evaluation claims.
+## Integration order
+
+1. Integrate worker changes without altering immutable evidence or protected AGENTS.md. Review shared service/CLI/browser contracts against their actual implementations.
+2. Run all lint/format/tests/builds; exercise A–D regression reproductions and the guided retained-check path. Verify a clean installed wheel, not only an editable checkout.
+3. Run three consecutive fresh packaged browser servers with synthetic fixtures. Capture the real shipped screen only after it passes; no mock screenshot or invented CI output.
+4. Test old/current stock hosts, schema rejection/acceptance boundaries, locked setup, interrupted upgrade retention, migration, alias registration, reminders and removal in isolated profiles.
+5. Audit the exact staged index and generated distribution, retaining the privacy document and stock scanner policy. Coordinator reviews before ordinary commit/push.
+6. Require both final exact-source CI workflows and exact-distribution native evidence before supported pointer/tag/release. No PyPI publication or dependency upgrades for the rename.
+
+Future claims about behavioral improvement require independent reviewed labels, meaningful held-out failures and controlled repeated agent trials. They are not prerequisites for a bounded deterministic regression-retention release and must not be inferred from its receipts.

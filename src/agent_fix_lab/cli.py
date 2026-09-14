@@ -8,7 +8,7 @@ import time
 from importlib.metadata import version
 from pathlib import Path
 
-from .history import import_hermes, snapshot, validate_schema
+from .history import snapshot, validate_schema
 from .service import Lab
 from .store import Store
 
@@ -21,6 +21,35 @@ def parser():
     p = argparse.ArgumentParser(prog="agent-fix-lab")
     p.add_argument("--home", type=Path, default=default_home())
     commands = p.add_subparsers(dest="command", required=True)
+    commands.add_parser(
+        "demo", help="Create labeled synthetic evidence and an unapproved draft; no inference"
+    )
+    guided = commands.add_parser("guided")
+    guided.add_argument("case_id")
+    draft_recipe = commands.add_parser("draft-regression")
+    draft_recipe.add_argument(
+        "--file",
+        type=Path,
+        required=True,
+        help="User-selected deterministic call examples and target revisions",
+    )
+    approve = commands.add_parser("authorize-draft")
+    approve.add_argument("draft_id")
+    approve.add_argument("--approve-digest", required=True)
+    approve.add_argument("--reviewed", action="store_true")
+    approve.add_argument("--declared-inputs", action="store_true")
+    retain = commands.add_parser("retained-plan")
+    retain.add_argument("recipe_id")
+    retain.add_argument("--target-revision", required=True)
+    retain.add_argument(
+        "--reviewed-data-changes",
+        default="{}",
+        help="JSON path-to-review-rationale for intentional subject data/config changes",
+    )
+    retained = commands.add_parser("retained-check")
+    retained.add_argument("plan_id")
+    retained.add_argument("--approve-digest", required=True)
+    retained.add_argument("--reviewed", action="store_true")
     shadow = commands.add_parser("verification-shadow")
     shadow.add_argument("--file", type=Path, required=True)
     shadow.add_argument("--captured-bindings", action="store_true")
@@ -48,9 +77,13 @@ def parser():
     scan.add_argument("--source-id", required=True)
     scan.add_argument("--before", type=float, required=True)
     scan.add_argument("--after", type=float, default=0)
+    scan.add_argument("--after-id", type=int, default=0)
     scan.add_argument("--limit", type=int, default=500)
     candidates = commands.add_parser("corrections")
     candidates.add_argument("--status", choices=["pending", "accepted", "rejected"])
+    candidates.add_argument("--offset", type=int, default=0)
+    candidates.add_argument("--limit", type=int, default=100)
+    candidates.add_argument("--review-offset", type=int, default=0)
     review = commands.add_parser("review-correction")
     review.add_argument("candidate_id")
     review.add_argument("--decision", choices=["accepted", "rejected", "retracted"], required=True)
@@ -82,7 +115,10 @@ def parser():
     i.add_argument("--before", type=float, default=None, help="Exclusive Unix seconds cutoff")
     i.add_argument("--after", type=float, default=0)
     i.add_argument(
-        "--after-id", type=int, default=0, help="Resume bounded import from next_after_id"
+        "--after-id",
+        type=int,
+        default=None,
+        help="Override saved tool cursor; correction cursor resumes independently",
     )
     i.add_argument("--session")
     i.add_argument("--limit", type=int, default=500)
@@ -97,9 +133,14 @@ def parser():
     listing.add_argument("--status", choices=["pass", "fail", "inconclusive", "not-run"])
     listing.add_argument("--cohort", choices=["historical", "dogfood"])
     listing.add_argument("--split", choices=["development", "held-out", "unassigned"])
+    listing.add_argument("--offset", type=int, default=0)
+    listing.add_argument("--limit", type=int, default=100)
     for name in ("show", "report", "export"):
         x = commands.add_parser(name)
         x.add_argument("case_id")
+        if name == "show":
+            x.add_argument("--offset", type=int, default=0)
+            x.add_argument("--limit", type=int, default=100)
     a = commands.add_parser("annotate")
     a.add_argument("case_id")
     a.add_argument("--text", required=True)
@@ -176,6 +217,46 @@ def main(argv=None):
             result = doctor(args.source)
         else:
             lab = Lab(Store(args.home))
+            if args.command in {
+                "demo",
+                "guided",
+                "draft-regression",
+                "authorize-draft",
+                "retained-plan",
+                "retained-check",
+            }:
+                from .current_check import retained_check, retained_plan
+
+                if args.command == "demo":
+                    result = lab.synthetic_demo()
+                elif args.command == "guided":
+                    result = lab.guided(args.case_id)
+                elif args.command == "draft-regression":
+                    with args.file.open("rb") as stream:
+                        raw = stream.read(65537)
+                    if len(raw) > 65536:
+                        raise ValueError("Draft request too large")
+                    result = lab.draft_regression(**json.loads(raw))
+                elif args.command == "authorize-draft":
+                    result = lab.authorize_draft(
+                        args.draft_id,
+                        args.approve_digest,
+                        reviewed=args.reviewed,
+                        declared_inputs=args.declared_inputs,
+                    )
+                elif args.command == "retained-plan":
+                    result = retained_plan(
+                        lab,
+                        args.recipe_id,
+                        args.target_revision,
+                        json.loads(args.reviewed_data_changes),
+                    )
+                else:
+                    result = retained_check(
+                        lab, args.plan_id, args.approve_digest, reviewed=args.reviewed
+                    )
+                print(json.dumps(result, indent=2))
+                return 2 if args.command == "retained-check" and result["status"] != "pass" else 0
             if args.command.startswith("intervention-"):
                 from . import interventions
 
@@ -220,10 +301,22 @@ def main(argv=None):
 
                 if args.command == "correction-scan":
                     result = corrections.scan(
-                        lab.store, args.source, args.source_id, args.before, args.after, args.limit
+                        lab.store,
+                        args.source,
+                        args.source_id,
+                        args.before,
+                        args.after,
+                        args.limit,
+                        args.after_id,
                     )
                 elif args.command == "corrections":
-                    result = corrections.candidates(lab.store, args.status)
+                    result = corrections.candidates(
+                        lab.store,
+                        args.status,
+                        offset=args.offset,
+                        limit=args.limit,
+                        review_offset=args.review_offset,
+                    )
                 elif args.command == "review-correction":
                     result = corrections.review(
                         lab.store,
@@ -268,8 +361,7 @@ def main(argv=None):
                 if args.selection:
                     data = json.loads(args.selection.read_text())
                     selection = {x["id"]: x for x in data}
-                result = import_hermes(
-                    lab.store,
+                result = lab.scan(
                     args.source,
                     source_id=args.source_id,
                     before=args.before if args.before is not None else time.time(),
@@ -283,9 +375,11 @@ def main(argv=None):
                     source_revision=args.source_revision,
                 )
             elif args.command == "list":
-                result = lab.list_cases(args.query, args.status, args.cohort, args.split)
+                result = lab.list_cases(
+                    args.query, args.status, args.cohort, args.split, args.offset, args.limit
+                )
             elif args.command == "show":
-                result = lab.detail(args.case_id)
+                result = lab.detail(args.case_id, args.offset, args.limit)
             elif args.command in ("export", "report"):
                 result = lab.export(args.case_id)
             elif args.command == "annotate":

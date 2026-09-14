@@ -2,6 +2,7 @@
 
 import hashlib
 import io
+import json
 import os
 import signal
 import subprocess
@@ -11,9 +12,11 @@ import tempfile
 import time
 import uuid
 import xml.etree.ElementTree as ET
-from pathlib import Path
+from importlib.metadata import version
+from itertools import islice
+from pathlib import Path, PurePosixPath
 
-from .models import Comparison, Recipe, ReproductionResult
+from .models import Comparison, Recipe, ReproductionResult, digest
 
 
 def git(repo, *args):
@@ -27,7 +30,56 @@ def git(repo, *args):
         ) from exc
 
 
+def validate_input_contract(recipe):
+    """Validate bounded declared inputs; never infer arbitrary Python dependencies.
+
+    Coordinators must create a NEW reviewed v2 recipe to adopt this contract.
+    Merely re-running or loading a v1 recipe does not upgrade its authority.
+    Frozen files are read through AFTERFORGE_FROZEN_INPUTS, not overlaid on
+    subject files. Intentional subject data changes require path-specific review.
+    """
+    if recipe.schema_version != 2 and (
+        recipe.input_contract != "unknown" or recipe.frozen_inputs or recipe.reviewed_data_changes
+    ):
+        raise ValueError("Legacy recipe requires explicit new v2 review")
+    paths = set()
+    total = 0
+    for item in recipe.frozen_inputs:
+        path = PurePosixPath(item.logical_path)
+        if (
+            not item.logical_path
+            or path.is_absolute()
+            or ".." in path.parts
+            or str(path) != item.logical_path
+            or "\\" in item.logical_path
+            or any(part.startswith(".") for part in path.parts)
+        ):
+            raise ValueError("Unsafe frozen input path")
+        if item.logical_path in paths:
+            raise ValueError("Duplicate frozen input path")
+        paths.add(item.logical_path)
+        raw = item.content.encode("utf-8")
+        total += len(raw)
+        if hashlib.sha256(raw).hexdigest() != item.sha256:
+            raise ValueError("Frozen input checksum mismatch")
+    if total > 1048576:
+        raise ValueError("Frozen inputs exceed 1MiB")
+    for path in paths:
+        if any(str(parent) in paths for parent in PurePosixPath(path).parents):
+            raise ValueError("Conflicting frozen input paths")
+    for path, reason in recipe.reviewed_data_changes.items():
+        if (
+            not reason.strip()
+            or len(reason) > 4000
+            or not path
+            or path.startswith("/")
+            or ".." in PurePosixPath(path).parts
+        ):
+            raise ValueError("Subject data change requires a safe path and review rationale")
+
+
 def resolve_recipe(recipe):
+    validate_input_contract(recipe)
     repo = Path(recipe.repository).expanduser().resolve(strict=True)
     if git(repo, "rev-parse", "--show-toplevel").decode().strip() != str(repo):
         raise ValueError("Recipe repository must be its Git root")
@@ -51,6 +103,24 @@ def resolve_recipe(recipe):
         if value.startswith("-") or not value:
             raise ValueError("Invalid revision")
         values[name] = git(repo, "rev-parse", "--verify", value + "^{commit}").decode().strip()
+    if recipe.schema_version == 2 and recipe.input_contract == "declared-v1":
+        changed = (
+            git(
+                repo,
+                "diff",
+                "--name-only",
+                "-z",
+                values["faulty_revision"],
+                values["corrected_revision"],
+            )
+            .decode()
+            .split("\0")
+        )
+        data_changes = {name for name in changed if name and Path(name).suffix != ".py"}
+        if not data_changes.issubset(recipe.reviewed_data_changes):
+            raise ValueError("Changed subject data/config requires explicit path-specific review")
+        if not set(recipe.reviewed_data_changes).issubset(set(changed)):
+            raise ValueError("Data-change review names an unchanged path")
     values.update(repository=str(repo), test_file=str(test))
     return Recipe(**values)
 
@@ -115,6 +185,12 @@ def execute(recipe, variant):
         workspace = base / "project"
         workspace.mkdir()
         unpack_revision(recipe.repository, revision, workspace)
+        frozen_dir = base / "frozen-inputs"
+        frozen_dir.mkdir()
+        for item in recipe.frozen_inputs:
+            target = frozen_dir / item.logical_path
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(item.content.encode("utf-8"))
         assertion_dir = base / "assertions"
         assertion_dir.mkdir()
         assertion = assertion_dir / "test_regression.py"
@@ -122,6 +198,10 @@ def execute(recipe, variant):
         if hashlib.sha256(test_bytes).hexdigest() != recipe.test_sha256:
             raise ValueError("Reviewed test changed during preparation")
         assertion.write_bytes(test_bytes)
+        (assertion_dir / "conftest.py").write_bytes(
+            Path(__file__).with_name("pytest_identity.py").read_bytes()
+        )
+        identity_report = base / "identity.json"
         report = base / "report.xml"
         outpath = base / "output.log"
         # No user config, autoloaded plugins, shell, or inherited credential environment.
@@ -134,6 +214,8 @@ def execute(recipe, variant):
             "PYTHONPATH": str(workspace) + os.pathsep + str(workspace / "src"),
             "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
             "PYTHONHASHSEED": "0",
+            "AFTERFORGE_INPUT_REPORT": str(identity_report),
+            "AFTERFORGE_FROZEN_INPUTS": str(frozen_dir),
         }
         command = [
             sys.executable,
@@ -194,7 +276,64 @@ def execute(recipe, variant):
         ):
             status, reason = "inconclusive", "Failure did not match reviewed intended assertion"
         output = output.replace(str(base), "<workspace>")
+        collection = []
+        input_digest = None
+        try:
+            if identity_report.stat().st_size <= 1048576:
+                identities = json.loads(identity_report.read_text())
+                if identities.get("schema_version") == 1 and identities.get("complete") is True:
+                    collection = identities["collection"]
+                    input_digest = digest(identities)
+        except (OSError, ValueError, KeyError):
+            pass
+        unknowns = []
+        if recipe.schema_version != 2 or recipe.input_contract != "declared-v1":
+            unknowns.append(
+                "Input dependencies have not been explicitly reviewed under declared-v1"
+            )
+        if input_digest is None:
+            unknowns.append("Unsupported or incomplete pytest argument identity")
+        expected_files = {item.logical_path: item.sha256 for item in recipe.frozen_inputs}
+        actual_files = {}
+        total_bytes = 0
+        for index, target in enumerate(islice(frozen_dir.rglob("*"), 1025)):
+            if index == 1024:
+                unknowns.append("Frozen input directory exceeds inspection bound")
+                break
+            if target.is_symlink() or (target.is_file() and target.stat().st_size > 1048576):
+                unknowns.append("Frozen input mutated during execution")
+                break
+            if target.is_file():
+                total_bytes += target.stat().st_size
+                if total_bytes > 1048576:
+                    unknowns.append("Frozen input directory exceeds inspection bound")
+                    break
+                actual_files[target.relative_to(frozen_dir).as_posix()] = hashlib.sha256(
+                    target.read_bytes()
+                ).hexdigest()
+        if actual_files != expected_files:
+            unknowns.append("Frozen input mutated during execution")
+        if unknowns:
+            input_digest = None
+        else:
+            input_digest = digest(["declared-v1", expected_files, input_digest])
         return ReproductionResult(
+            schema_version=3,
+            capture_source="local-runner.v3",
+            recipe_digest=digest(recipe.model_dump()),
+            runtime_digest=digest(
+                [
+                    sys.version,
+                    version("pytest"),
+                    hashlib.sha256(
+                        Path(__file__).with_name("pytest_identity.py").read_bytes()
+                    ).hexdigest(),
+                ]
+            ),
+            input_contract=recipe.input_contract,
+            input_unknowns=unknowns,
+            collection_identities=collection,
+            frozen_input_digest=input_digest,
             id=uuid.uuid4().hex,
             recipe_id=recipe.id,
             variant=variant,
@@ -224,7 +363,27 @@ def compare(recipe, faulty=None, corrected=None):
     if not faulty or not corrected:
         return Comparison(**values, reason="Both fresh implementations must be run")
     compatible = (
-        faulty.test_sha256 == corrected.test_sha256 == recipe.test_sha256
+        recipe.schema_version == 2
+        and recipe.reviewed
+        and recipe.input_contract
+        == faulty.input_contract
+        == corrected.input_contract
+        == "declared-v1"
+        and faulty.schema_version == corrected.schema_version == 3
+        and faulty.capture_source == corrected.capture_source == "local-runner.v3"
+        and faulty.recipe_digest == corrected.recipe_digest == digest(recipe.model_dump())
+        and faulty.runtime_digest is not None
+        and faulty.runtime_digest == corrected.runtime_digest
+        and not faulty.input_unknowns
+        and not corrected.input_unknowns
+        and faulty.variant == "faulty"
+        and corrected.variant == "corrected"
+        and faulty.revision != corrected.revision
+        and faulty.frozen_input_digest is not None
+        and faulty.frozen_input_digest == corrected.frozen_input_digest
+        and faulty.collection_identities == corrected.collection_identities
+        and len(faulty.collection_identities) == faulty.tests
+        and faulty.test_sha256 == corrected.test_sha256 == recipe.test_sha256
         and faulty.recipe_id == corrected.recipe_id == recipe.id
         and faulty.revision == recipe.faulty_revision
         and corrected.revision == recipe.corrected_revision

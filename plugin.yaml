@@ -1,10 +1,10 @@
 name: agent-fix-lab
-version: 0.4.0
+version: 0.5.0
 manifest_version: 1
 api_version: 1
 description: Local-first regression workbench that turns Hermes failures and corrections into reproducible, evidence-backed test cases.
 license: MIT
-homepage: https://github.com/ussyverse/agent-fix-lab
+homepage: https://github.com/ussyverse/afterforge
 tags: [regression, pytest, local-first, evidence]
 provides_tools: [fixlab_status, fixlab_scan, fixlab_list_cases, fixlab_inspect_case, fixlab_review_case, fixlab_build_regression, fixlab_verify_regression, fixlab_report]
 provides_hooks: [post_tool_call, on_session_end, pre_verify]

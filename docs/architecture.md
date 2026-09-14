@@ -1,25 +1,38 @@
-# Architecture
+# Afterforge architecture — 0.5.0
 
-The package is a local application, independent of Hermes runtime imports. `cli.py` and `web.py` call a shared `Lab` service. Browser assets are installed inside the wheel; neither a frontend build server nor an external CDN is required. SQLite stores versioned JSON documents atomically. Network/model access is unnecessary after dependencies are installed.
+The standalone `agent_fix_lab` package is independent of Hermes runtime imports. CLI and web call the shared Lab service; the installed wheel contains its browser assets, with no CDN/frontend server dependency. A thin standard-library native adapter delegates to an explicitly installed private backend. Aliases register around one Runtime, not duplicate tools/hooks.
 
-## Explicit boundaries
+## Boundaries
 
-`history.py` opens the source with SQLite URI mode=ro and query_only, uses SQLite backup into a private temporary database, and validates schema 26. Bounded rows, outputs and surrounding messages become immutable `Run` and `Case` documents. Same-source IDs and payload digests preserve provenance. Parser revisions do not silently rewrite facts.
+| Component | Responsibility | Does not establish |
+| --- | --- | --- |
+| history.py | Read-only SQLite backup for WAL-consistent snapshots; explicit schema checks; bounded v4 source/lineage observations | Independent incident identity from a repeated call ID or generic output |
+| corrections.py / service | Conservative candidate discovery, append-only review/retraction, shared workflow operations | Authenticated human correction, causal repair or execution approval |
+| adapters.py | Pinned Triage symptoms; Petrichor selected-field hashes/diffs; structural correction-aware-learning relations | Process success from symptom absence, historical configuration from a current snapshot, active learning |
+| runner.py / pytest_identity.py | Committed archive execution, recipe v2 declared inputs, result v3 collection/typed-input/runtime evidence | An OS sandbox, automatic Python dependency proof, live-worktree/environment certification |
+| bundles.py | v2 selected-source/frozen-input projection, strict validation, fresh local import | Trusted code from checksums or inherited execution authority |
+| current_check.py | Digest-reviewed committed-check receipts, immutable historical evidence | Authority to silently bind old approval to a new commit |
+| hermes_plugin/runtime.py | Serialized uv locked staged setup/removal, resolved manifests, atomic doctor readiness, bounded private output | Permission to modify Hermes's own environment |
+| hermes_plugin/hooks.py / policy.py | Independently bounded metadata capture and opt-in fixed reminder | Complete verification coverage or model efficacy |
 
-`adapters.py` calls the pinned Triage `extract_errors` API for symptoms, while retaining exit codes separately. Its Petrichor adapter hashes and stores only selected allowlisted configuration JSON under normalized logical paths. Its correction-aware-learning adapter writes constrained evidence/relation records and exposes count-only recurrence, shadow-only. Raw case text remains in our private store, never the structural learning store.
+The shared guided scan/review/draft/retained-check services and SQL-bounded pagination are being integrated. Treat that path as a release acceptance gate until the final packaged workflow and scale tests pass; do not duplicate behavior in frontend or native adapters.
 
-`corrections.py` scans bounded user-role messages in the same read-only schema. Explicit lexical correction markers require a nearby imported failure or completion-like assistant claim. Candidates retain source/message IDs, role observations, limited private text, selection reason and uncertainty. Reviews and retractions are append-only; candidate detection never grants human-authenticated authority.
+## Identity and persistence
 
-`runner.py` resolves committed revisions, freezes one test hash, archives tracked source into temporary workspaces, controls environment, disables plugin autoload/user pytest configuration, and executes pytest directly without a shell. JUnit plus return code/output determine outcomes. Same-process-runtime configuration, assertion identity and test counts are checked before comparison. It is not an OS sandbox.
+SQLite documents are versioned, append-only and immutable under an existing ID. Explicit source mapping must be reused across native/CLI/browser reads of the same logical profile store; filenames and copied paths do not establish sameness. v4 canonical identity incorporates lineage and preserves legitimate compaction links without global call-ID merges. Reconciliation can link only a retained exact observation and never transfers old annotation/split/recurrence authority or invents lost source evidence.
 
-`bundles.py` projects only explicitly approved source files and separately supplied sanitized metadata. No raw history is copied. Validation checks schema, paths, field allowlists and checksums. Import creates new local source-projection commits and a not-run recipe; explicit local review is mandatory for execution.
+Corrections have their own resumable cursor, separate from tool import; same-time pagination and deferred linking must not discard a candidate merely because its nearby tool record arrives later. Effective review state is computed from immutable receipts. Pending/accepted/rejected and pass/fail/inconclusive/not-run remain separate dimensions.
 
-## Web consistency and security
+## Runner and transport
 
-Request generations guard list and detail responses. Old responses cannot replace newer selections. Mutations are single-flight; the main interface is inert while they run. `data-state`, `data-completed`, `data-case-id` and discarded-response state let browser tests observe actual completion. No sleeps substitute for product state.
+Reviewed pytest executes directly, not through a shell, in temporary tracked-source archives. Environment filtering, disabled plugin autoload, timeouts, bounded output and process-group cleanup reduce accidental interference but are not hostile-code isolation. Regression input bytes are materialized separately from subject code and exposed through AFTERFORGE_FROZEN_INPUTS. Collection and typed parameter digests supplement—not replace—the caller's declared deterministic-input review. Old evidence never acquires newer authority on load.
 
-The CLI binds 127.0.0.1. Host/Origin/Fetch-Site checks, per-launch mutation tokens, bounded bodies, no CORS, restrictive CSP and text-only rendering defend browser-origin attacks. This is a single-user local service, not authenticated multi-user hosting.
+Native JSON success reports operation completion, not verification success. Native terminal failures/nonpassing checks must exit nonzero. Capture outcomes have an independent 32-session LRU and 64-event/session cap; pending-hint consumption does not remove the bound. Best-effort/truncated capture remains inconclusive for positive certification.
 
-## Source interfaces not reused
+## Browser security and consistency
 
-Hermes task-router evaluation checks deterministic routing, not general reasoning replay. AgentReplay is reference-only, not a dependency. No Hermes core patches, prompt modifications or automatic learning activation are made.
+Loopback bind; Host/Origin/Fetch-Site guards, per-launch mutation tokens, bounded bodies, restrictive CSP, no CORS, and text-only rendering of untrusted history. Same-user malware is outside this local security boundary. Request generations reject stale list/detail responses and mutations are single-flight. Browser tests use actual completion state and fresh packaged servers, not arbitrary sleeps.
+
+## Distribution
+
+Committed runtime blobs plus lock/legal/privacy material form a reproducible distribution with RELEASE.json. Candidate publication is separate from stable certification. Both exact-source CI workflows and the exact-distribution native matrix must pass before atomic stable-pointer/locator advancement. See [release](release.md), [data model](data-model.md), [privacy](privacy.md) and [sources](sources.md).

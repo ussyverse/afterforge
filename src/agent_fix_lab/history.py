@@ -10,7 +10,58 @@ from pathlib import Path
 from .adapters import process_facts, symptoms
 from .models import Case, Run, SourceRecord, digest
 
-PARSER = "hermes.sqlite.v2"
+PARSER = "hermes.sqlite.v4"
+
+
+def reconcile_legacy_identity(legacy, candidates, *, reviewed=False, reviewer=None):
+    """Return an append-only reconciliation document; never mutate either input.
+
+    Coordinator supplies a bounded, source-scoped page of fresh v4 Runs and
+    persists this document separately. Only the EXACT surviving original
+    observation can link. A legacy global-call merge may have lost other roots:
+    this links the retained observation, NOT the old case's annotations, split,
+    corrections or recurrence count. Lost observations remain unknown and must
+    be reimported from source; never synthesize a split from a call ID.
+    No match on a partial page is unresolved, not proof of absence.
+    """
+    legacy = Run.model_validate(legacy)
+    if legacy.source.parser not in {"hermes.sqlite.v1", "hermes.sqlite.v2", "hermes.sqlite.v3"}:
+        raise ValueError("Expected a legacy Hermes run")
+    if len(candidates) > 10000:
+        raise ValueError("Reconciliation page exceeds 10000 runs")
+    if reviewed and (not reviewer or not reviewer.strip()):
+        raise ValueError("Explicit reconciliation review requires reviewer attribution")
+    fields = (
+        "source_id",
+        "session_id",
+        "message_id",
+        "tool_call_id",
+        "tool_name",
+        "payload_digest",
+    )
+    matches = set()
+    for value in candidates:
+        candidate = Run.model_validate(value)
+        if candidate.source.parser != PARSER:
+            raise ValueError("Reconciliation candidates must use current parser")
+        if all(
+            getattr(candidate.source, field) == getattr(legacy.source, field) for field in fields
+        ):
+            matches.add(candidate.id)
+    status = "linked-observation" if len(matches) == 1 and reviewed else "unresolved"
+    body = {
+        "schema_version": 1,
+        "strategy": "legacy-exact-observation.v1",
+        "legacy_run_id": legacy.id,
+        "legacy_digest": digest(legacy.model_dump()),
+        "candidate_ids": sorted(matches),
+        "status": status,
+        "reviewer": reviewer if reviewed else None,
+        "canonical_run_id": next(iter(matches)) if status == "linked-observation" else None,
+        "unknown": ["discarded_legacy_observations", "annotation_and_split_applicability"],
+        "transfers_case_authority": False,
+    }
+    return {"id": digest(body), **body}
 
 
 @contextmanager
@@ -41,7 +92,8 @@ def validate_schema(c):
         {r["name"] for r in c.execute("pragma table_info(sessions)")}
     ):
         raise ValueError("Unsupported Hermes sessions schema")
-    # Installed schema v26 is verified; refuse unknown future versions.
+    # Pinned stock hosts use v26/v30 with the required columns checked above.
+    # Refuse other versions rather than assuming future schema compatibility.
     tables = {r[0] for r in c.execute("select name from sqlite_master where type='table'")}
     if "schema_version" not in tables:
         raise ValueError("Unsupported Hermes schema: missing explicit schema_version")
@@ -50,7 +102,7 @@ def validate_schema(c):
         if len(versions) != 1:
             raise ValueError("Unsupported Hermes schema: ambiguous or missing version row")
         version = versions[0][0]
-        if version != 26:
+        if version not in (26, 30):
             raise ValueError(f"Unsupported Hermes schema version: {version}")
     return cols
 
@@ -99,13 +151,6 @@ def import_hermes(
         "parser": PARSER,
         "next_after_id": after_id,
     }
-    existing_identity = {
-        (
-            x["source"]["source_id"],
-            x["source"].get("tool_call_id") or str(x["source"]["message_id"]),
-        ): x["id"]
-        for x in store.all("run")
-    }
     with snapshot(path) as c:
         cols = validate_schema(c)
         session_cols = {r["name"] for r in c.execute("pragma table_info(sessions)")}
@@ -128,18 +173,17 @@ def import_hermes(
             )
 
         def group(s):
-            seen = set()
-            while s in sessions and s not in seen:
-                seen.add(s)
+            seen = []
+            while s in sessions:
+                if s in seen:
+                    # Only cycle members determine identity, not the entry path.
+                    return digest(["cycle", sorted(seen[seen.index(s) :])])
+                seen.append(s)
                 p = sessions[s].get("parent_session_id") or sessions[s].get("delegated_from")
-                if not p or p not in sessions:
+                if not isinstance(p, str) or not p:
                     break
                 s = p
-            return (
-                digest(sorted(seen))
-                if s in seen and sessions.get(s, {}).get("parent_session_id") in seen
-                else digest(s)
-            )
+            return digest(s)
 
         args = [after, before, after_id]
         where = 'role="tool" and timestamp>=? and timestamp<? and id>?'
@@ -191,16 +235,29 @@ def import_hermes(
                 stats["truncated"] += 1
             code, status = process_facts(payload)
             output = str(payload.get("output", payload.get("error", r["content"] or "")))
-            # Identity is stable across snapshot copies, compaction duplicates and re-imports.
-            event = r.get("tool_call_id") or str(r["id"])
-            identifier = existing_identity.get(
-                (source_id, event), digest([source_id, group(r["session_id"]), event])[:32]
+            # Calls are only scoped within explicit lineage, never across source roots.
+            # Different observed bytes are separate evidence, not a successful overwrite.
+            # Missing calls cannot establish compaction equivalence.
+            event = (
+                ["call", r["tool_call_id"]]
+                if r.get("tool_call_id") and not truncated
+                else ["message", r["session_id"], r["id"]]
             )
-            existing_identity[(source_id, event)] = identifier
+            identifier = digest(
+                [
+                    PARSER,
+                    source_id,
+                    group(r["session_id"]),
+                    event,
+                    r.get("tool_name"),
+                    digest(r["content"]),
+                ]
+            )[:32]
             observation = {
                 "schema_version": 1,
                 "id": digest(
                     [
+                        PARSER,
                         source_id,
                         r["id"],
                         r.get("active", 1),

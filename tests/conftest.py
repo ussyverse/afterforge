@@ -110,6 +110,8 @@ def regression(tmp_path):
         'from implementation import classify\ndef test_failure():\n    assert classify(3) == "fail", "nonzero must fail"\ndef test_control():\n    assert classify(0) == "pass"\n'
     )
     return {
+        "schema_version": 2,
+        "input_contract": "declared-v1",
         "repository": str(repo),
         "faulty_revision": faulty,
         "corrected_revision": corrected,

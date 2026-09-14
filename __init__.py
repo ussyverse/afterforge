@@ -30,6 +30,18 @@ def register(ctx):
         setup_fn=configure,
         handler_fn=runtime.command,
     )
+    ctx.register_command(
+        "afterforge",
+        lambda raw, **kwargs: slash(runtime, raw),
+        description="Afterforge: reviewed regression checks",
+        args_hint="status | scan | failures | review | help",
+    )
+    ctx.register_cli_command(
+        name="afterforge",
+        help="Afterforge runtime and reviewed checks",
+        setup_fn=configure,
+        handler_fn=runtime.command,
+    )
     ctx.register_skill(
         "regression-workflow", Path(__file__).parent / "skills/regression-workflow/SKILL.md"
     )
