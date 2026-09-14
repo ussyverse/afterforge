@@ -27,7 +27,7 @@ class CorrectionCandidate(Contract):
     )
     confidence: float = Field(default=0.6, ge=0, le=1)
     review_status: Literal["pending"] = "pending"
-    parser: Literal["corrections.v1", "corrections.v2"] = "corrections.v2"
+    parser: Literal["corrections.v1", "corrections.v2", "corrections.v3"] = "corrections.v3"
     preceding_tool_ids: list[int] = Field(default_factory=list)
 
 
@@ -46,6 +46,12 @@ MARKER = re.compile(
     re.IGNORECASE,
 )
 CLAIM = re.compile(r"\b(done|completed|fixed|passed|implemented|verified)\b", re.IGNORECASE)
+# Shape-based abstention, not authenticated system provenance. Embedded command/report
+# text is not direct correction evidence. Keep quoted mentions and unknown formats eligible.
+NOTIFICATION_HEADER = re.compile(
+    r"\A\[IMPORTANT: Background process proc_[A-Za-z0-9]+ "
+    r"(?:completed normally|exited) \(exit code -?\d+\)\.\r?\nCommand: "
+)
 
 
 def scan(store, path, source_id, before, after=0, limit=500, after_id=0, session=None):
@@ -57,8 +63,9 @@ def scan(store, path, source_id, before, after=0, limit=500, after_id=0, session
         "selected": 0,
         "added": 0,
         "insufficient_evidence": 0,
+        "excluded_notification_like": 0,
         "unsupported": ["authenticated human identity", "cross-session causal pairing"],
-        "parser": "corrections.v2",
+        "parser": "corrections.v3",
         "next_cursor": {"timestamp": after, "id": after_id},
     }
     with snapshot(path) as c:
@@ -73,6 +80,9 @@ def scan(store, path, source_id, before, after=0, limit=500, after_id=0, session
             stats["scanned_users"] += 1
             user = dict(row)
             stats["next_cursor"] = {"timestamp": user["timestamp"], "id": user["id"]}
+            if NOTIFICATION_HEADER.match(user["content"] or ""):
+                stats["excluded_notification_like"] += 1
+                continue
             if not MARKER.search(user["content"] or ""):
                 continue
             # Preserve legacy candidate IDs/reviews instead of manufacturing a second queue item.
@@ -104,7 +114,7 @@ def scan(store, path, source_id, before, after=0, limit=500, after_id=0, session
                 stats["insufficient_evidence"] += 1
                 continue
             candidate = CorrectionCandidate(
-                id=digest(["correction-discovery.v2", source_id, user["session_id"], user["id"]]),
+                id=digest(["correction-discovery.v3", source_id, user["session_id"], user["id"]]),
                 source_id=source_id,
                 session_id=user["session_id"],
                 case_id=None,

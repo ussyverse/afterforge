@@ -1,5 +1,20 @@
 # Afterforge 0.5.0 coordinator handoff
 
+## Unreleased local attribution repair
+
+This branch adds only a narrow notification-shaped correction-discovery abstention
+(`corrections.v3`), its synthetic regression, and migration documentation. It does
+not rewrite the published v0.5.0 tag, advance a release pointer, or activate Hermes
+behavior. Earlier release handoff facts below are retained as historical records.
+
+Verification: the released-wheel baseline produced 4 failed / 5 passed on the new
+9-test regression; the candidate passed all 9. Full tests plus packaging and the
+existing approved Chromium browser gate passed 241 tests with no skips and two
+dependency deprecation warnings. Ruff check/format and wheel/sdist build passed.
+Legacy evidence/reviews remain immutable; operator review is still required.
+Private model trials found no baseline-to-candidate improvement, so the separate
+task-scoped recovery procedure remains an unactivated experiment, not learning.
+
 Exclusive release executor integrated and normally pushed candidate source `72db27e5a887379fcb4562d48f0c1cd610df9942`. Historical results remain in CHANGELOG.md. No supported pointer, version tag or GitHub release has been published for 0.5.0.
 
 | Item | Current fact / integration action |

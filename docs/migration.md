@@ -33,6 +33,23 @@ These are release acceptance requirements, not a claim that final installed migr
 
 ## Immutable evidence compatibility
 
+### Unreleased correction attribution candidate
+
+Correction parser `corrections.v3` abstains from new candidates when the user-role
+content begins with the recognized background-process completion/exit header and
+command field. `excluded_notification_like` counts those rows; the scan cursor
+still advances. This is a content-shape heuristic, not authenticated system or
+human identity. Quoted mentions and unknown notification formats are not suppressed.
+The filter does not establish that other selected messages are genuine corrections.
+
+New candidates use the v3 discovery identity. Existing v1/v2 candidates and reviews
+remain byte-identical, readable, and in their existing queue state; a rescan does
+not delete or automatically reject previously selected notifications, nor create
+duplicate candidates for previously retained ordinary messages. An explicit bounded
+rescan in a separate private store can compare discovery behavior. An operator must
+review old queue entries separately. No database schema rewrite, release-tag change,
+production activation, or model-learning claim is implied by this local candidate.
+
 History parser v4 corrects global-call-ID merging with source/lineage identity. Original v1/v2/v3 observations remain readable. Explicit reconciliation can link only an exact retained observation to a reviewed v4 candidate. It cannot recover discarded source rows, invent a split, transfer annotation/cohort/review authority or certify recurrence. Reimport real available source and keep unresolved loss explicit.
 
 Recipe v2 declared-v1, result v3 and bundle v2 add input-equivalence evidence. Legacy formats remain immutable and never gain new claims by loading or rerunning them. Create a new reviewed recipe to adopt the input contract; preserve old results. A new commit requires a new reviewed retained binding with unchanged frozen regression. Bundle checksums confer neither trusted-code status nor inherited execution approval.
