@@ -1,5 +1,15 @@
 # Afterforge 0.5.1 coordinator handoff
 
+## Subsequent behavioral research summary
+
+The [aggregate retrieval findings](docs/retrieval-behavior-findings.md) supersede blanket interpretations of the older negative model trials below, not the observations themselves. A frozen split-directory development task produced Luna-low target correctness of 1/5 before a task-scoped reminder and 5/5 with it; Astra stayed 5/5, and wrong-version controls remained correct. A separate six-case transfer check found no main-status regression, but completeness omissions and unnecessary archive reads remain. The reminder is inactive, distinct from the shipped hook, and not evidence of durable learning or global deployment readiness. Raw traces and detailed evaluations stay private. This documentation update does not promote or recertify a release; the earlier release-preparation notes below are historical context.
+
+## Documentation-update verification
+
+Ruff check and format check passed for `src tests scripts examples`; wheel and source distribution built successfully. The initial `pytest -q tests packaging` run passed 260 tests with three browser skips. Repeating with the existing approved Chromium explicitly selected passed all 263 tests with no skips and two dependency deprecation warnings. This is local documentation-change validation, not a new release certification. The exact staged-content privacy audit is required before committing; no private evidence files are staged.
+
+## Historical release-preparation context
+
 0.5.1 integrates the reviewed original repair plus bounded envelope hardening.
 Final installed-wheel, existing-installation migration and exact-source CI
 certification are required before publication. Historical 0.5.0 evidence below

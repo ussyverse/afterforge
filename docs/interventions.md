@@ -56,6 +56,10 @@ A nonpassing evaluation exits 2. Evaluation uses the real Lab.run/pytest runner,
 
 Target success requires matched-failure comparison with compatible regression inputs, not arbitrary red/green exits. Controls must preserve pass. Results are `deterministic-recipe-suite`, `behavioral_trials=not-run`, `promotion_authorized=false`, authority local-caller-declared. Accept-evidence is not approve-deployment or authenticated human approval. Missing/stale/cancelled evidence never becomes a pass.
 
+## Separate retrieval-behavior research
+
+[Aggregate retrieval experiments](retrieval-behavior-findings.md) reproduced premature stopping on a synthetic split-directory task with Luna low and tested an unchanged task-scoped reminder on both Luna low and Astra low. New-case checks preserved main status correctness but exposed completeness and search-cost limitations. This is a different prompt intervention from the native `pre_verify` hook above; it remains inactive and does not change any shipped contract or approval.
+
 ## Validation boundary
 
 Synthetic tests cover lifecycle, digest/revision/assertion mismatch, legacy reapproval, symlink abstention, repeated rollback, controls, immutable conflicts, CLI/web mutation protection and malicious-looking text. Final 0.5.0 packaged browser and real-host migration must rerun these contracts; earlier milestone totals belong in CHANGELOG.md, not current certification.

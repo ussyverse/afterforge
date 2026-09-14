@@ -100,6 +100,8 @@ Run runtime removal before removing source if environment cleanup is desired. Ev
 
 ## Privacy, evidence and development
 
+See the [aggregate retrieval-behavior findings](docs/retrieval-behavior-findings.md) for model-specific premature-stopping experiments, an inactive task-scoped reminder, and new-case limitations. These are exploratory behavioral results, not efficacy claims for the shipped hook or deployment approval.
+
 Data is permission-restricted, not encrypted. Never publish private histories, session IDs, local paths, credentials or raw outputs. The loopback web service has mutation tokens, origin/host checks and text-only history rendering; it is not a multi-user hosted service. Read [privacy](docs/privacy.md) before import, execution or export. The stock scanner and its exact-warning gate remain enabled and unchanged in scope.
 
 The historical evaluation cohort and its weak holdout are documented in [dataset methodology](docs/dataset-methodology.md); they are not a new 0.5.0 benchmark. The three included history-derived examples are synthetic reductions, not recovered historical source or proof of repair of original incidents. Component pins remain unchanged; see [sources and attribution](docs/sources.md).
