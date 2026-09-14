@@ -46,12 +46,60 @@ MARKER = re.compile(
     re.IGNORECASE,
 )
 CLAIM = re.compile(r"\b(done|completed|fixed|passed|implemented|verified)\b", re.IGNORECASE)
-# Shape-based abstention, not authenticated system provenance. Embedded command/report
-# text is not direct correction evidence. Keep quoted mentions and unknown formats eligible.
+# Text grammar inspected in both pinned stock hosts' format_process_notification.
+# This is never trusted origin metadata, including the optional attribution line.
 NOTIFICATION_HEADER = re.compile(
-    r"\A\[IMPORTANT: Background process proc_[A-Za-z0-9]+ "
-    r"(?:completed normally|exited) \(exit code -?\d+\)\.\r?\nCommand: "
+    r"\[IMPORTANT: Background process proc_[A-Za-z0-9]+ "
+    r"(?:(?:completed normally|exited|failed to start|"
+    r"marked lost because the process backend disappeared|"
+    r"terminated by [A-Za-z0-9_.-]+) \(exit code (?:-?\d+|None|\?)"
+    r"(?:, SIGTERM)?\)|matched watch pattern \"[^\n]*\")\.\n"
 )
+NOTIFICATION_FIELDS = re.compile(
+    r"(?:(?:Started by subagent sa-[^\n]+|"
+    r"Handed off to you by a subagent before it finished\. Purpose: [^\n]*)\n)?"
+    r"Command: [\s\S]*?\n(?:Output|Matched output):\n"
+)
+
+
+def notification_evidence(content):
+    """Bounded textual abstention; preserve speech outside complete envelopes.
+
+    Only unindented and Markdown blockquoted envelopes are supported. A closing
+    bracket must end its line. Ambiguous/truncated envelopes remain UNCERTAIN,
+    not attributed exclusions. The host does not escape arbitrary output, so
+    this grammar cannot authenticate origin or disambiguate every quoted report.
+    """
+    text = re.sub(r"(?m)^> ?", "", (content or "").replace("\r\n", "\n"))
+    if len(text) > 65536:
+        return text, "UNCERTAIN: notification inspection bound exceeded", 0
+    spans = []
+    for header in NOTIFICATION_HEADER.finditer(text):
+        if spans and header.start() < spans[-1][1]:
+            continue
+        fields = NOTIFICATION_FIELDS.match(text, header.end())
+        if not fields:
+            continue
+        depth = 0
+        for index in range(header.start(), len(text)):
+            if text[index] == "[":
+                depth += 1
+            elif text[index] == "]":
+                depth -= 1
+                if depth == 0:
+                    if index >= fields.end() and (
+                        index + 1 == len(text) or text[index + 1] == "\n"
+                    ):
+                        spans.append((header.start(), index + 1))
+                    break
+    remaining = text
+    for start, end in reversed(spans):
+        remaining = remaining[:start] + remaining[end:]
+    if spans:
+        return remaining, "UNCERTAIN: notification-shaped text; origin unavailable", len(spans)
+    if "[IMPORTANT: Background process" in text:
+        return text, "UNCERTAIN: malformed or unsupported notification envelope", 0
+    return text, "Origin unavailable; user role is not authenticated identity", 0
 
 
 def scan(store, path, source_id, before, after=0, limit=500, after_id=0, session=None):
@@ -64,6 +112,10 @@ def scan(store, path, source_id, before, after=0, limit=500, after_id=0, session
         "added": 0,
         "insufficient_evidence": 0,
         "excluded_notification_like": 0,
+        "excluded_attributed_notification": 0,
+        "uncertain_notification_rows": 0,
+        "notification_spans_ignored": 0,
+        "attribution_reason": "No supported authenticated notification-origin metadata",
         "unsupported": ["authenticated human identity", "cross-session causal pairing"],
         "parser": "corrections.v3",
         "next_cursor": {"timestamp": after, "id": after_id},
@@ -71,7 +123,7 @@ def scan(store, path, source_id, before, after=0, limit=500, after_id=0, session
     with snapshot(path) as c:
         validate_schema(c)
         for row in c.execute(
-            "select id,session_id,role,substr(content,1,4000) content,timestamp "
+            "select id,session_id,role,substr(content,1,65537) content,timestamp "
             'from messages where role="user" and (timestamp>? or (timestamp=? and id>?)) and timestamp<? '
             "and (? is null or session_id=?) "
             "order by timestamp,id limit ?",
@@ -80,10 +132,14 @@ def scan(store, path, source_id, before, after=0, limit=500, after_id=0, session
             stats["scanned_users"] += 1
             user = dict(row)
             stats["next_cursor"] = {"timestamp": user["timestamp"], "id": user["id"]}
-            if NOTIFICATION_HEADER.match(user["content"] or ""):
+            marker_text, attribution, spans = notification_evidence(user["content"])
+            stats["notification_spans_ignored"] += spans
+            if attribution.startswith("UNCERTAIN"):
+                stats["uncertain_notification_rows"] += 1
+            if spans and not marker_text.strip():
                 stats["excluded_notification_like"] += 1
                 continue
-            if not MARKER.search(user["content"] or ""):
+            if not MARKER.search(marker_text):
                 continue
             # Preserve legacy candidate IDs/reviews instead of manufacturing a second queue item.
             with store.connect() as existing:
@@ -122,9 +178,10 @@ def scan(store, path, source_id, before, after=0, limit=500, after_id=0, session
                 preceding_tool_ids=tool_ids,
                 assistant_claim=claim,
                 user_message=user,
-                selection_reason="Correction marker after nearby tool; causal linkage unconfirmed"
-                if tool_ids
-                else "Correction marker after assistant completion/verification claim",
+                selection_reason=(
+                    "Correction marker after nearby evidence; causal linkage unconfirmed; "
+                    + attribution
+                ),
             )
             stats["selected"] += 1
             stats["added"] += store.put("correction-candidate", candidate)

@@ -35,12 +35,20 @@ These are release acceptance requirements, not a claim that final installed migr
 
 ### Unreleased correction attribution candidate
 
-Correction parser `corrections.v3` abstains from new candidates when the user-role
-content begins with the recognized background-process completion/exit header and
-command field. `excluded_notification_like` counts those rows; the scan cursor
-still advances. This is a content-shape heuristic, not authenticated system or
-human identity. Quoted mentions and unknown notification formats are not suppressed.
-The filter does not establish that other selected messages are genuine corrections.
+Correction parser `corrections.v3` inspects up to 65,536 characters for complete
+background-process envelopes, with command/output fields and balanced square
+brackets. Completion, termination, lost/start-failure and watch-match variants
+follow the inspected pinned stock producers. Markdown blockquotes are supported;
+speech outside recognized spans remains eligible for ordinary marker discovery.
+Unbalanced, truncated and unsupported shapes remain explicitly UNCERTAIN.
+This is notification-shaped abstention, never authenticated origin attribution.
+`excluded_notification_like` counts whole-message abstentions; the separate
+`excluded_attributed_notification` counter is zero because this adapter supplies
+no authenticated origin evidence. Uncertain-row and ignored-span counters expose
+the distinction, and every scanned row still advances the cursor. Arbitrary
+producer output is unescaped: balanced brackets are a conservative supported
+subset, not an NLP guarantee. New requests can still be semantic false positives;
+selected messages remain pending hypotheses, not automatic corrections.
 
 New candidates use the v3 discovery identity. Existing v1/v2 candidates and reviews
 remain byte-identical, readable, and in their existing queue state; a rescan does

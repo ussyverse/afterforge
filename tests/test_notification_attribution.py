@@ -114,3 +114,39 @@ def test_parser_versions_explicit():
         assert corrections.CorrectionCandidate(**fields, parser=version).parser == version
     with pytest.raises(ValueError):
         corrections.CorrectionCandidate(**fields, parser="corrections.v4")
+
+
+@pytest.mark.parametrize(
+    "speech,selected",
+    [
+        ("That's wrong: the worker skipped validation.", 1),
+        ("I asked you to fix the worker output, not repeat it.", 1),
+        ("Please start a new task: improve the navigation.", 0),
+        ("", 0),
+    ],
+)
+def test_full_quoted_report_then_surrounding_speech(history, tmp_path, speech, selected):
+    content = (
+        "> [IMPORTANT: Background process proc_abc123 completed normally (exit code 0).\n"
+        "> Command: synthetic\n> Output:\n> [synthetic truncation marker]\n"
+        "> I asked for a check.]\n" + speech
+    )
+    add_message(history, content)
+    store = Store(tmp_path / "quoted")
+    stats = corrections.scan(store, history, "synthetic", 10)
+    assert stats["selected"] == selected
+    assert stats["excluded_attributed_notification"] == 0
+    assert stats["uncertain_notification_rows"] == 1
+    if selected:
+        candidate = store.all("correction-candidate")[0]
+        assert candidate["user_message"]["content"] == content
+        assert "UNCERTAIN" in candidate["selection_reason"]
+        corrections.review(store, candidate["id"], "accepted", "Synthetic review")
+        review = store.all("correction-review")[0]
+        corrections.review(
+            store, candidate["id"], "retracted", "Synthetic retraction", retracts=review["id"]
+        )
+        before = store.all("correction-candidate"), store.all("correction-review")
+        assert corrections.scan(store, history, "synthetic", 10)["added"] == 0
+        assert before == (store.all("correction-candidate"), store.all("correction-review"))
+        assert corrections.candidates(store, "pending")[0]["id"] == candidate["id"]
