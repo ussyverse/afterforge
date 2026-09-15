@@ -31,7 +31,7 @@ def correction_history(path):
             "insert into messages values(?,?,?,?,?,?,?,?,?)",
             [(7, "s", "assistant", "I verified everything", None, None, 8, 1, 0)]
             + [
-                (i, "s", "user", "That is wrong; I asked for a check", None, None, 8, 1, 0)
+                (i, "s", "user", f"That is wrong; I asked for check {i}", None, None, 8, 1, 0)
                 for i in range(8, 13)
             ],
         )

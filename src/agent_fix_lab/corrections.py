@@ -27,7 +27,9 @@ class CorrectionCandidate(Contract):
     )
     confidence: float = Field(default=0.6, ge=0, le=1)
     review_status: Literal["pending"] = "pending"
-    parser: Literal["corrections.v1", "corrections.v2", "corrections.v3"] = "corrections.v3"
+    parser: Literal["corrections.v1", "corrections.v2", "corrections.v3", "corrections.v4"] = (
+        "corrections.v4"
+    )
     preceding_tool_ids: list[int] = Field(default_factory=list)
 
 
@@ -102,6 +104,29 @@ def notification_evidence(content):
     return text, "Origin unavailable; user role is not authenticated identity", 0
 
 
+REFERENCE_START = "[CONTEXT COMPACTION — REFERENCE ONLY]"
+REFERENCE_END = (
+    "--- END OF CONTEXT SUMMARY — respond to the message below, not the summary above ---"
+)
+
+
+def reference_evidence(content):
+    """Abstain only on complete, bounded, line-delimited reference-shaped spans.
+
+    Shape is not origin authentication. Preserve original records and all speech
+    outside the envelope. Ambiguous, nested or incomplete envelopes stay visible.
+    """
+    text = content or ""
+    if len(text) > 65536:
+        return text, 0
+    lines = text.splitlines(keepends=True)
+    starts = [i for i, line in enumerate(lines) if line.rstrip("\r\n") == REFERENCE_START]
+    ends = [i for i, line in enumerate(lines) if line.rstrip("\r\n") == REFERENCE_END]
+    if len(starts) != 1 or len(ends) != 1 or ends[0] <= starts[0]:
+        return text, 0
+    return "".join(lines[: starts[0]] + lines[ends[0] + 1 :]), 1
+
+
 def scan(store, path, source_id, before, after=0, limit=500, after_id=0, session=None):
     if not 1 <= limit <= 10000:
         raise ValueError("limit must be between 1 and 10000")
@@ -117,7 +142,10 @@ def scan(store, path, source_id, before, after=0, limit=500, after_id=0, session
         "notification_spans_ignored": 0,
         "attribution_reason": "No supported authenticated notification-origin metadata",
         "unsupported": ["authenticated human identity", "cross-session causal pairing"],
-        "parser": "corrections.v3",
+        "parser": "corrections.v4",
+        "reference_spans_ignored": 0,
+        "excluded_reference_like": 0,
+        "duplicate_observations": 0,
         "next_cursor": {"timestamp": after, "id": after_id},
     }
     with snapshot(path) as c:
@@ -132,7 +160,14 @@ def scan(store, path, source_id, before, after=0, limit=500, after_id=0, session
             stats["scanned_users"] += 1
             user = dict(row)
             stats["next_cursor"] = {"timestamp": user["timestamp"], "id": user["id"]}
-            marker_text, attribution, spans = notification_evidence(user["content"])
+            reference_text, references = reference_evidence(user["content"])
+            stats["reference_spans_ignored"] += references
+            if references and not reference_text.strip():
+                stats["excluded_reference_like"] += 1
+                continue
+            marker_text, attribution, spans = notification_evidence(reference_text)
+            if references:
+                attribution += "; reference-shaped span omitted, origin unauthenticated"
             stats["notification_spans_ignored"] += spans
             if attribution.startswith("UNCERTAIN"):
                 stats["uncertain_notification_rows"] += 1
@@ -152,6 +187,21 @@ def scan(store, path, source_id, before, after=0, limit=500, after_id=0, session
             if old:
                 stats["selected"] += 1
                 continue
+            # Exact repeated observations only: never merge independent sources,
+            # sessions, times, or bounded/truncated text. Prior records stay immutable.
+            if len(user["content"] or "") <= 65536:
+                with store.connect() as existing:
+                    duplicate = existing.execute(
+                        "select id from documents where kind='correction-candidate' "
+                        "and json_extract(body,'$.source_id')=? "
+                        "and json_extract(body,'$.session_id')=? "
+                        "and json_extract(body,'$.user_message.timestamp')=? "
+                        "and json_extract(body,'$.user_message.content')=? limit 1",
+                        (source_id, user["session_id"], user["timestamp"], user["content"]),
+                    ).fetchone()
+                if duplicate:
+                    stats["duplicate_observations"] += 1
+                    continue
             # A nearby marker alone cannot establish a correction. Require an operation or claim.
             preceding = [
                 dict(x)
@@ -170,7 +220,7 @@ def scan(store, path, source_id, before, after=0, limit=500, after_id=0, session
                 stats["insufficient_evidence"] += 1
                 continue
             candidate = CorrectionCandidate(
-                id=digest(["correction-discovery.v3", source_id, user["session_id"], user["id"]]),
+                id=digest(["correction-discovery.v4", source_id, user["session_id"], user["id"]]),
                 source_id=source_id,
                 session_id=user["session_id"],
                 case_id=None,

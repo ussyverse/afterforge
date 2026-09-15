@@ -1,5 +1,16 @@
 # Afterforge 0.5.1 coordinator handoff
 
+## Correction queue source-branch repair
+
+See [discovery v4 findings](docs/correction-reference-noise.md): bounded complete
+reference-span abstention and exact repeated-observation suppression, preserving
+legacy evidence and reviews. Synthetic red/green proof and 274 application and
+packaging tests passed with Chromium and no skips; lint, format and builds passed.
+The private field rescan is not a frozen comparison and did not demonstrate
+reference-span recall. Partial-closeout behavior remains an unevaluated hypothesis;
+no live procedure, stable release or deployment promotion is authorized by this result.
+
+
 ## Subsequent behavioral research summary
 
 The [aggregate retrieval findings](docs/retrieval-behavior-findings.md) supersede blanket interpretations of the older negative model trials below, not the observations themselves. A frozen split-directory development task produced Luna-low target correctness of 1/5 before a task-scoped reminder and 5/5 with it; Astra stayed 5/5, and wrong-version controls remained correct. A separate six-case transfer check found no main-status regression, but completeness omissions and unnecessary archive reads remain. The reminder is inactive, distinct from the shipped hook, and not evidence of durable learning or global deployment readiness. Raw traces and detailed evaluations stay private. This documentation update does not promote or recertify a release; the earlier release-preparation notes below are historical context.

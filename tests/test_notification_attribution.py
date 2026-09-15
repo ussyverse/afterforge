@@ -48,7 +48,7 @@ def test_notification_marker_is_not_selected(history, tmp_path, status):
     assert store.all("correction-candidate") == []
     assert stats["excluded_notification_like"] == 1
     assert stats["next_cursor"] == {"timestamp": 8.0, "id": 7}
-    assert stats["parser"] == "corrections.v3"
+    assert stats["parser"] == "corrections.v4"
 
 
 @pytest.mark.parametrize(
@@ -110,10 +110,10 @@ def test_parser_versions_explicit():
         "user_message": {},
         "selection_reason": "Synthetic",
     }
-    for version in ("corrections.v1", "corrections.v2", "corrections.v3"):
+    for version in ("corrections.v1", "corrections.v2", "corrections.v3", "corrections.v4"):
         assert corrections.CorrectionCandidate(**fields, parser=version).parser == version
     with pytest.raises(ValueError):
-        corrections.CorrectionCandidate(**fields, parser="corrections.v4")
+        corrections.CorrectionCandidate(**fields, parser="corrections.v5")
 
 
 @pytest.mark.parametrize(
