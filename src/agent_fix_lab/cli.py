@@ -159,6 +159,11 @@ def parser():
     r.add_argument(
         "--reviewed", action="store_true", help="Confirm code, revisions and fixture inspection"
     )
+    review_recipe = commands.add_parser(
+        "review-recipe", help="Operator review of a registered unreviewed recipe by exact digest"
+    )
+    review_recipe.add_argument("recipe_id")
+    review_recipe.add_argument("--approve-digest", required=True)
     plan = commands.add_parser("current-check-plan")
     plan.add_argument("recipe_id")
     current = commands.add_parser("verify-current")
@@ -395,6 +400,8 @@ def main(argv=None):
                 )
             elif args.command == "recipe":
                 result = lab.add_recipe(json.loads(args.file.read_text()), args.reviewed)
+            elif args.command == "review-recipe":
+                result = lab.review_recipe(args.recipe_id, args.approve_digest)
             elif args.command == "current-check-plan":
                 from .models import digest
 

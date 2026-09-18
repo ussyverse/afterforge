@@ -113,12 +113,27 @@ def dispatch(home, operation, args):
             retracts=args.get("retracts"),
         )
     if operation in ("build_regression", "register_regression"):
-        if args.get("reviewed") is not True:
-            raise ValueError("Explicit inspected recipe review is required")
+        from .models import digest
+
         file = Path(args["recipe_file"]).expanduser().resolve(strict=True)
         if file.stat().st_size > 65536:
             raise ValueError("Recipe file too large")
-        return lab.add_recipe(json.loads(file.read_text()), reviewed=True)
+        # A model-supplied "reviewed" flag is never trusted: registration is always
+        # unreviewed and only an operator-side review can produce a runnable recipe.
+        recipe = lab.add_recipe(json.loads(file.read_text()), reviewed=False)
+        return {
+            "recipe": recipe,
+            "recipe_digest": digest(recipe),
+            "status": "not-run",
+            "review_required": (
+                "Operator must inspect the recipe and run "
+                "`hermes afterforge review-recipe RECIPE_ID --approve-digest DIGEST` "
+                "before fixlab_verify_regression can run it"
+            ),
+        }
+    if operation == "review_recipe":
+        # Only reachable from the operator terminal command, not from model tools.
+        return lab.review_recipe(args["recipe_id"], args["approve_digest"])
     if operation == "verify_regression":
         return lab.run(args["recipe_id"])
     if operation == "report":
@@ -155,6 +170,9 @@ def main():
             "authorize_draft": "Inspect exact draft; supply approve_digest, reviewed=true and declared_inputs=true",
             "retained_plan": "Supply a reviewed recipe and explicit target commit; declare intentional data/config changes by path",
             "retained_check": "Inspect exact target plan; supply plan_id, approve_digest and reviewed=true",
+            "build_regression": "Registration is always unreviewed; an operator must inspect and review the recipe before verification",
+            "review_recipe": "Supply the unreviewed recipe ID and its exact digest from the registration response",
+            "verify_regression": "Only operator-reviewed recipes run; use hermes afterforge review-recipe first",
             "review_correction": "Supply candidate ID, accepted/rejected/retracted decision, nonempty note and valid same-candidate retraction target",
         }
         result = {

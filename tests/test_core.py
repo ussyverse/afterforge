@@ -186,6 +186,31 @@ def test_inconclusive_never_fix(lab, regression, text, reason):
     assert reason.lower() in result.reason.lower()
 
 
+def test_bridge_registration_is_unreviewed_until_operator_review(lab, regression, tmp_path):
+    from agent_fix_lab.plugin_bridge import dispatch
+
+    case = lab.list_cases()[0]["id"]
+    recipe_file = tmp_path / "recipe.json"
+    recipe_file.write_text(json.dumps({**regression, "case_id": case}))
+    # A model-supplied reviewed=True is ignored: registration never yields a runnable recipe.
+    registered = dispatch(
+        lab.store.root, "build_regression", {"recipe_file": str(recipe_file), "reviewed": True}
+    )
+    unreviewed = registered["recipe"]
+    assert unreviewed["reviewed"] is False
+    assert registered["recipe_digest"] == digest(unreviewed)
+    with pytest.raises(ValueError, match="not been reviewed by an operator"):
+        dispatch(lab.store.root, "verify_regression", {"recipe_id": unreviewed["id"]})
+    with pytest.raises(ValueError, match="digest"):
+        lab.review_recipe(unreviewed["id"], "0" * 64)
+    reviewed = lab.review_recipe(unreviewed["id"], registered["recipe_digest"])
+    assert reviewed["reviewed"] is True and reviewed["id"] != unreviewed["id"]
+    # Immutable original, idempotent review, and only the reviewed copy runs.
+    assert lab.store.get("recipe", unreviewed["id"])["reviewed"] is False
+    assert lab.review_recipe(unreviewed["id"], registered["recipe_digest"]) == reviewed
+    assert lab.run(reviewed["id"])["comparison"]["status"] == "pass"
+
+
 def test_review_and_fixture_integrity(lab, regression):
     case = lab.list_cases()[0]["id"]
     recipe = Recipe(**lab.add_recipe({**regression, "case_id": case}))
