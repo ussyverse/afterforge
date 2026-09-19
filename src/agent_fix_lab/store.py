@@ -44,7 +44,7 @@ class Store:
 
     @contextmanager
     def workflow_lock(self, name):
-        if name not in {"scan", "authorize-draft"}:
+        if name not in {"scan", "authorize-draft", "review-recipe"}:
             raise ValueError("Unsupported workflow lock")
         fd = os.open(self.root / f"{name}.lock", os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
         try:

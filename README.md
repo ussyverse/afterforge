@@ -29,6 +29,16 @@ hermes afterforge scan
 hermes afterforge serve
 ```
 
+**Dependencies not installed by Hermes.** `pyproject.toml` pins three components as direct Git URLs (`triage`, `petrichor`, `correction-aware-learning`), which are not published on PyPI. `hermes plugins install` does not install direct-URL requirements; nothing works until you run the setup step, which fetches those three repositories from GitHub into the plugin's own private uv environment from the committed lock (network access to github.com required):
+
+```sh
+hermes afterforge setup   # or, from a source checkout: uv sync --locked --no-dev
+```
+
+**What `fixlab_scan` copies.** Scanning reads Hermes' `state.db` (WAL-consistent, read-only) and copies failed tool results—up to 64 KiB of tool output per result, exit codes, session/message identifiers, timestamps and the two preceding messages (first 2000 characters each) as context—into the plugin's own SQLite store under profile-local plugin data. That copy is permission-restricted, not encrypted, and persists until you delete the data directory; it is a second location holding conversation-derived content. See [privacy](docs/privacy.md).
+
+**Recipe review is operator-only.** `fixlab_build_regression` always registers a recipe as unreviewed; a model cannot mark it reviewed. Inspect the recipe and its test file yourself, then run `hermes afterforge review-recipe RECIPE_ID --approve-digest DIGEST` (or standalone `afterforge review-recipe`). `fixlab_verify_regression` refuses recipes without that operator review. The managed backend subprocess starts from a minimal allowlisted environment and does not inherit provider API keys.
+
 Use `/afterforge status`, `/afterforge scan` and `/afterforge review` in a Hermes session. Launch Hermes with the same explicit AFTERFORGE_SOURCE_ID used by the browser/native scans and standalone `--source-id`; choose a different value for an independent store. See the guided queue/draft/retained-check [workflow](docs/workflow.md). `hermes fixlab`, `/fixlab` and the standalone `agent-fix-lab` command remain aliases for this migration release. The plugin ID remains `agent-fix-lab`: do not install a second plugin under the new brand.
 
 Setup uses the committed uv lock and a private staged environment, records transitive hashes/resolved packages, and switches readiness only after doctor. It never installs dependencies into Hermes's environment. Failed upgrades retain the last working runtime. See [native installation/host matrix](docs/native-plugin.md), [release protocol](docs/release.md) and [migration](docs/migration.md).

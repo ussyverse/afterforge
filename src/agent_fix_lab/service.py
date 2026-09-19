@@ -439,8 +439,49 @@ class Lab:
         self.store.put("recipe", recipe)
         return recipe.model_dump()
 
+    def review_recipe(self, recipe_id, approved_digest):
+        """Operator-side review of a registered recipe; never callable through model tools.
+
+        Records are immutable, so review creates a new reviewed recipe bound to the
+        inspected original by digest, mirroring draft authorization. Idempotent.
+        """
+        with self.store.workflow_lock("review-recipe"):
+            original = self.store.get("recipe", recipe_id)
+            if original["reviewed"]:
+                return original
+            if digest(original) != approved_digest:
+                raise ValueError("Exact recipe digest required; inspect the recipe first")
+            existing = self.store.page("recipe-review", field="scope", value=recipe_id, limit=1)
+            if existing:
+                return self.store.get("recipe", existing[0]["recipe_id"])
+            # Re-verify the assertion bytes; a changed test file needs a fresh review.
+            saved = resolve_recipe(
+                Recipe(**{**original, "id": uuid.uuid4().hex, "reviewed": True})
+            ).model_dump()
+            self.store.put_many(
+                [
+                    ("recipe", saved),
+                    (
+                        "recipe-review",
+                        {
+                            "id": uuid.uuid4().hex,
+                            "scope": recipe_id,
+                            "recipe_id": saved["id"],
+                            "recipe_digest": approved_digest,
+                            "authority": "operator-declared",
+                        },
+                    ),
+                ]
+            )
+            return saved
+
     def run(self, recipe_id):
         recipe = Recipe(**self.store.get("recipe", recipe_id))
+        if not recipe.reviewed:
+            raise ValueError(
+                "Recipe has not been reviewed by an operator; inspect it and run "
+                "`afterforge review-recipe RECIPE_ID --approve-digest DIGEST`"
+            )
         results = []
         for variant in ("faulty", "corrected"):
             result = execute(recipe, variant)

@@ -41,12 +41,12 @@ SPECS = {
         ["text"],
     ),
     "build_regression": (
-        "Associate an inspected existing pytest recipe with a case. No automatic reduction or execution of historical commands. Explicit local review is mandatory.",
-        {"recipe_file": {"type": "string", "maxLength": 4096}, "reviewed": {"type": "boolean"}},
-        ["recipe_file", "reviewed"],
+        "Register an existing pytest recipe with a case as UNREVIEWED. No automatic reduction or execution of historical commands. Only an operator can review it (hermes afterforge review-recipe); the model cannot declare review.",
+        {"recipe_file": {"type": "string", "maxLength": 4096}},
+        ["recipe_file"],
     ),
     "verify_regression": (
-        "Run an already reviewed pytest recipe against its two frozen revisions. Inspect code first; not an OS sandbox.",
+        "Run an operator-reviewed pytest recipe against its two frozen revisions. Unreviewed recipes are refused; not an OS sandbox.",
         {"recipe_id": ID},
         ["recipe_id"],
     ),

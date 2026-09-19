@@ -103,14 +103,38 @@ class Runtime:
         finally:
             os.close(fd)
 
+    # Managed subprocesses start from a minimal allowlisted environment, never the full
+    # Hermes process environment: provider API keys and other host secrets are not
+    # inherited. Locale/TLS/proxy names are needed by uv and git during setup.
+    ENVIRONMENT_ALLOWLIST = (
+        "PATH",
+        "HOME",
+        "USER",
+        "LOGNAME",
+        "LANG",
+        "LANGUAGE",
+        "LC_ALL",
+        "LC_CTYPE",
+        "TZ",
+        "TERM",
+        "SSL_CERT_FILE",
+        "SSL_CERT_DIR",
+        "REQUESTS_CA_BUNDLE",
+        "HTTP_PROXY",
+        "HTTPS_PROXY",
+        "NO_PROXY",
+        "http_proxy",
+        "https_proxy",
+        "no_proxy",
+        "HERMES_PROFILE",
+        "AFTERFORGE_SOURCE_ID",
+    )
+
     def environment(self):
         root = self.root()
         work = self.private_dir(root / "workspaces")
-        env = {**os.environ, "HERMES_HOME": str(root.parent.parent), "TMPDIR": str(work)}
-        for key in tuple(env):
-            if key.startswith(("UV_", "PYTHON", "PIP_")) or key in ("VIRTUAL_ENV", "CONDA_PREFIX"):
-                env.pop(key)
-        env["PYTHONNOUSERSITE"] = "1"
+        env = {key: os.environ[key] for key in self.ENVIRONMENT_ALLOWLIST if key in os.environ}
+        env.update(HERMES_HOME=str(root.parent.parent), TMPDIR=str(work), PYTHONNOUSERSITE="1")
         return env
 
     def run_process(
@@ -603,10 +627,11 @@ class Runtime:
                         root, args.operation, args.generation, item, args.approve_digest
                     )
                 result = {"success": True, "data": data}
-            elif action in ("demo", "review", "retained-plan", "retained-check"):
+            elif action in ("demo", "review", "review-recipe", "retained-plan", "retained-check"):
                 mapping = {
                     "demo": ("synthetic_demo", ()),
                     "review": ("review_queue", ("offset", "limit")),
+                    "review-recipe": ("review_recipe", ("recipe_id", "approve_digest")),
                     "retained-plan": ("retained_plan", ("recipe_id", "target_revision")),
                     "retained-check": ("retained_check", ("plan_id", "approve_digest", "reviewed")),
                 }

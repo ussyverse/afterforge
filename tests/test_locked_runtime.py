@@ -87,6 +87,27 @@ def test_invoke_handles_bidirectional_backpressure_and_host_isolation(runtime, m
     assert dict(os.environ) == before
 
 
+def test_backend_environment_is_minimal_allowlist(runtime, monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "synthetic-secret")
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "synthetic-secret")
+    monkeypatch.setenv("AWS_SECRET_ACCESS_KEY", "synthetic-secret")
+    monkeypatch.setenv("UV_INDEX_URL", "synthetic-host-override")
+    monkeypatch.setenv("AFTERFORGE_SOURCE_ID", "synthetic-source")
+    env = runtime.environment()
+    assert not any(key.endswith(("_KEY", "_TOKEN", "_SECRET")) for key in env)
+    assert set(env) <= set(runtime.ENVIRONMENT_ALLOWLIST) | {
+        "HERMES_HOME",
+        "TMPDIR",
+        "PYTHONNOUSERSITE",
+    }
+    assert env["PATH"] == os.environ["PATH"] and env["AFTERFORGE_SOURCE_ID"] == "synthetic-source"
+    assert env["HERMES_HOME"] == str(runtime.root().parent.parent)
+    leaked = runtime.invoke(
+        [sys.executable, "-c", "import json,os; print(json.dumps(sorted(os.environ)))"]
+    )
+    assert "OPENAI_API_KEY" not in leaked and "UV_INDEX_URL" not in leaked
+
+
 @pytest.mark.parametrize("name", ["runtime", "runtimes", "jobs", "uv-cache"])
 def test_symlink_managed_directories_rejected(runtime, tmp_path, name):
     outside = tmp_path / "unowned"
