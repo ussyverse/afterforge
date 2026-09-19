@@ -137,7 +137,8 @@ def main():
         )
     )
     assert refused["success"] is False
-    assert "not been reviewed by an operator" in refused["error"]["message"]
+    assert refused["error"]["code"] == "ValueError", refused
+    assert "Only operator-reviewed recipes run" in refused["error"]["message"], refused
     import subprocess
 
     def current_command(*arguments):
