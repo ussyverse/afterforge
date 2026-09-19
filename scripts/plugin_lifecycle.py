@@ -126,10 +126,18 @@ def main():
         )
     )
     assert rejected["success"] is False
-    registered = call("build_regression", {"recipe_file": str(path), "reviewed": True})
-    assert (
-        call("verify_regression", {"recipe_id": registered["id"]})["comparison"]["status"] == "pass"
+    registration = call("build_regression", {"recipe_file": str(path)})
+    unreviewed = registration["recipe"]
+    assert unreviewed["reviewed"] is False and registration["status"] == "not-run"
+    refused = json.loads(
+        registry.dispatch(
+            "fixlab_verify_regression",
+            {"recipe_id": unreviewed["id"]},
+            scope=manager.scope_key,
+        )
     )
+    assert refused["success"] is False
+    assert "not been reviewed by an operator" in refused["error"]["message"]
     import subprocess
 
     def current_command(*arguments):
@@ -145,6 +153,13 @@ def main():
         assert response["success"], response
         return response["data"]
 
+    registered = current_command(
+        "review-recipe", unreviewed["id"], "--approve-digest", registration["recipe_digest"]
+    )
+    assert registered["reviewed"] is True and registered["id"] != unreviewed["id"]
+    assert (
+        call("verify_regression", {"recipe_id": registered["id"]})["comparison"]["status"] == "pass"
+    )
     plan = current_command("current-check-plan", registered["id"])
     checked = current_command(
         "verify-current", registered["id"], "--approve-digest", plan["recipe_digest"]
