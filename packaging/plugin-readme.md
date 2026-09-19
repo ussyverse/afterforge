@@ -21,6 +21,16 @@ Choose an explicit private source identity for this logical profile store. Launc
 
 Setup uses uv's committed lock in a private staged generation, exports transitive hashed requirements, records resolved package versions and publishes readiness only after doctor. Failed upgrades retain the previously usable runtime. Hermes's environment is never modified and no hidden application backend is downloaded. Inspect the three full-SHA Git dependencies declared in pyproject.toml. Initial dependency installation needs network.
 
+## Security and data disclosures
+
+`hermes plugins install` does not install the three direct-URL Git requirements (`triage`, `petrichor`, `correction-aware-learning`) in pyproject.toml. Run `hermes afterforge setup` before using the backend; it fetches those SHA-pinned repositories from GitHub into the plugin's private locked uv environment. They are not published on PyPI or vendored here.
+
+`fixlab_scan` reads Hermes' state.db read-only and copies failed tool results (up to 64 KiB per result), exit codes, session/message identifiers, timestamps, and the two preceding messages (first 2000 characters each) into the plugin's SQLite store in profile-local plugin data. This second copy of conversation-derived content is permission-restricted, not encrypted, and persists until you delete the data directory. See docs/privacy.md.
+
+`fixlab_build_regression` always registers an unreviewed recipe. Inspect its test file and both revisions, then approve the exact recipe digest with `hermes afterforge review-recipe RECIPE_ID --approve-digest DIGEST`. Approval returns a new reviewed recipe ID; use that ID with `fixlab_verify_regression`. The model tools cannot approve recipes, and verification refuses unreviewed recipes. This is not a sandbox or a restriction on an agent that already has unrestricted terminal access.
+
+Managed bridge, setup and serve subprocesses use an allowlisted environment rather than inheriting provider API keys or arbitrary host variables. They still run as your OS user; environment filtering does not isolate filesystem access.
+
 ## Commands and evidence
 
 Standalone: `afterforge` and legacy `agent-fix-lab`. Native: `hermes afterforge` and legacy `hermes fixlab`. Session commands: `/afterforge` and legacy `/fixlab`. Consult installed help for current review/draft/retained-check operations. Bundled skill remains `agent-fix-lab:regression-workflow`; do not install a duplicate under the new brand.
