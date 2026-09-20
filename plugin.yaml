@@ -12,3 +12,4 @@ config_schema:
   capture: {type: bool, default: true, description: Queue bounded metadata only; never execute from hooks}
   scan_limit: {type: int, default: 50, description: Maximum source records per scan (1 to 200)}
   timeout: {type: int, default: 120, description: Backend timeout in seconds (5 to 600)}
+python_runtime: external
